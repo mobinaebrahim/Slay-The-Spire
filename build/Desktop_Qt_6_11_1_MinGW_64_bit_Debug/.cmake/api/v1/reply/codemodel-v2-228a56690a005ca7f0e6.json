@@ -1,0 +1,88 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-3df2247e954511f1fb20.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "slay-the-spire",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "slay-the-spire::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-slay-the-spire-Debug-0fc9ec4e6dc656406d6f.json",
+					"name" : "slay-the-spire",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "slay-the-spire_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-slay-the-spire_autogen-Debug-1ed809c52ca9e66d2d72.json",
+					"name" : "slay-the-spire_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "slay-the-spire_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-slay-the-spire_autogen_timestamp_deps-Debug-acce4ca2037f50c35b13.json",
+					"name" : "slay-the-spire_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "slay-the-spire_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-slay-the-spire_qmlimportscan-Debug-472e21932c9dd07a3b3a.json",
+					"name" : "slay-the-spire_qmlimportscan",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug",
+		"source" : "C:/Users/sunmedia/Documents/slay-the-spire"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

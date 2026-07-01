@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+045a8975b3cfb1829bae6149a8779482 CMakeFiles/slay-the-spire_autogen
+bfeaad48beb33b68022bf19ad3f97fd8 slay-the-spire_autogen/EWIEGA46WW/qrc_resources.cpp
+90f851c4c1fc37fa8d17f5b3a7e19d07 slay-the-spire_autogen/timestamp

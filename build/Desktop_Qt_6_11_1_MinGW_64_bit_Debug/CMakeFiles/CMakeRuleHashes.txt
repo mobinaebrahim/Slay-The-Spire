@@ -1,6 +1,0 @@
-# Hashes of file build rules.
-40c4c327e9b2de8842a0e1bd66931182 .qt/qml_imports/slay-the-spire_build.cmake
-b5986cb9fab16f943a89796535e90480 CMakeFiles/slay-the-spire_autogen
-b5986cb9fab16f943a89796535e90480 CMakeFiles/slay-the-spire_qmlimportscan
-9c2f0ee37c23e3ff69fa133f130d118b slay-the-spire_autogen/EWIEGA46WW/qrc_resources.cpp
-3560581fbaa1fdba07903d60afbf843f slay-the-spire_autogen/timestamp

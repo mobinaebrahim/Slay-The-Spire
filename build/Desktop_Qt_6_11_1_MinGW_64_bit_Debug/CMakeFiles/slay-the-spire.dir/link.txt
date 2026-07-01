@@ -1,3 +1,0 @@
-C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\slay-the-spire.dir/objects.a
-C:\Qt\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\slay-the-spire.dir/objects.a @CMakeFiles\slay-the-spire.dir\objects1.rsp
-C:\Qt\Tools\mingw1310_64\bin\g++.exe -g -mwindows -Wl,--whole-archive CMakeFiles\slay-the-spire.dir/objects.a -Wl,--no-whole-archive -o slay-the-spire.exe -Wl,--out-implib,libslay-the-spire.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\slay-the-spire.dir\linkLibs.rsp

@@ -1,9 +1,0 @@
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/slay-the-spire.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/edit_cache.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/rebuild_cache.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/list_install_components.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/install.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/install/local.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/install/strip.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/slay-the-spire_autogen_timestamp_deps.dir
-C:/Users/sunmedia/Documents/slay-the-spire/build/Desktop_Qt_6_11_1_MinGW_64_bit_Release/CMakeFiles/slay-the-spire_autogen.dir

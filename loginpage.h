@@ -2,6 +2,7 @@
 #define LOGINPAGE_H
 
 #include <QDialog>
+#include"usermanager.h"
 
 namespace Ui {
 class Dialogloginpage;
@@ -17,6 +18,7 @@ public:
 
 private:
     Ui::Dialogloginpage *ui;
+    void login_check();
 };
 
 #endif // LOGINPAGE_H

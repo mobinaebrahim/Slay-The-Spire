@@ -1,8 +1,8 @@
 #include "loginpage.h"
+#include "usermanager.h"
 #include "ui_loginpage.h"
 #include <QMessageBox>
 #include <QCryptographicHash>
-
 
 
 Dialogloginpage::Dialogloginpage(QWidget *parent)
@@ -29,7 +29,6 @@ void Dialogloginpage::login_check(){
         return;
     }
 
-    QString hashedPassword = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
     bool exist_user = user_manager::instance().usernmae_exist(username);
     if(!exist_user){
         QMessageBox::warning(this, "Error", "Username not exist!");
@@ -38,6 +37,7 @@ void Dialogloginpage::login_check(){
 
     bool success = user_manager::instance().login_user(username,password);
     if (success) {
+        user_manager::instance().set_current_user(username,password);
         QMessageBox::information(this, "Success", "Login successful!");
         this->close();
     }

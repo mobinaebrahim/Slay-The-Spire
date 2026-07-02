@@ -103,3 +103,15 @@ bool user_manager::login_user(const QString &username, const QString &password){
     return verify_password(username, hashedPassword);
 }
 
+void user_manager::set_current_user(const QString &username,const QString &password){
+    current_username = username;
+    current_password = password;
+}
+
+QString user_manager::get_current_username() const{
+    return current_username;
+}
+
+QString user_manager::get_current_password() const{
+    return current_password;
+}

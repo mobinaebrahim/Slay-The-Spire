@@ -5,7 +5,7 @@
 class user_manager
 {
 public:
-    user_manager();
+    static user_manager& instance();
     ~user_manager();
 
     bool open_database();
@@ -14,6 +14,9 @@ public:
     bool usernmae_exist(const QString &username);
 
 private:
+    user_manager();
+    user_manager(const user_manager&) = delete;
+    user_manager& operator=(const user_manager&) = delete;
     QSqlDatabase data_base;
     bool insert_user(const QString &username, const QString &hashedPassword, const QString &email );
     bool verify_password(const QString &username, const QString &hashedPassword);

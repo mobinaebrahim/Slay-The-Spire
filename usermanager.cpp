@@ -5,6 +5,11 @@
 #include <QCryptographicHash>
 
 //console output just help me to debug it easier :)
+user_manager& user_manager::instance()
+{
+    static user_manager instance;
+    return instance;
+}
 user_manager::user_manager() {
     open_database();
 }

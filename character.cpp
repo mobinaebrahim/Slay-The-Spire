@@ -31,7 +31,7 @@ void Character::increaseHP(int amount) {
         hp = maxHp;
 }
 
-void Character::calculate_total_block(int amount) {
+int Character::calculate_total_block(int amount) {
     int finalBlock = amount;
 
     int dexterity = getStatusValue("Dexterity");
@@ -41,7 +41,7 @@ void Character::calculate_total_block(int amount) {
     if (frail > 0) 
         finalBlock = finalBlock * 3 / 4; 
 
-    cout << name << " calculated total block: " << finalBlock << " (Base: " << amount << ")\n";
+    return finalBlock;
 }
 
 int Character::getStatusValue(string status) {

@@ -25,7 +25,6 @@ public:
     void takeDamage(int incomingDamage);
     void addBlock(int amount);
     void increaseHP(int amount);
-    void calculate_total_block(int amount);
     void applyStatus(StatusEffect* newEffect);
     void keep_block_until_next_turn();
     virtual void TurnStartEffect(string effect);
@@ -33,6 +32,7 @@ public:
 
     int getStatusValue(string status);
     int calculate_total_damage(int baseDamage);
+    int calculate_total_block(int amount);
     int getTimesDamagedThisCombat() const;
 
     int getHp() const { return hp; }

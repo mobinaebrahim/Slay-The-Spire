@@ -40,6 +40,7 @@ void Dialogregisterpage::handle_register_sub(){
     bool success = user_manager::instance().register_user(username, password, email);
 
     if (success) {
+        user_manager::instance().set_current_user(username,password);
         QMessageBox::information(this, "Success", "Registration successful!");
         this->close();
     }

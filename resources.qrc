@@ -3,4 +3,12 @@
         <file>assets/video/background.mp4</file>
         <file>assets/video/bakground.jpg</file>
     </qresource>
+    <qresource prefix="/">
+        <file>assets/login-register-menu/buttonL.png</file>
+        <file>assets/login-register-menu/buttonLRed.png</file>
+        <file>assets/login-register-menu/confirm.png</file>
+        <file>assets/login-register-menu/nameBox.png</file>
+        <file>assets/login-register-menu/no.png</file>
+        <file>assets/login-register-menu/yes.png</file>
+    </qresource>
 </RCC>

@@ -10,6 +10,8 @@ Dialogloginpage::Dialogloginpage(QWidget *parent)
     , ui(new Ui::Dialogloginpage)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+
     connect(ui->login_button,&QPushButton::clicked,this,&Dialogloginpage::login_check);
     connect(ui->back_button,&QPushButton::clicked,this,&QDialog::close);
 

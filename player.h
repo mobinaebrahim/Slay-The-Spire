@@ -38,6 +38,7 @@ public:
     void add_block_when_exhausted();
     void TurnStartEffect(string effect) override;
     const vector<Card*>& getHand() const { return hand; }
+    void endTurnCleanUp();
 };
 
 #endif

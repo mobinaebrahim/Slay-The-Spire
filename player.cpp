@@ -107,3 +107,11 @@ void Player::TurnStartEffect(string effect) {
     if (effect == "Brutality") 
         drawCards(1);
 }
+
+void Player::endTurnCleanUp() {
+    for (Card* card : hand) {
+        if (card) 
+            discardPile.push_back(card);
+    }
+    hand.clear(); 
+}

@@ -115,3 +115,8 @@ void Player::endTurnCleanUp() {
     }
     hand.clear(); 
 }
+
+void Player::addCardToDrawPile(Card* card) {
+    if (card != nullptr) 
+        drawPile.push_back(card);
+}

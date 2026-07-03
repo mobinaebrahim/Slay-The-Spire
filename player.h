@@ -39,6 +39,7 @@ public:
     void TurnStartEffect(string effect) override;
     const vector<Card*>& getHand() const { return hand; }
     void endTurnCleanUp();
+    void addCardToDrawPile(Card* card);
 };
 
 #endif

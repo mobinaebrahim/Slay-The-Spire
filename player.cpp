@@ -87,9 +87,11 @@ Card* Player::chooseCardFromHand() {
 void Player::addCopiesToHand(Card* chosenCard, int count) {
     if (!chosenCard)
         return;
-    for (int i = 0; i < count; i++) 
-        hand.push_back(chosenCard);
-    cout << "Added " << count << " copies of " << chosenCard->getName() << " to hand.\n";
+    for (int i = 0; i < count; i++){
+        Card* newCopy = createCardByName(chosenCard->getName());
+        if (newCopy)
+            hand.push_back(newCopy);
+    }
 }
 
 int Player::getHandSize() {

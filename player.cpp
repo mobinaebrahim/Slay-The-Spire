@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <algorithm>
 #include <random>
+#include <chrono>
 
 extern Card* createCardByName(const std::string& name);
 
@@ -30,12 +31,18 @@ void Player::increaseMaxHP(int amount) {
 void Player::drawCards(int count) {
     for (int i = 0; i < count; i++) {
         if (drawPile.empty()) {
-            if (discardPile.empty()) 
+            if (discardPile.empty())
                 break;
+
             drawPile = discardPile;
             discardPile.clear();
-            std::random_shuffle(drawPile.begin(), drawPile.end());
+
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            std::default_random_engine motor(seed);
+
+            std::shuffle(drawPile.begin(), drawPile.end(), motor);
         }
+
         Card* topCard = drawPile.back();
         drawPile.pop_back();
         hand.push_back(topCard);

@@ -159,7 +159,7 @@ void MainWindow::initializePlayerDeck(int totalCards) {
     "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
     "DualWield", "Defend", "DemonForm", "Disarm", "Entrench",
     "Exhume", "FeelNoPain", "Impervious", "Inflame", "LimitBreak", "Metallicize",
-    "Offering", "ShrugItOff", "Daze", "Slime", "Wound", "Burn", "JAX", "CurseOfBell", "Regret"};
+    "Offering", "ShrugItOff", "Daze", "Slime", "Wound", "Burn", "JAX", "CurseOfBell"};
 
     for (int i = 0; i < totalCards; ++i) {
         int randomIndex = std::rand() % allCardNames.size();

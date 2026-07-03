@@ -12,6 +12,6 @@ int main(int argc, char *argv[])
     user_manager::instance();
 
     MainWindow w;
-    w.show();
+    w.showFullScreen();
     return a.exec();
 }

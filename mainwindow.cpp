@@ -40,10 +40,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     view->lower();
 
+    //---home_page---
     ui->btnLogin->raise();
     ui->btnRegister->raise();
 
-    // ---connect video to loginpage/registerpage---
     connect(ui->btnLogin, &QPushButton::clicked, this, [this](){
         Dialogloginpage *loginDlg = new Dialogloginpage(this);
         loginDlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -55,6 +55,23 @@ MainWindow::MainWindow(QWidget *parent)
         registerDlg->setAttribute(Qt::WA_DeleteOnClose);
         registerDlg->exec();
     });
+
+    //---main_menu---
+    ui->btnSetting->raise();
+    ui->btnStatics->raise();
+    ui->btnQuit->raise();
+    ui->btnCompendium->raise();
+
+    connect(ui->btnQuit,&QPushButton::clicked, this, [this](){
+        this->close();
+    });
+
+    connect(ui->btnStatics,&QPushButton::clicked, this,[this](){
+        StaticsItemPage *staticDlg = new StaticsItemPage(this);
+        staticDlg->setAttribute(Qt::WA_DeleteOnClose);
+        staticDlg->exec();
+    });
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -65,7 +82,26 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     scene->setSceneRect(0, 0, ui->centralwidget->width(), ui->centralwidget->height());
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        return;
+    }
+    QMainWindow::keyPressEvent(event);
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+void MainWindow::on_exit_button_clicked()
+{
+    close();
+}
+void MainWindow::go_to_menu()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_menu);
+}
+
+
+

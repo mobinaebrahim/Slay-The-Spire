@@ -10,6 +10,8 @@
 #include <QResizeEvent>
 #include "loginpage.h"
 #include "registerpage.h"
+#include "staticsitempage.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,9 +26,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+    void go_to_menu();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+
+private slots:
+    void on_exit_button_clicked();
 
 private:
     Ui::MainWindow *ui;

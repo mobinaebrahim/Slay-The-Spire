@@ -6,64 +6,139 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>916</width>
-    <height>600</height>
+    <width>1200</width>
+    <height>966</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="btnRegister">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>390</y>
-      <width>191</width>
-      <height>91</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QWidget" name="page_home">
+       <widget class="QPushButton" name="btnRegister">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>660</y>
+          <width>271</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
     border-image: url(:/assets/login-register-menu/buttonLRed.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
 	font-size: 14pt;
     font-weight: bold;}</string>
-    </property>
-    <property name="text">
-     <string>register</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnLogin">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>380</y>
-      <width>211</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
+        </property>
+        <property name="text">
+         <string>register</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnLogin">
+        <property name="geometry">
+         <rect>
+          <x>580</x>
+          <y>560</y>
+          <width>281</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
     border-image: url(:/assets/login-register-menu/buttonL.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
     font-weight: bold;
 	font-size: 14pt;
 }</string>
-    </property>
-    <property name="text">
-     <string>login</string>
-    </property>
-   </widget>
+        </property>
+        <property name="text">
+         <string>login</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="exit_button">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>790</y>
+          <width>93</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>exit</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_menu">
+       <widget class="QPushButton" name="btnSetting">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>660</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Setting</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnStatics">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>700</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Statics</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnQuit">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>740</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Quit</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnCompendium">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>620</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>compendium</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>916</width>
+     <width>1200</width>
      <height>26</height>
     </rect>
    </property>

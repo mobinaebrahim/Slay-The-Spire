@@ -1,4 +1,6 @@
 #include "Player.h"
+#include <algorithm>
+#include <random>
 
 extern Card* createCardByName(const std::string& name);
 
@@ -32,6 +34,7 @@ void Player::drawCards(int count) {
                 break;
             drawPile = discardPile;
             discardPile.clear();
+            std::random_shuffle(drawPile.begin(), drawPile.end());
         }
         Card* topCard = drawPile.back();
         drawPile.pop_back();

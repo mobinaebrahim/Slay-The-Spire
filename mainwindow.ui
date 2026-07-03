@@ -17,11 +17,19 @@
    <widget class="QPushButton" name="btnRegister">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>200</x>
       <y>390</y>
-      <width>93</width>
-      <height>29</height>
+      <width>191</width>
+      <height>91</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-image: url(:/assets/login-register-menu/buttonLRed.png) 0 0 0 0 stretch stretch;
+    border: none;
+    color: white;
+	font-size: 14pt;
+    font-weight: bold;}</string>
     </property>
     <property name="text">
      <string>register</string>
@@ -30,11 +38,20 @@
    <widget class="QPushButton" name="btnLogin">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>390</y>
-      <width>93</width>
-      <height>29</height>
+      <x>540</x>
+      <y>380</y>
+      <width>211</width>
+      <height>101</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-image: url(:/assets/login-register-menu/buttonL.png) 0 0 0 0 stretch stretch;
+    border: none;
+    color: white;
+    font-weight: bold;
+	font-size: 14pt;
+}</string>
     </property>
     <property name="text">
      <string>login</string>

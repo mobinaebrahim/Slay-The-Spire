@@ -9,16 +9,12 @@ Dialogregisterpage::Dialogregisterpage(QWidget *parent)
     , ui(new Ui::Dialogregisterpage)
 {
     ui->setupUi(this);
-    ui->login_button->hide();
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+
 
     connect(ui->submit_button,&QPushButton::clicked,this, &Dialogregisterpage::handle_register_sub);
     connect(ui->back_button,&QPushButton::clicked,this,&QDialog::close);
-    connect(ui->login_button,&QPushButton::clicked,this,[this](){
-        this->close();
-        Dialogloginpage *loginDlg = new Dialogloginpage(this->parentWidget());
-        loginDlg->setAttribute(Qt::WA_DeleteOnClose);
-        loginDlg->exec();
-    });
+
 
 }
 
@@ -46,6 +42,5 @@ void Dialogregisterpage::handle_register_sub(){
     }
     else {
         QMessageBox::warning(this, "Error", "Username already exists! Click Login to sign in.");
-        ui->login_button->show();
     }
 }

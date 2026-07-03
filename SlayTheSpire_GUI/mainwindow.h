@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <vector>
 #include <string>
+#include "../Player.h"
 
 class Card;
 
@@ -32,8 +33,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     std::vector<Card*> playerHand;
+    Player* playerObject;
     void updateHandUI();
     void drawRandomCards(int numberOfCards);
+    void initializePlayerDeck(int totalCards);
 };
 
 Card* createCardByName(const std::string& name);

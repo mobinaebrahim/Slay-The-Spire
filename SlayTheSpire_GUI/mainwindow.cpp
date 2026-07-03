@@ -5,14 +5,16 @@
 #include <vector>
 #include <string>
 #include <QPushButton>
+#include<QDebug>
+#include<Qfile>
+
 #include "../card.h"
 #include "../AttackCard.h"
 #include "../CurseCard.h"
 #include "../SkillCard.h"
 #include "../PowerCard.h"
 #include "../StatusCard.h"
-#include<QDebug>
-#include<Qfile>
+#include "../Player.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,61 +22,79 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     std::srand(std::time(nullptr));
-    drawRandomCards(5);
+    playerObject = new Player("Dina", 80, 80, 3);
+    initializePlayerDeck(15);
+    playerObject->drawCards(5);
+    updateHandUI();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete playerObject;
 }
 
 void MainWindow::on_cardButton_1_clicked() {
-    if (0 < playerHand.size()) {
-        delete playerHand[0];
-        playerHand.erase(playerHand.begin() + 0);
+    const auto& hand = playerObject->getHand();
+    if (0 < hand.size()) {
+        playerObject->exhaustCard(hand[0]);
         updateHandUI();
     }
 }
 
 void MainWindow::on_cardButton_2_clicked() {
-    if (1 < playerHand.size()) {
-        delete playerHand[1];
-        playerHand.erase(playerHand.begin() + 1);
+    const auto& hand = playerObject->getHand();
+    if (1 < hand.size()) {
+        playerObject->exhaustCard(hand[1]);
         updateHandUI();
     }
 }
 
 void MainWindow::on_cardButton_3_clicked() {
-    if (4 < playerHand.size()) {
-        delete playerHand[4];
-        playerHand.erase(playerHand.begin() + 4);
+    const auto& hand = playerObject->getHand();
+    if (4 < hand.size()) {
+        playerObject->exhaustCard(hand[4]);
         updateHandUI();
     }
 }
 
 void MainWindow::on_cardButton_4_clicked() {
-    if (2 < playerHand.size()) {
-        delete playerHand[2];
-        playerHand.erase(playerHand.begin() + 2);
+    const auto& hand = playerObject->getHand();
+    if (2 < hand.size()) {
+        playerObject->exhaustCard(hand[2]);
         updateHandUI();
     }
 }
 
 void MainWindow::on_cardButton_5_clicked() {
-    if (3 < playerHand.size()) {
-        delete playerHand[3];
-        playerHand.erase(playerHand.begin() + 3);
+    const auto& hand = playerObject->getHand();
+    if (3 < hand.size()) {
+        playerObject->exhaustCard(hand[3]);
         updateHandUI();
     }
 }
 
 void MainWindow::on_EndTurnButton_clicked()
 {
-    drawRandomCards(5);
+    const auto& hand = playerObject->getHand();
+    for (Card* card : hand) {
+        if (card && card->getName() == "Burn") {
+            playerObject->decreaseHp(2);
+        }
+    }
+    playerObject->endTurnCleanUp();
+
+    // enemy
+
+    playerObject->increaseEnergy(3);
+    playerObject->drawCards(5);
+    updateHandUI();
 }
 
 void MainWindow::updateHandUI() {
     QPushButton* buttons[] = { ui->cardButton_1, ui->cardButton_2, ui->cardButton_4, ui->cardButton_5, ui->cardButton_3 };
+
+    const std::vector<Card*>& playerHand = playerObject->getHand();
 
     for (int i = 0; i < 5; ++i) {
         buttons[i]->setIcon(QIcon());
@@ -90,9 +110,8 @@ void MainWindow::updateHandUI() {
             buttons[i]->setIcon(cardIcon);
             buttons[i]->setIconSize(buttons[i]->size());
         }
-        else {
+        else
             buttons[i]->hide();
-        }
     }
 }
 
@@ -134,28 +153,20 @@ Card* createCardByName(const std::string& name) {
     return nullptr;
 }
 
-void MainWindow::drawRandomCards(int numberOfCards) {
+void MainWindow::initializePlayerDeck(int totalCards) {
     std::vector<std::string> allCardNames = {
-        "Bash", "Blood for Blood", "Clash", "Feed", "Immolate", "PerfectedStrike", "Reaper",
-        "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
-        "Burn", "CurseOfBell", "DualWield", "Daze", "Defend", "DemonForm", "Disarm", "Entrench",
-        "Exhume", "FeelNoPain", "Impervious", "Inflame", "JAX", "LimitBreak", "Metallicize",
-        "Offering", "Regret", "ShrugItOff", "Slime", "Wound"};
+    "Bash", "Blood for Blood", "Clash", "Feed", "Immolate", "PerfectedStrike", "Reaper",
+    "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
+    "DualWield", "Defend", "DemonForm", "Disarm", "Entrench",
+    "Exhume", "FeelNoPain", "Impervious", "Inflame", "LimitBreak", "Metallicize",
+    "Offering", "ShrugItOff"};
 
-    for (Card* card : playerHand) {
-        delete card;
-    }
-    playerHand.clear();
-
-    for (int i = 0; i < numberOfCards; ++i) {
+    for (int i = 0; i < totalCards; ++i) {
         int randomIndex = std::rand() % allCardNames.size();
         std::string randomName = allCardNames[randomIndex];
 
         Card* newCard = createCardByName(randomName);
-
-        if (newCard != nullptr) {
-            playerHand.push_back(newCard);
-        }
+        if (newCard)
+            playerObject->addCardToDrawPile(newCard);
     }
-    updateHandUI();
 }

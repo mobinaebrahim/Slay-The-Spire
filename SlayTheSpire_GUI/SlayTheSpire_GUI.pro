@@ -12,7 +12,11 @@ SOURCES += \
     ../PowerCard.cpp \
     ../SkillCard.cpp \
     ../StatusCard.cpp \
+    ../StatusEffect.cpp \
     ../card.cpp \
+    ../character.cpp \
+    ../enemy.cpp \
+    ../player.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -22,7 +26,11 @@ HEADERS += \
     ../PowerCard.h \
     ../SkillCard.h \
     ../StatusCard.h \
+    ../StatusEffect.h \
     ../card.h \
+    ../character.h \
+    ../enemy.h \
+    ../player.h \
     mainwindow.h
 
 FORMS += \

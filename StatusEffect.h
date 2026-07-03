@@ -18,7 +18,7 @@ public:
 
     virtual int modifyOutgoingDamage(int baseDamage);
     virtual int modifyIncomingDamage(int baseDamage);
-    virtual int modifyBlock(int baseBlock) { return baseBlock; }
+    virtual int modifyBlock(int baseBlock);
     virtual void onTurnEnd() {}
 };
 

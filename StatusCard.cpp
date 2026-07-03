@@ -49,7 +49,7 @@ BurnCard::BurnCard() : StatusCard(CardType::Status, "Burn",
 void BurnCard::applyEffect(class Character* caster, class Character* target) {
     if (caster) {
         //cout << "Burn card detected in hand!\n";
-        // caster->take_damage(2);
+        // target->decreaseHp(2);
         //cout << " -> Burn effect active! (You will take 2 damage if this stays in your hand)\n";
     }
 }

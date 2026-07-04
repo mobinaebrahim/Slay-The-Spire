@@ -37,6 +37,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         loginpage.h loginpage.cpp loginpage.ui
         registerpage.h registerpage.cpp registerpage.ui
         usermanager.h usermanager.cpp
+        staticsitempage.h staticsitempage.cpp staticsitempage.ui
+        scoremanager.h scoremanager.cpp
+
+
+
 
 
 

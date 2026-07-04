@@ -19,221 +19,476 @@
   <property name="styleSheet">
    <string notr="true">QDialog {
     background: transparent;
+
+}
+Qwidget#overlaywidget{
+	back-ground- color: rgba(0, 0,0,150);
 }</string>
   </property>
-  <widget class="QPushButton" name="btnReturn">
+  <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>2</x>
-     <y>658</y>
-     <width>161</width>
-     <height>81</height>
+     <x>0</x>
+     <y>0</y>
+     <width>1821</width>
+     <height>821</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true">border-image:url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
+   <widget class="QWidget" name="main">
+    <widget class="QPushButton" name="btnLeaderboard">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>20</y>
+       <width>350</width>
+       <height>600</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image: url(:/assets/mainmenu/lederbords.png) 0 0 0 0 stretch stretch;
 </string>
-   </property>
-   <property name="text">
-    <string>return</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnCharStat">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>60</y>
-     <width>350</width>
-     <height>600</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-image: url(:/assets/mainmenu/menuPanel2.png) 0 0 0 0 stretch stretch;</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnHistory">
-   <property name="geometry">
-    <rect>
-     <x>1010</x>
-     <y>60</y>
-     <width>350</width>
-     <height>600</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-image: url(:/assets/mainmenu/menuPanel3.png) 0 0 0 0 stretch stretch;</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnLeaderboard">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>60</y>
-     <width>350</width>
-     <height>600</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-image: url(:/assets/mainmenu/menuPanel4.png) 0 0 0 0 stretch stretch;</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>150</y>
-     <width>291</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel{
-	border-image: url(:/assets/mainmenu/charstat.jpg) 0 0 0 0 stretch stretch;
-	border : white;
-}</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>1040</x>
-     <y>150</y>
-     <width>291</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel{
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>80</width>
+       <height>80</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnHistory">
+     <property name="geometry">
+      <rect>
+       <x>990</x>
+       <y>20</y>
+       <width>350</width>
+       <height>600</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image: url(:/assets/mainmenu/history.png) 0 0 0 0 stretch stretch;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnReturn">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>590</y>
+       <width>161</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image:url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
+</string>
+     </property>
+     <property name="text">
+      <string>return</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>1020</x>
+       <y>110</y>
+       <width>291</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
 	border-image: url(:/assets/mainmenu/history.jpg) 0 0 0 0 stretch stretch;
 	border : white;
 }</string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Shape::VLine</enum>
-   </property>
-   <property name="lineWidth">
-    <number>12</number>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>620</x>
-     <y>150</y>
-     <width>291</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel{
-	border-image: url(:/assets/mainmenu/leaderboards.jpg) 0 0 0 0 stretch stretch;
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::VLine</enum>
+     </property>
+     <property name="lineWidth">
+      <number>12</number>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCharStat">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>350</width>
+       <height>600</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image: url(:/assets/mainmenu/charstst.png) 0 0 0 0 stretch stretch;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>110</y>
+       <width>291</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	border-image: url(:/assets/mainmenu/charstat.jpg) 0 0 0 0 stretch stretch;
 	border : white;
 }</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="textBrowser">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>390</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-   <property name="tabletTracking">
-    <bool>true</bool>
-   </property>
-   <property name="autoFillBackground">
-    <bool>true</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QTextBrowser {
-    background: transparent;
-    background-color: transparent;
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="leaderboard">
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>60</y>
+       <width>63</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>110</y>
+       <width>63</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>240</y>
+       <width>63</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>370</y>
+       <width>63</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnRetun1">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>570</y>
+       <width>181</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image:url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
+</string>
+     </property>
+     <property name="text">
+      <string>return</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnsilent">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>140</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/silent.png) 0 0 0 0 stretch stretch;
     border: none;
-	color : white;
 }
-QTextBrowser::selection {
-    background: transparent;
-    color: white;
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
 }</string>
-   </property>
-   <property name="html">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: &quot;\2610&quot;; }
-li.checked::marker { content: &quot;\2612&quot;; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Vazirmatn'; font-size:16px; color:#000000; background-color:#ffffff;&quot;&gt;The progress and statistics for each character can be seen here.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="textBrowser_2">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>370</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-   <property name="html">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: &quot;\2610&quot;; }
-li.checked::marker { content: &quot;\2612&quot;; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Vazirmatn'; font-size:16px; color:#000000; background-color:#ffffff;&quot;&gt;View and compare your score with friends and other players.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="textBrowser_3">
-   <property name="geometry">
-    <rect>
-     <x>1060</x>
-     <y>370</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-   <property name="html">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: &quot;\2610&quot;; }
-li.checked::marker { content: &quot;\2612&quot;; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Vazirmatn'; font-size:16px; color:#000000; background-color:#ffffff;&quot;&gt;Revisit your past attempts at slaying the Spire.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btndefect">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>140</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/defect.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnwatcher">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>140</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/watcher.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnfriends">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>290</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/friends.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnglobal">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>290</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/global.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnscore">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>440</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/score.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btntime">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>440</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/time.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnchain">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>440</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/chain.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnironclad">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>140</y>
+       <width>101</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/ironclad.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>-10</y>
+       <width>1920</width>
+       <height>1080</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0, 150);</string>
+     </property>
+     <widget class="QTableWidget" name="table_scores">
+      <property name="geometry">
+       <rect>
+        <x>640</x>
+        <y>110</y>
+        <width>391</width>
+        <height>401</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <zorder>widget</zorder>
+    <zorder>label_4</zorder>
+    <zorder>label_5</zorder>
+    <zorder>label_6</zorder>
+    <zorder>label_7</zorder>
+    <zorder>btnRetun1</zorder>
+    <zorder>btnsilent</zorder>
+    <zorder>btndefect</zorder>
+    <zorder>btnwatcher</zorder>
+    <zorder>btnfriends</zorder>
+    <zorder>btnglobal</zorder>
+    <zorder>btnscore</zorder>
+    <zorder>btntime</zorder>
+    <zorder>btnchain</zorder>
+    <zorder>btnironclad</zorder>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -66,10 +66,18 @@ MainWindow::MainWindow(QWidget *parent)
         this->close();
     });
 
-    connect(ui->btnStatics,&QPushButton::clicked, this,[this](){
-        StaticsItemPage *staticDlg = new StaticsItemPage(this);
-        staticDlg->setAttribute(Qt::WA_DeleteOnClose);
-        staticDlg->exec();
+
+    connect(ui->btnStatics, &QPushButton::clicked, this, [this](){
+        ui->page_menu->hide();
+
+        StaticsItemPage *statsDlg = new StaticsItemPage(this);
+        statsDlg->setAttribute(Qt::WA_DeleteOnClose);
+
+        connect(statsDlg, &QDialog::finished, this, [this](){
+            ui->page_menu->show();
+        });
+
+        statsDlg->exec();
     });
 
 }

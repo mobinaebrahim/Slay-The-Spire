@@ -83,8 +83,8 @@ void StaticsItemPage::refresh_leaderboard()
     for (int i = 0; i < scores.size(); i++) {
         ui->table_scores->setItem(i, 0, new QTableWidgetItem(scores[i].username));
         ui->table_scores->setItem(i, 1, new QTableWidgetItem(scores[i].character));
-        ui->table_scores->setItem(i, 2, new QTableWidgetItem(QString::number(scores[i].score)));
-        ui->table_scores->setItem(i, 3, new QTableWidgetItem(QString::number(scores[i].floor_reached)));
+        ui->tableScores->setItem(i, 2, new QTableWidgetItem(QString::number(scores[i].score)));
+        ui->tableScores->setItem(i, 3, new QTableWidgetItem(QString::number(scores[i].floorReached)));
     }
 }
 

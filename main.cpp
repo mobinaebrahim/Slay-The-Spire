@@ -3,6 +3,7 @@
 #include "registerpage.h"
 #include "usermanager.h"
 #include <QApplication>
+#include "scoremanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
 
     //acces to database
     user_manager::instance();
+    ScoreManager::instance();
 
     MainWindow w;
     w.showFullScreen();

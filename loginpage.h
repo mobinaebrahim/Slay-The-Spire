@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include"usermanager.h"
-
+#include"mainwindow.h"
 namespace Ui {
 class Dialogloginpage;
 }

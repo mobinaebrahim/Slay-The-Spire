@@ -2,6 +2,7 @@
 #define STATICSITEMPAGE_H
 
 #include <QDialog>
+#include <QButtonGroup>
 
 namespace Ui {
 class StaticsItemPage;
@@ -17,6 +18,12 @@ public:
 
 private:
     Ui::StaticsItemPage *ui;
+    QButtonGroup *characterGroup;
+    QButtonGroup *regionGroup;
+    QButtonGroup *typeGroup;
+
+    void refresh_leaderboard();
+
 };
 
 #endif // STATICSITEMPAGE_H

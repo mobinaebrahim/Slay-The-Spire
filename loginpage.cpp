@@ -11,6 +11,8 @@ Dialogloginpage::Dialogloginpage(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    //setAttribute(Qt::WA_TranslucentBackground);
+    //setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 
     connect(ui->login_button,&QPushButton::clicked,this,&Dialogloginpage::login_check);
     connect(ui->back_button,&QPushButton::clicked,this,&QDialog::close);
@@ -41,7 +43,14 @@ void Dialogloginpage::login_check(){
     if (success) {
         user_manager::instance().set_current_user(username,password);
         QMessageBox::information(this, "Success", "Login successful!");
+
+        MainWindow *mainWin = qobject_cast<MainWindow*>(this->parentWidget());
+        if (mainWin) {
+            mainWin->go_to_menu();
+        }
+
         this->close();
+
     }
     else{
         QMessageBox::warning(this, "Error", "Incorrect username or password!");

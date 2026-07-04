@@ -38,6 +38,12 @@ void Dialogregisterpage::handle_register_sub(){
     if (success) {
         user_manager::instance().set_current_user(username,password);
         QMessageBox::information(this, "Success", "Registration successful!");
+
+        MainWindow *mainWin = qobject_cast<MainWindow*>(this->parentWidget());
+        if (mainWin) {
+            mainWin->go_to_menu();
+        }
+
         this->close();
     }
     else {

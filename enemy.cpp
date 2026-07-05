@@ -20,6 +20,6 @@ string Enemy::getIntentString() const {
         return "Intent: Buff (getting stronger by " + to_string(intentValue) + " )";
     if (currentIntent == IntentType::Debuff)
         return "Intent: Debuff (wants to have negative effect on you) ";
-    else
+    else if(currentIntent == IntentType::Combined)
         return "Intent: a combination of Attack + Debuff / Defend + Buff";
 }

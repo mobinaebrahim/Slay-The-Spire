@@ -12,6 +12,7 @@ class Enemy : public Character {
 protected:
     IntentType currentIntent;
     int intentValue;
+    int intentBlock;
 
 public:
     Enemy(std::string n, int h, int max);

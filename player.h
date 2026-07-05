@@ -40,6 +40,7 @@ public:
     const vector<Card*>& getHand() const { return hand; }
     void endTurnCleanUp();
     void addCardToDrawPile(Card* card);
+    void addCardToDiscardPile(Card* card);
 };
 
 #endif

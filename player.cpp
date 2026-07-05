@@ -132,3 +132,8 @@ void Player::addCardToDrawPile(Card* card) {
     if (card != nullptr) 
         drawPile.push_back(card);
 }
+
+void Player::addCardToDiscardPile(Card* card) {
+    if (card != nullptr)
+        discardPile.push_back(card);
+}

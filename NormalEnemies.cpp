@@ -175,3 +175,105 @@ void SmallSlime::executeAction(Character* target) {
     }
     chooseAction();
 }
+
+//_______________________________________MediumSlime_______________________________________
+MediumSlime::MediumSlime() : Enemy("MediumSlime", 30, 30) {
+    int randomHP = 28 + (rand() % 5);
+    this->hp = randomHP;
+    this->maxHp = randomHP;
+    chooseAction();
+}
+
+void MediumSlime::chooseAction() {
+    int randomIntent = 1 + (rand() % 100);
+
+    if (randomIntent <= 30) {
+        currentIntent = IntentType::Debuff; 
+        intentValue = 7; 
+    }
+    else if (randomIntent <= 70) {
+        currentIntent = IntentType::Attack; 
+        intentValue = 10;
+    }
+    else {
+        currentIntent = IntentType::Debuff; 
+        intentValue = 1; 
+    }
+}
+
+void MediumSlime::executeAction(Character* target) {
+    if (currentIntent == IntentType::Attack) { 
+        if (target) 
+            target->takeDamage(calculate_total_damage(intentValue));
+    }
+    else if (currentIntent == IntentType::Debuff) {
+        if (target) {
+            if (intentValue == 7) {
+                target->takeDamage(calculate_total_damage(7));
+                Player* player = dynamic_cast<Player*>(target);
+                if (player) 
+                    player->addCardToDiscardPile(new SlimeCard());
+            }
+            else 
+                target->applyStatus(new WeakEffect(1));
+        }
+    }
+    chooseAction();
+}
+
+//_______________________________________LargeSlime________________________________________
+LargeSlime::LargeSlime() : Enemy("Large Slime", 70, 70), hasSplited(false) {
+    int randomHP = 68 + (rand() % 5);
+    this->hp = randomHP;
+    this->maxHp = randomHP;
+    chooseAction();
+}
+
+void LargeSlime::chooseAction() {
+    if (this->hp <= (this->maxHp / 2) && !hasSplited) {
+        currentIntent = IntentType::Combined;
+        intentValue = 0;
+        intentBlock = 0;
+    }
+    else {
+        int randomIntent = 1 + (rand() % 100);
+        if (randomIntent <= 30) {
+            currentIntent = IntentType::Debuff; 
+            intentValue = 7;
+        }
+        else if (randomIntent <= 70) {
+            currentIntent = IntentType::Attack; 
+            intentValue = 10;
+        }
+        else {
+            currentIntent = IntentType::Debuff; 
+            intentValue = 1; 
+        }
+    }
+}
+
+void LargeSlime::executeAction(Character* target) {
+    if (currentIntent == IntentType::Combined) {
+        hasSplited = true;
+        //incomplete
+    }
+    else {
+        if (currentIntent == IntentType::Attack) {
+            if (target)
+                target->takeDamage(calculate_total_damage(intentValue));
+        }
+        else if (currentIntent == IntentType::Debuff) {
+            if (target) {
+                if (intentValue == 7) {
+                    target->takeDamage(calculate_total_damage(7));
+                    Player* p = dynamic_cast<Player*>(target);
+                    if (p)
+                        p->addCardToDiscardPile(new SlimeCard());
+                }
+                else 
+                    target->applyStatus(new WeakEffect(1));
+            }
+        }
+    }
+    chooseAction();
+}

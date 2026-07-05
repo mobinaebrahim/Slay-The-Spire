@@ -3,6 +3,8 @@
 
 #include "character.h"
 #include "enemy.h"
+#include "player.h"
+#include "StatusCard.h"
 #include <string>
 #include <vector>
 using namespace std;
@@ -42,6 +44,23 @@ public:
 class SmallSlime : public Enemy {
 public:
     SmallSlime();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class MediumSlime : public Enemy {
+public:
+    MediumSlime();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class LargeSlime : public Enemy {
+private:
+    bool hasSplited;
+
+public:
+    LargeSlime();
     void chooseAction() override;
     void executeAction(Character* target) override;
 };

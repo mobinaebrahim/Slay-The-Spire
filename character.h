@@ -22,7 +22,7 @@ public:
     virtual ~Character() = default;
 
     void decreaseHp(int amount);
-    void takeDamage(int incomingDamage);
+    virtual void takeDamage(int incomingDamage);
     void addBlock(int amount);
     void increaseHP(int amount);
     void applyStatus(StatusEffect* newEffect);

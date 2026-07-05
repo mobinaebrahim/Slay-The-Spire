@@ -91,3 +91,87 @@ void JawWorm::executeAction(Character* target) {
     isFirstTurn = false;
     chooseAction();
 }
+
+//__________________________________________Louse__________________________________________
+Louse::Louse() : Enemy("Louse", 12, 12), hasCurledUp(false) {
+    int randomHP = 10 + (rand() % 6);
+    this->hp = randomHP;
+    this->maxHp = randomHP;
+    colorChance = 1 + (rand() % 2);
+    chooseAction();
+}
+
+void Louse::chooseAction() {
+    int randomIntent = 1 + (rand() % 100);
+
+    if (randomIntent <= 75) {
+        currentIntent = IntentType::Attack;
+        intentValue = 5 + (rand() % 3);
+        intentBlock = 0;
+    }
+    else {
+        currentIntent = IntentType::Buff;
+        intentValue = 3; 
+        intentBlock = 0;
+    }
+}
+
+void Louse::executeAction(Character* target) {
+    if (currentIntent == IntentType::Attack) {
+        if (target) {
+            int finalDamage = calculate_total_damage(intentValue);
+            target->takeDamage(finalDamage);
+        }
+    }
+    else if (currentIntent == IntentType::Buff) 
+        this->applyStatus(new StrengthEffect(intentValue));
+    chooseAction();
+}
+
+void Louse::takeDamage(int incomingDamage) {
+    Enemy::takeDamage(incomingDamage);
+
+    if (this->hp > 0 && !hasCurledUp) {
+        int randomBlock = 3 + (rand() % 5); 
+        this->block += randomBlock;
+        hasCurledUp = true; 
+    }
+}
+
+//________________________________________SmallSlime_______________________________________
+SmallSlime::SmallSlime() : Enemy("SmallSlime", 10, 10) {
+    int randomHP = 8 + (rand() % 5);
+    this->hp = randomHP;
+    this->maxHp = randomHP;
+    chooseAction();
+}
+
+void SmallSlime::chooseAction() {
+    int randomIntent = 1 + (rand() % 100);
+
+    if (randomIntent <= 50) {
+        currentIntent = IntentType::Attack;
+        intentValue = 3;
+        intentBlock = 0;
+    }
+
+    else {
+        currentIntent = IntentType::Debuff;
+        intentValue = 1; 
+        intentBlock = 0;
+    }
+}
+
+void SmallSlime::executeAction(Character* target) {
+    if (currentIntent == IntentType::Attack) {
+        if (target) {
+            int finalDamage = calculate_total_damage(intentValue);
+            target->takeDamage(finalDamage);
+        }
+    }
+    else if (currentIntent == IntentType::Debuff) {
+        if (target) 
+            target->applyStatus(new WeakEffect(intentValue));
+    }
+    chooseAction();
+}

@@ -70,3 +70,11 @@ void MetallicizeEffect::onTurnEnd() {
     //if (amount > 0)
     //     caster->AddBlock(amount);
 }
+
+//_____________________________________EntangledEffect______________________________________
+EntangledEffect::EntangledEffect(int turns) : StatusEffect("Entangled", turns) {}
+
+void EntangledEffect:: onTurnEnd() { 
+    if (amount > 0) 
+        amount--;
+}

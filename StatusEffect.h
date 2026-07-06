@@ -61,4 +61,10 @@ public:
     void onTurnEnd() override;
 };
 
+class EntangledEffect : public StatusEffect {
+public:
+    EntangledEffect(int turns);
+    void onTurnEnd() override;
+};
+
 #endif

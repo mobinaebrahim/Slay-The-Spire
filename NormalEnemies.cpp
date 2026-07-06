@@ -364,3 +364,80 @@ void SphericGuardian::executeAction(Character* target){
     }
     chooseAction();
 }
+
+//_______________________________________BlueSlaver________________________________________
+BlueSlaver:: BlueSlaver() : Enemy("BlueSlaver", 48, 48) {
+    int hp = 46 + (rand() % 5);
+    this->hp = hp; this->maxHp = hp;
+    chooseAction();
+}
+
+void BlueSlaver::chooseAction() {
+    int randVal = rand() % 100;
+    if (randVal < 60) {
+        currentIntent = IntentType::Attack;
+        intentValue = 12;
+    }
+    else {
+        currentIntent = IntentType::Combined; 
+        intentValue = 7; 
+    }
+}
+
+void BlueSlaver::executeAction(Character* target) {
+    if (currentIntent == IntentType::Attack)
+        target->takeDamage(calculate_total_damage(intentValue));
+    else if (currentIntent == IntentType::Combined) {
+        target->takeDamage(calculate_total_damage(intentValue));
+        target->applyStatus(new WeakEffect(1)); 
+    }
+    chooseAction();
+}
+
+//________________________________________RedSlaver________________________________________
+RedSlaver:: RedSlaver() : Enemy("Red Slaver", 48, 48), isFirstTurn(true), hasEntangled(false) {
+    int hp = 46 + (rand() % 5);
+    this->hp = hp; this->maxHp = hp;
+    chooseAction();
+}
+
+void RedSlaver::chooseAction() {
+    if (isFirstTurn) {
+        currentIntent = IntentType::Attack; 
+        intentValue = 13;
+    }
+    else {
+        int randVal = rand() % 125;
+
+        if (!hasEntangled && randVal < 25) {
+            currentIntent = IntentType::Debuff;
+            intentValue = 0; 
+        }
+        else if (randVal < 75) { 
+            currentIntent = IntentType::Attack;
+            intentValue = 13;
+        }
+        else { 
+            currentIntent = IntentType::Combined;
+            intentValue = 8; 
+        }
+    }
+}
+
+void RedSlaver:: executeAction(Character* target) {
+    if (isFirstTurn)
+        isFirstTurn = false;
+
+    if (currentIntent == IntentType::Attack) {
+        target->takeDamage(calculate_total_damage(intentValue));
+    }
+    else if (currentIntent == IntentType::Debuff) {
+            hasEntangled = true;
+            target->applyStatus(new EntangledEffect(1));
+    }
+    else {
+        target->takeDamage(calculate_total_damage(intentValue));
+        target->applyStatus(new VulnerableEffect(1));
+    }
+    chooseAction();
+}

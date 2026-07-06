@@ -86,4 +86,22 @@ public:
     void executeAction(Character* target) override;
 };
 
+class BlueSlaver : public Enemy {
+public:
+    BlueSlaver();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class RedSlaver : public Enemy {
+private:
+    bool isFirstTurn;
+    bool hasEntangled; 
+
+public:
+    RedSlaver();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
 #endif

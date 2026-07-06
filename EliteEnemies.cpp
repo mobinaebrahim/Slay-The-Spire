@@ -76,3 +76,60 @@ SideSentry::SideSentry() : ThreeSentries("SideSentry", 38, 42) {
     isNextMoveBeam = false; 
     chooseAction();
 }
+
+//______________________________________BookOfStabbing_____________________________________
+BookOfStabbing::BookOfStabbing() : Enemy("BookOfStabbing", 160, 162) {
+    int hp = 160 + (rand() % 3);
+    this->hp = hp;
+    this->maxHp = hp;
+    this->stabCount = 0; 
+    chooseAction();
+}
+
+void BookOfStabbing::chooseAction() {
+    int randVal = rand() % 100;
+
+    if (randVal < 85) {
+        currentIntent = IntentType::Attack;
+        intentValue = stabCount + 2;
+    }
+    else {
+        currentIntent = IntentType::Attack;
+        intentValue = 21;
+    }
+}
+
+void BookOfStabbing::executeAction(Character* target) {
+    if (intentValue == 21) {
+        target->takeDamage(calculate_total_damage(21));
+    }
+    else {
+        for (int i = 0; i < intentValue; i++) 
+            target->takeDamage(calculate_total_damage(6)); 
+        stabCount++;
+    }
+    chooseAction();
+}
+
+//_______________________________________Taskmaster________________________________________
+Taskmaster::Taskmaster() : Enemy("Taskmaster", 54, 60) {
+    int hp = 54 + (rand() % 7); 
+    this->hp = hp;
+    this->maxHp = hp;
+    chooseAction();
+}
+
+void Taskmaster::chooseAction() {
+    currentIntent = IntentType::Combined;
+    intentValue = 7;
+}
+
+void Taskmaster::executeAction(Character* target) {
+    target->takeDamage(calculate_total_damage(intentValue));
+
+    Player* player = dynamic_cast<Player*>(target);
+    if (player) 
+        player->addCardToDiscardPile(new WoundCard());
+
+    chooseAction();
+}

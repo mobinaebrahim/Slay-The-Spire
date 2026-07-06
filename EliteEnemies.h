@@ -36,4 +36,20 @@ public:
     SideSentry();
 };
 
+class BookOfStabbing : public Enemy {
+private:
+    int stabCount; 
+public:
+    BookOfStabbing();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class Taskmaster : public Enemy {
+public:
+    Taskmaster();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
 #endif

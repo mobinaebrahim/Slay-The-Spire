@@ -43,6 +43,7 @@ public:
     void addCardToDrawPile(Card* card);
     void addCardToDiscardPile(Card* card);
     void loseGold(int amount);
+    void playCard(Card* card, Character* target);
 };
 
 #endif

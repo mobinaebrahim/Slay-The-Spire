@@ -29,6 +29,7 @@ public:
     void keep_block_until_next_turn();
     virtual void TurnStartEffect(string effect);
     void setBlock(int amount);
+    bool hasEffect(string effectName);
 
     int getStatusValue(string status);
     int calculate_total_damage(int baseDamage);

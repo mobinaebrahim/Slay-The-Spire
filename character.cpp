@@ -81,6 +81,14 @@ void Character::setBlock(int amount) {
     block = amount;
 }
 
+bool Character::hasEffect(string effectName) {
+    for (auto* effect : effects) {
+        if (effect->getName() == effectName && effect->getAmount() > 0)
+            return true;
+    }
+    return false;
+}
+
 int Character::calculate_total_damage(int baseDamage) {
     return baseDamage;
 }

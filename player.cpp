@@ -143,3 +143,16 @@ void Player::loseGold(int amount) {
     if (gold < 0) 
         gold = 0; 
 }
+
+void Player::playCard(Card* card, Character* target) {
+    if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) {
+        //card can't be played
+        //incomplete
+        return; 
+    }
+    if (this->getEnergy() >= card->getEnergyCost()) {
+        this->decreaseEnergy(card->getEnergyCost());
+        card->applyEffect(this, target);
+        this->exhaustCard(card); 
+    }
+}

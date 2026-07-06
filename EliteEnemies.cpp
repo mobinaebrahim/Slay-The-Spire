@@ -3,7 +3,8 @@
 //_______________________________________GremlinKnob_______________________________________
 GremlinKnob::GremlinKnob() : Enemy("GremlinKnob", 82, 86) {
     int hp = 82 + (rand() % 5);
-    this->hp = hp; this->maxHp = hp;
+    this->hp = hp;
+    this->maxHp = hp;
     chooseAction();
 }
 
@@ -38,7 +39,11 @@ void GremlinKnob::executeAction(Character* target) {
 }
 
 //______________________________________ThreeSentries______________________________________
-ThreeSentries::ThreeSentries(string name, int minHp, int maxHp) : Enemy("ThreeSentries", 38, 42) {}
+ThreeSentries::ThreeSentries(string name, int minHp, int maxHp) : Enemy("ThreeSentries", 38, 42) {
+    int hp = 38 + (rand() % 4);
+    this->hp = hp;
+    this->maxHp = hp;
+}
 
 void ThreeSentries::chooseAction() {
     if (isNextMoveBeam) {

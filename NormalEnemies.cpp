@@ -222,7 +222,7 @@ void MediumSlime::executeAction(Character* target) {
 }
 
 //_______________________________________LargeSlime________________________________________
-LargeSlime::LargeSlime() : Enemy("Large Slime", 70, 70), hasSplited(false) {
+LargeSlime::LargeSlime() : Enemy("LargeSlime", 70, 70), hasSplited(false) {
     int randomHP = 68 + (rand() % 5);
     this->hp = randomHP;
     this->maxHp = randomHP;
@@ -274,6 +274,93 @@ void LargeSlime::executeAction(Character* target) {
                     target->applyStatus(new WeakEffect(1));
             }
         }
+    }
+    chooseAction();
+}
+
+//__________________________________________Thief__________________________________________
+Thief::Thief(string name) : Enemy(name, 48, 48), turnCounter(1) {
+    this->hp = 44 + (rand() % 13);
+    this->maxHp = this->hp;
+    chooseAction();
+}
+
+void Thief::chooseAction() {
+    if (turnCounter == 1 || turnCounter == 2) {
+        currentIntent = IntentType::Attack; 
+        intentValue = 10;    
+    }
+    else if (turnCounter == 3) {
+        currentIntent = IntentType::Defend; 
+        intentValue = 0;
+        intentBlock = 6;
+    }
+    else {
+        currentIntent = IntentType::Special; 
+        intentValue = 0;
+    }
+}
+
+void Thief::executeAction(Character* target) {
+    if (currentIntent == IntentType::Attack) {
+        if (target) {
+            target->takeDamage(calculate_total_damage(intentValue));
+            Player* p = dynamic_cast<Player*>(target);
+            if (p)
+                p->loseGold(15);
+        }
+    }
+    else if (currentIntent == IntentType::Defend) 
+        this->addBlock(intentBlock);
+    else if (currentIntent == IntentType::Special) 
+        hasScaped = true;
+
+    turnCounter++; 
+    chooseAction();
+}
+
+//_____________________________________SphericGuardian_____________________________________
+SphericGuardian:: SphericGuardian() : Enemy("SphericGuardian", 0, 0), isFirstTurn(true) {
+    int randomHP = 20 + (rand() % 21);
+    this->hp = randomHP; 
+    this->maxHp = randomHP;
+    chooseAction();
+}
+
+void SphericGuardian::chooseAction() {
+    if (isFirstTurn) {
+        currentIntent = IntentType::Buff;
+        intentBlock = 25;
+    }
+    else {
+        int randVal = rand() % 100;
+        if (randVal < 50) {
+            currentIntent = IntentType::Combined;
+            intentValue = 10;
+            intentBlock = 15;
+        }
+        else {
+            currentIntent = IntentType::Attack; // Slam (Attack twice)
+            intentValue = 10;
+            intentBlock = 0;
+        }
+    }
+}
+
+void SphericGuardian::executeAction(Character* target){
+    if (isFirstTurn) {
+        this->addBlock(intentBlock);
+        target->takeDamage(calculate_total_damage(10));
+        target->applyStatus(new FrailEffect(5)); 
+        isFirstTurn = false;
+    }
+    else if (currentIntent == IntentType::Combined) {
+            target->takeDamage(calculate_total_damage(intentValue));
+            this->addBlock(intentBlock);
+    }
+    else {
+        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculate_total_damage(intentValue));
     }
     chooseAction();
 }

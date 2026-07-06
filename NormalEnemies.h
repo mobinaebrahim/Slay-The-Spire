@@ -65,4 +65,25 @@ public:
     void executeAction(Character* target) override;
 };
 
+class Thief : public Enemy {
+private:
+    int turnCounter;
+    bool hasScaped = false;
+
+public:
+    Thief(string name);
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class SphericGuardian : public Enemy {
+private:
+    bool isFirstTurn;
+
+public:
+    SphericGuardian();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
 #endif

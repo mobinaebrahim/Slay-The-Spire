@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "StatusEffect.h"
 #include "card.h"
+#include "enemy.h"
 #include <string>
 #include <vector>
 #include <iostream>

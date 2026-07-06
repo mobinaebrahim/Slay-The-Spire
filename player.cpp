@@ -145,14 +145,19 @@ void Player::loseGold(int amount) {
 }
 
 void Player::playCard(Card* card, Character* target) {
-    if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) {
-        //card can't be played
-        //incomplete
-        return; 
-    }
+    if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
+        return;
+
     if (this->getEnergy() >= card->getEnergyCost()) {
         this->decreaseEnergy(card->getEnergyCost());
+
+        if (target != nullptr) {
+            Enemy* enemy = dynamic_cast<Enemy*>(target);
+            if (enemy != nullptr)
+                enemy->onPlayerPlayedCard(card);
+        }
         card->applyEffect(this, target);
-        this->exhaustCard(card); 
+
+        this->exhaustCard(card);
     }
 }

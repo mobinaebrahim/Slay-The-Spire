@@ -23,7 +23,9 @@ public:
 
     IntentType getIntentType() const;
     int getIntentValue() const;
-    std::string getIntentString() const;
+    string getIntentString() const;
+
+    virtual void onPlayerPlayedCard(Card* card) {}
 };
 
 #endif

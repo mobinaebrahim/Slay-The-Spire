@@ -6,7 +6,7 @@
 #include <vector>
 using namespace std;
 
-enum class IntentType { Attack, Defend, Buff, Debuff, Combined};
+enum class IntentType { Attack, Defend, Buff, Debuff, Combined, Special};
 
 class Enemy : public Character {
 protected:

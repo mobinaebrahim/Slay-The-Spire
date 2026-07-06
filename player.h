@@ -14,6 +14,7 @@ private:
     int currentEnergy;
     int maxEnergy;
     int feelNoPainStacks = 0;
+    int gold;
     vector<Card*> drawPile;
     vector<Card*> hand;
     vector<Card*> discardPile;
@@ -41,6 +42,7 @@ public:
     void endTurnCleanUp();
     void addCardToDrawPile(Card* card);
     void addCardToDiscardPile(Card* card);
+    void loseGold(int amount);
 };
 
 #endif

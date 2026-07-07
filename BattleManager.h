@@ -18,6 +18,7 @@ public:
     void spawnEnemy(Enemy* newEnemy);
     void removeEnemy(Enemy* enemy); 
     void startCombat(); 
+    void dealDamageToAllEnemies(int damage);
 };
 
 #endif

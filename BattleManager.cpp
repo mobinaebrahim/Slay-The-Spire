@@ -13,3 +13,9 @@ void BattleManager::removeEnemy(Enemy* enemy) {
         }
     }
 }
+
+void BattleManager::dealDamageToAllEnemies(int damage) {
+    for (Enemy* enemy : enemies) {
+        enemy->takeDamage(damage);
+    }
+}

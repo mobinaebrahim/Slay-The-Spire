@@ -1,7 +1,7 @@
 #ifndef POWERCARD_H
 #define POWERCARD_H
 
-#include "Card.h"
+#include "card.h"
 #include "BattleManager.h"
 #include <string>
 #include <iostream>

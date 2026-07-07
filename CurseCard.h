@@ -1,7 +1,7 @@
 #ifndef CURSECARD_H
 #define CURSECARD_H
 
-#include "Card.h"
+#include "card.h"
 #include "BattleManager.h"
 #include <iostream>
 #include <string>

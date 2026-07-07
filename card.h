@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include "BattleManager.h"
 using namespace std;
 
 enum class CardType{ Attack, Skill, Power, Status, Curse};
@@ -13,15 +14,17 @@ protected:
 	string name;
 	string description;
 	int energyCost;
+	bool isUpgraded = false;
 public:
 	Card(CardType t, string n, string d, int e);
 	virtual ~Card();
-	virtual void applyEffect(class Character* caster, class Character* target) = 0;
+	virtual void applyEffect(class Character* caster, class Character* target, BattleManager* bm) = 0;
 	string getName() const;
 	string getDescription() const;
 	int getEnergyCost() const;
 	CardType getType() const;
 	virtual bool isPlayable() const; 
+	virtual void upgrade();
 };
 
 #endif

@@ -22,7 +22,7 @@ public:
     virtual ~Character() = default;
 
     void decreaseHp(int amount);
-    virtual void takeDamage(int incomingDamage);
+    virtual int takeDamage(int incomingDamage);
     void addBlock(int amount);
     void increaseHP(int amount);
     void applyStatus(StatusEffect* newEffect);
@@ -32,9 +32,11 @@ public:
     bool hasEffect(string effectName);
 
     int getStatusValue(string status);
-    int calculate_total_damage(int baseDamage);
     int calculate_total_block(int amount);
     int getTimesDamagedThisCombat() const;
+
+    int calculateOutgoingDamage(int baseDamage);
+    int calculateIncomingDamage(int baseDamage);
 
     int getHp() const { return hp; }
     int getBlock() const { return block; }

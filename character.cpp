@@ -8,17 +8,20 @@ void Character::decreaseHp(int amount) {
         hp = 0;
 }
 
-void Character::takeDamage(int incomingDamage) {
-    timesDamagedThisCombat++;
-    if (incomingDamage <= block) 
-        block -= incomingDamage;
-    else {
-        incomingDamage -= block;
-        block = 0;
-        hp -= incomingDamage;
+int Character::takeDamage(int incomingDamage) {
+    int finalDamage = calculateIncomingDamage(incomingDamage);
+
+    int damageToHp = 0;
+    if (finalDamage <= block) {
+        block -= finalDamage;
     }
-    if (hp < 0)
-        hp = 0;
+    else {
+        damageToHp = finalDamage - block;
+        block = 0;
+        hp -= damageToHp;
+    }
+
+    return damageToHp;
 }
 
 void Character::addBlock(int amount) {
@@ -89,7 +92,15 @@ bool Character::hasEffect(string effectName) {
     return false;
 }
 
-int Character::calculate_total_damage(int baseDamage) {
+int Character::calculateOutgoingDamage(int baseDamage) {
+    for (auto* effect : effects)
+        baseDamage = effect->modifyOutgoingDamage(baseDamage);
+    return baseDamage;
+}
+
+int Character::calculateIncomingDamage(int baseDamage) {
+    for (auto* effect : effects)
+        baseDamage = effect->modifyIncomingDamage(baseDamage);
     return baseDamage;
 }
 

@@ -1,172 +1,196 @@
 #include "AttackCard.h"
-class Character;
+#include "character.h"
+#include "player.h"
 
 //___________________________________AttackCard______________________________________
-AttackCard::AttackCard(CardType t, string n, string d, int e, int damage) :
+AttackCard::AttackCard(CardType t, string n, string d, int e, int damage, int upgradeddamage) :
 	Card(t, n, d, e), baseDamage(damage){}
 
 AttackCard::~AttackCard() = default;
 
-void AttackCard::applyEffect(class Character* caster, class Character* target) {
-	//if (caster) {
-	//	 caster->decreaseEnergy(energyCost); 
-	//	cout << caster->getName() << " spent " << energyCost << " energy to play " << name << ".\n";
-	//}
-	//if (target) {
-	//	 target->takeDamage(baseDamage); 
-	//}
+void AttackCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
+	if (target) 
+		target->takeDamage(isUpgraded ? upgradedDamage : baseDamage);
 } 
 
 //___________________________________ReaperCard______________________________________
 ReaperCard::ReaperCard(): AttackCard(CardType::Attack, "Reaper", 
-	"Deal 4 damage to all enemies - Heal HP equal to unblocked damage - Exhaust", 2, 4) {}
+	"Deal 4 damage to all enemies - Heal HP equal to unblocked damage - Exhaust", 2, 4, 5) {}
 
-void ReaperCard::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void ReaperCard::upgrade() {
+	Card::upgrade(); 
+	baseDamage = upgradedDamage; 
+}
+
+void ReaperCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 4;
-		//realDamage = target->claculate_total_damage(4);
-		//caster->increaseHP(realDamage);
-		//cout << "Reaper card played! (Base Damage: 4) -> Dealt " << realDamage
-		//	<< " real damage. Your HP increased by " << realDamage << endl;
+		int baseDamage = isUpgraded ? upgradedDamage : baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDamage);
+		int totalActualDamage = bm->GetTotalDamageToAllEnemies(damageToDeal);
+		caster->increaseHP(totalActualDamage);
 	}
 }
 
 //____________________________________FeedCard_______________________________________
 FeedCard::FeedCard(): AttackCard(CardType::Attack, "Feed",
-	"Deal 10 damage - If fatal, raise max HP by 3 - Exhaust", 1, 10) {}
+	"Deal 10 damage - If fatal, raise max HP by 3 - Exhaust", 1, 10, 12) {}
 
-void FeedCard::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void FeedCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void FeedCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 10;
-		//realDamage = target->claculate_total_damage(10);
-		// bool isFatal = (realDamage >= target->getHP()); 
-		//if (isFatal)
-			// caster->increaseMaxHP(3); 
-		//cout << "Feed card played! (Base Damage: 10) -> Dealt " << realDamage << " real damage\n";
-		//if (isFatal) 
-			//cout << "Fatal blow! Your Max HP increased by 3!\n";
+		int baseDamage = isUpgraded ? upgradedDamage : this->baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDamage);
+		int actualDamage = target->takeDamage(damageToDeal);
+		if (actualDamage >= target->getHp()) {
+			Player* player = dynamic_cast<Player*>(caster);
+			if (player) player->increaseMaxHP(isUpgraded ? 4 : 3);
+		}
 	}
 }
 
 //__________________________________ImmolateCard_____________________________________
 ImmolateCard::ImmolateCard(): AttackCard(CardType::Attack, "Immolate",
-	"Deal 21 damage to all enemies - Add 2 BURN into discard pile", 2, 21) {}
+	"Deal 21 damage to all enemies - Add 2 BURN into discard pile", 2, 21, 28) {}
 
-void ImmolateCard::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void ImmolateCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void ImmolateCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 21;
-		//realDamage = target->claculate_total_damage(21);
-		// caster->addBurnToDiscard(2);
-		//cout << "Immolate Card played! (Base Damage: 21) -> Dealt " << realDamage << " real damage\n";
-		// cout << "2 BURN cards added to discard pile!\n";
+		int baseDamage = isUpgraded ? upgradedDamage : this->baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDamage);
+		bm->GetTotalDamageToAllEnemies(damageToDeal);
+		Player* player = dynamic_cast<Player*>(caster);
+		if (player) player->addBurnToDiscard(2);
 	}
 }
 
 //__________________________________WhirlwindCard_____________________________________
 WhirlwindCard::WhirlwindCard() : AttackCard(CardType::Attack, "Whirlwind",
-	"Deal 5 damage to all enemies X times (X = your current energy)", 0, 5) {}
+	"Deal 5 damage to all enemies X times (X = your current energy)", 0, 5, 8) {}
 
-void WhirlwindCard::applyEffect(class Character* caster, class Character* target) {
+void WhirlwindCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void WhirlwindCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int currentEnergy = 3;
-		//currentEnergy = caster->getEnergy(); 
-		int realDamage = 5;
-		// realDamage = target->claculate_total_damage(5);
-		//cout << "Whirlwind card played! Expending ALL " << currentEnergy << " energy\n";
-		//for (int i = 0; i < currentEnergy; i++) 
-		//	cout << " -> [Hit " << (i + 1) << "] Dealt " << realDamage << " real damage to target\n";
-		// caster->decreaseEnergy(currentEnergy);
+		Player* player = dynamic_cast<Player*>(caster);
+		if (player) {
+			int energySpent = player->getEnergy();
+			player->decreaseEnergy(energySpent);
+			int baseDamage = isUpgraded ? upgradedDamage : this->baseDamage;
+			int damageToDeal = caster->calculateOutgoingDamage(baseDamage);
+			for (int i = 0; i < energySpent; i++)
+				bm->GetTotalDamageToAllEnemies(damageToDeal);
+		}
 	}
 }
 
 //__________________________________Blood_for_BloodCard_____________________________________
 Blood_for_BloodCard::Blood_for_BloodCard() : AttackCard(CardType::Attack, "Blood for Blood",
-	"Deal 18 damage - Costs 1 less for each time you lose HP this combat", 4, 18) {} 
+	"Deal 18 damage - Costs 1 less for each time you lose HP this combat", 4, 18, 22) {} 
 
-void Blood_for_BloodCard::applyEffect(class Character* caster, class Character* target) {
+void Blood_for_BloodCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+int Blood_for_BloodCard::getCost(Character* caster) {
+	if (!caster) 
+		return energyCost;
+	int reduction = caster->getTimesDamagedThisCombat();
+	int newCost = energyCost - reduction;
+	return (newCost < 0) ? 0 : newCost;
+}
+
+void Blood_for_BloodCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int baseCost = 4;
-		int timesDamaged = 2; 
-		// timesDamaged = caster->getTimesDamagedThisCombat();
-		int currentCost = baseCost - timesDamaged;
-		if (currentCost < 0)
-			currentCost = 0;
-		int realDamage = 18;
-		// realDamage = target->claculate_total_damage(18);
-		//cout << "Blood for Blood Card played! Cost: " << currentCost <<
-		//	" energy (Base cost reduced because you took damage " << timesDamaged << 
-		//	" times) \n-> Dealt" << realDamage << " damage to enemy.\n";
-		// caster->decreaseEnergy(currentCost);
+		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+		target->takeDamage(damageToDeal);
 	}
 }
 
 //________________________________________BashCard__________________________________________
 BashCard::BashCard():AttackCard(CardType::Attack, "Bash",
-	"Deal 8 damage - Apply 2 Vulnerable", 2, 8) {}
+	"Deal 8 damage - Apply 2 Vulnerable", 2, 8, 10) {}
 
-void BashCard::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void BashCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void BashCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 8;
-		// realDamage = target->claculate_total_damage(8);
-		//cout << "Bash card played! -> Dealt " << realDamage << " real damage\n";
-		// target->applyStatus("Vulnerable", 2); 
-		//cout << "Applied 2 turns of Vulnerable to the target\n";
+		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+		target->takeDamage(damageToDeal);
+		target->applyStatus(new VulnerableEffect(isUpgraded ? 3 : 2));
 	}
 }
 
 //_____________________________________TwinStrikeCard_______________________________________
 TwinStrikeCard::TwinStrikeCard():AttackCard(CardType::Attack, "TwinStrike",
-	"Deal 6 damage twice", 1, 6) {}
+	"Deal 6 damage twice", 1, 6, 8) {}
 
-void TwinStrikeCard::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void TwinStrikeCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void TwinStrikeCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 6;
-		// realDamage = target->claculate_total_damage(6);
-		//cout << "Twin Strike card played!\n";
-		//for (int i = 0; i < 2; i++) 
-		//	cout << " -> [Hit " << (i + 1) << "] Dealt " << realDamage << " real damage to target\n";
+		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+		target->takeDamage(damageToDeal);
+		target->takeDamage(damageToDeal);
 	}
 }
 
 //___________________________________PerfectedStrikeCard____________________________________
 PerfectedStrike::PerfectedStrike():AttackCard(CardType::Attack, "PerfectedStrike",
-	"Deal 6 damage + 2 additional for every Strike card in deck", 2, 6) {}
+	"Deal 6 damage + 2 additional for every Strike card in deck", 2, 6, 6) {}
 
-void PerfectedStrike::applyEffect(class Character* caster, class Character* target) {
-	AttackCard::applyEffect(caster, target);
+void PerfectedStrike::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void PerfectedStrike::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
-		int realDamage = 6;
-		int StrikeCardsInDeck = 1;
-		//if( count_cards_in_deck(StrikeCard) > 0)
-			//StrikeCards_in_deck = count_cards_in_deck("StrikeCard");
-		for (int i = 0; i < StrikeCardsInDeck; i++)
-			realDamage += 2;
-		// realDamage = target->claculate_total_damage(realDamage);
-		//cout << "Perfected Strike card played! -> Dealt " << realDamage << " real damage\n";
+		Player* player = dynamic_cast<Player*>(caster);
+		int strikeCount = player->countCardsByName("Strike"); 
+		int baseDmg = (isUpgraded ? upgradedDamage : baseDamage) + (isUpgraded ? strikeCount * 3 : strikeCount * 2);
+
+		int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+		target->takeDamage(damageToDeal);
 	}
 }
 
 //________________________________________ClashCard_________________________________________
 ClashCard::ClashCard():AttackCard(CardType::Attack, "Clash",
-	"Deal 14 damage - Can only be played if every card in hand is an attack", 0, 14) {}
+	"Deal 14 damage - Can only be played if every card in hand is an attack", 0, 14, 18) {}
 
-void ClashCard::applyEffect(class Character* caster, class Character* target) {
-	if (caster && target) {
-		bool AllCardsInHandAreAttack = false;
-		//if( caster->checkIfAllHandIsAttack() )
-			//AllCardsInHandAreAttack = true;
-		if (AllCardsInHandAreAttack) {
-			AttackCard::applyEffect(caster, target);
-			int realDamage = 14;
-			// realDamage = target->claculate_total_damage(14);
-			//cout << "Clash card played! -> Dealt " << realDamage << " real damage\n";
-		}
-		else 
-			cout << "Cannot play Clash because there are non-Attack cards in your hand :(\n";
+void ClashCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
+void ClashCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
+	Player* player = dynamic_cast<Player*>(caster);
+	if (player && player->isHandAllAttacks()) { 
+		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
+		int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+		target->takeDamage(damageToDeal);
 	}
+	else
+		cout << "Cannot play Clash!" << endl;
 }

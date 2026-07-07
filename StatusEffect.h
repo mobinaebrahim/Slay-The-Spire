@@ -1,6 +1,7 @@
 #ifndef STATUSEFFECT_H
 #define STATUSEFFECT_H
 #include <string>
+#include "character.h"
 using namespace std;
 
 class StatusEffect {
@@ -19,7 +20,8 @@ public:
     virtual int modifyOutgoingDamage(int baseDamage);
     virtual int modifyIncomingDamage(int baseDamage);
     virtual int modifyBlock(int baseBlock);
-    virtual void onTurnEnd() {}
+    virtual void onTurnEnd(Character* owner) {}
+    virtual void onTurnStart(Character* owner) {}
 };
 
 class StrengthEffect : public StatusEffect {
@@ -38,33 +40,39 @@ class VulnerableEffect : public StatusEffect {
 public:
     VulnerableEffect(int turns);
     int modifyIncomingDamage(int baseDamage) override;
-    void onTurnEnd() override; 
+    void onTurnEnd(Character* owner) override;
 };
 
 class WeakEffect : public StatusEffect {
 public:
     WeakEffect(int turns);
     int modifyOutgoingDamage(int baseDamage) override;
-    void onTurnEnd() override;
+    void onTurnEnd(Character* owner) override;
 };
 
 class FrailEffect : public StatusEffect {
 public:
     FrailEffect(int turns);
     int modifyBlock(int baseBlock) override;
-    void onTurnEnd() override;
+    void onTurnEnd(Character* owner) override;
 };
 
 class MetallicizeEffect : public StatusEffect {
 public:
     MetallicizeEffect(int increaseBlockBy);
-    void onTurnEnd() override;
+    void onTurnEnd(Character* owner) override;
 };
 
 class EntangledEffect : public StatusEffect {
 public:
     EntangledEffect(int turns);
-    void onTurnEnd() override;
+    void onTurnEnd(Character* owner) override;
+};
+
+class DemonFormEffect : public StatusEffect {
+public:
+    DemonFormEffect(int amount);
+    void onTurnStart(Character* owner) override;
 };
 
 #endif

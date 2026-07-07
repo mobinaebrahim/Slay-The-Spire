@@ -30,9 +30,9 @@ int VulnerableEffect::modifyIncomingDamage(int baseDamage) {
     return baseDamage;
 }
 
-void VulnerableEffect::onTurnEnd() {
-    if (amount > 0) 
-        amount--; 
+void VulnerableEffect::onTurnEnd(Character* owner) {
+    if (amount > 0)
+        amount--;
 }
 
 //________________________________________WeakEffect________________________________________
@@ -44,7 +44,7 @@ int WeakEffect::modifyOutgoingDamage(int baseDamage) {
     return baseDamage;
 }
 
-void WeakEffect::onTurnEnd() {
+void WeakEffect::onTurnEnd(Character* owner) {
     if (amount > 0)
         amount--;
 }
@@ -58,7 +58,7 @@ int FrailEffect::modifyBlock(int baseBlock) {
     return baseBlock;
 }
 
-void FrailEffect::onTurnEnd() {
+void FrailEffect::onTurnEnd(Character* owner) {
     if (amount > 0) 
         amount--; 
 }
@@ -66,15 +66,22 @@ void FrailEffect::onTurnEnd() {
 //_____________________________________MetallicizeEffect____________________________________
 MetallicizeEffect::MetallicizeEffect(int increaseBlockBy) : StatusEffect("Metallicize", increaseBlockBy) {}
 
-void MetallicizeEffect::onTurnEnd() {
-    //if (amount > 0)
-    //     caster->AddBlock(amount);
+void MetallicizeEffect::onTurnEnd(Character* owner) {
+    if (amount > 0)
+        owner->addBlock(amount);
 }
 
 //_____________________________________EntangledEffect______________________________________
 EntangledEffect::EntangledEffect(int turns) : StatusEffect("Entangled", turns) {}
 
-void EntangledEffect:: onTurnEnd() { 
+void EntangledEffect:: onTurnEnd(Character* owner) {
     if (amount > 0) 
         amount--;
+}
+
+//______________________________________DemonFormEffect_____________________________________
+DemonFormEffect::DemonFormEffect(int amount) : StatusEffect("DemonForm", amount) {}
+
+void DemonFormEffect::onTurnStart(Character* owner) {
+    owner->applyStatus(new StrengthEffect(amount));
 }

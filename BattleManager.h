@@ -19,6 +19,7 @@ public:
     void removeEnemy(Enemy* enemy); 
     void startCombat(); 
     void dealDamageToAllEnemies(int damage);
+    int GetTotalDamageToAllEnemies(int damage);
 };
 
 #endif

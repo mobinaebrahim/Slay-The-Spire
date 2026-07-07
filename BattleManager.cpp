@@ -19,3 +19,11 @@ void BattleManager::dealDamageToAllEnemies(int damage) {
         enemy->takeDamage(damage);
     }
 }
+
+int BattleManager::GetTotalDamageToAllEnemies(int damage) {
+    int totalDealt = 0;
+    for (Enemy* enemy : enemies) {
+        totalDealt += enemy ->takeDamage(damage);
+    }
+    return totalDealt;
+}

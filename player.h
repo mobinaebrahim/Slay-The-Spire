@@ -16,13 +16,14 @@ private:
     int maxEnergy;
     int feelNoPainStacks = 0;
     int gold;
+    BattleManager* battleManagerPtr;
     vector<Card*> drawPile;
     vector<Card*> hand;
     vector<Card*> discardPile;
     vector<Card*> exhaustPile;
 
 public:
-    Player(string n, int h, int max, int en);
+    Player(string n, int h, int max, int en, BattleManager* bm);
 
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);
@@ -45,6 +46,8 @@ public:
     void addCardToDiscardPile(Card* card);
     void loseGold(int amount);
     void playCard(Card* card, Character* target);
+    int countCardsByName(string name);
+    bool isHandAllAttacks();
 };
 
 #endif

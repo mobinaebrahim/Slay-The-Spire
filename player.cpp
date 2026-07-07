@@ -1,11 +1,13 @@
 #include "Player.h"
+#include "BattleManager.h"
 #include <algorithm>
 #include <random>
 #include <chrono>
 
 extern Card* createCardByName(const std::string& name);
 
-Player::Player(string n, int h, int max, int energy): Character(n, h, max), currentEnergy(energy), maxEnergy(energy) {}
+Player::Player(string n, int h, int max, int energy, BattleManager* bm):
+    Character(n, h, max), currentEnergy(energy), maxEnergy(energy), battleManagerPtr(bm) {}
 
 void Player::decreaseEnergy(int amount) {
     currentEnergy -= amount;
@@ -148,16 +150,36 @@ void Player::playCard(Card* card, Character* target) {
     if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
         return;
 
-    if (this->getEnergy() >= card->getEnergyCost()) {
-        this->decreaseEnergy(card->getEnergyCost());
+    int finalCost = card->getCost(this); 
+
+    if (this->getEnergy() >= finalCost) {
+        this->decreaseEnergy(finalCost);
+        card->applyEffect(this, target, battleManagerPtr);
 
         if (target != nullptr) {
             Enemy* enemy = dynamic_cast<Enemy*>(target);
             if (enemy != nullptr)
                 enemy->onPlayerPlayedCard(card);
         }
-        card->applyEffect(this, target);
-
-        this->exhaustCard(card);
+        //this->exhaustCard(card);
     }
+}
+
+int Player::countCardsByName(string name) {
+    int count = 0;
+    for (Card* c : hand) if (c->getName() == name) count++;
+    for (Card* c : drawPile) if (c->getName() == name) count++;
+    for (Card* c : discardPile) if (c->getName() == name) count++;
+
+    return count;
+}
+
+bool Player::isHandAllAttacks() {
+    if (hand.empty()) 
+        return false;
+    for (Card* c : hand) {
+        if (c->getType() != CardType::Attack) 
+            return false; 
+    }
+    return true; 
 }

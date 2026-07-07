@@ -8,7 +8,7 @@ string Card::getName() const { return name; }
 
 string Card::getDescription() const { return description; }
 
-int Card::getEnergyCost() const { return energyCost; }
+int Card::getCost(Character* caster) { return energyCost; }
 
 CardType Card::getType() const { return type; }
 

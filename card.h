@@ -21,7 +21,7 @@ public:
 	virtual void applyEffect(class Character* caster, class Character* target, BattleManager* bm) = 0;
 	string getName() const;
 	string getDescription() const;
-	int getEnergyCost() const;
+	virtual int getCost(Character* caster);
 	CardType getType() const;
 	virtual bool isPlayable() const; 
 	virtual void upgrade();

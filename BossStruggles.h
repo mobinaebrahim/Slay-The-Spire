@@ -19,7 +19,26 @@ public:
     KingSlime(BattleManager* manager);
     void chooseAction() override;
     void executeAction(Character* target) override;
-    void takeDamage(int amount) override; 
+    int takeDamage(int amount) override; 
+};
+
+class Hexaghost : public Enemy {
+private:
+    int turnCount;
+    BattleManager* myManager;
+public:
+    Hexaghost();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
+};
+
+class TheChamp : public Enemy {
+private:
+    bool isTauntTurn;
+public:
+    TheChamp();
+    void chooseAction() override;
+    void executeAction(Character* target) override;
 };
 
 #endif

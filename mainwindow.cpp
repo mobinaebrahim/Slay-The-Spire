@@ -45,15 +45,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnRegister->raise();
 
     connect(ui->btnLogin, &QPushButton::clicked, this, [this](){
-        Dialogloginpage *loginDlg = new Dialogloginpage(this);
-        loginDlg->setAttribute(Qt::WA_DeleteOnClose);
-        loginDlg->exec();
+        AuthPage *authDlg = new AuthPage(this);
+        authDlg->setAttribute(Qt::WA_DeleteOnClose);
+        authDlg->show_login_page();
+        authDlg->exec();
     });
-
     connect(ui->btnRegister, &QPushButton::clicked, this, [this](){
-        Dialogregisterpage *registerDlg = new Dialogregisterpage(this);
-        registerDlg->setAttribute(Qt::WA_DeleteOnClose);
-        registerDlg->exec();
+        AuthPage *authDlg = new AuthPage(this);
+        authDlg->setAttribute(Qt::WA_DeleteOnClose);
+        authDlg->show_register_page();
+        authDlg->exec();
     });
 
     //---main_menu---
@@ -78,6 +79,28 @@ MainWindow::MainWindow(QWidget *parent)
         });
 
         statsDlg->exec();
+    });
+
+    //---test leaderboard---
+    /*connect(ui->btnTestAddScore, &QPushButton::clicked, this, [this](){
+        QString currentUser = user_manager::instance().get_current_username();
+        int randomScore = QRandomGenerator::global()->bounded(100, 1000);
+        int randomFloor = QRandomGenerator::global()->bounded(1, 20);
+
+        ScoreManager::instance().add_scores(currentUser, "Ironclad", randomScore, randomFloor);
+        QMessageBox::information(this, "Test", "Added score: " + QString::number(randomScore));
+    });*/
+
+
+    connect(ui->btnTestAddScore, &QPushButton::clicked, this, [this](){
+        QString currentUser = user_manager::instance().get_current_username();
+        int random_score = QRandomGenerator::global()->bounded(100, 1000);
+        int random_floor = QRandomGenerator::global()->bounded(1, 20);
+        int random_duration = QRandomGenerator::global()->bounded(300, 3600);
+
+        ScoreManager::instance().add_score(currentUser, "Ironclad", random_score, random_floor, random_duration);
+
+        QMessageBox::information(this, "Test", "Added score: " + QString::number(random_score));
     });
 
 }

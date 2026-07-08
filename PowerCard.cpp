@@ -4,13 +4,15 @@
 PowerCard::PowerCard(CardType type, string name, string description, int cost)
 	: Card(type, name, description, cost) {}
 
+void PowerCard::upgrade() {
+    Card::upgrade();
+}
+
 void PowerCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {}
 
 //_____________________________________InflameCard_____________________________________
 InflameCard::InflameCard(): PowerCard(CardType::Power, "Inflame",
     "Gain 2 Strength", 1) {}
-
-void InflameCard::upgrade() { Card::upgrade(); }
 
 void InflameCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     if (caster) 
@@ -21,8 +23,6 @@ void InflameCard::applyEffect(Character* caster, Character* target, BattleManage
 MetallicizeCard::MetallicizeCard() : PowerCard(CardType::Power, "Metallicize",
     "At the end of your turn get 3 block", 1) {}
 
-void MetallicizeCard::upgrade() { Card::upgrade(); }
-
 void MetallicizeCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     if (caster) 
         caster->applyStatus(new MetallicizeEffect(isUpgraded ? 4 : 3));
@@ -31,8 +31,6 @@ void MetallicizeCard::applyEffect(Character* caster, Character* target, BattleMa
 //____________________________________DemonFormCard____________________________________
 DemonFormCard::DemonFormCard() : PowerCard(CardType::Power, "DemonForm",
     "At the start of your turn gain 3 Strength", 3) {}
-
-void DemonFormCard::upgrade() { Card::upgrade(); }
 
 void DemonFormCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     if (caster) 
@@ -43,8 +41,6 @@ void DemonFormCard::applyEffect(Character* caster, Character* target, BattleMana
 BrutalityCard::BrutalityCard() : PowerCard(CardType::Power, "Brutality",
     "At the start of your turn lose 1 HP and draw 1 card", 0) {}
 
-void BrutalityCard::upgrade() { Card::upgrade(); }
-
 void BrutalityCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     if (caster) 
         caster->TurnStartEffect("Brutality");   
@@ -54,8 +50,6 @@ void BrutalityCard::applyEffect(Character* caster, Character* target, BattleMana
 FeelNoPainCard::FeelNoPainCard():PowerCard(CardType::Power, "FeelNoPain",
     "Every time a card is Exhausted, gain 3 block", 1) {}
 
-void FeelNoPainCard::upgrade() { Card::upgrade(); }
-
 void FeelNoPainCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     //if(caster)
         //caster->applyStatus(new FeelNoPainEffect(isUpgraded ? 4 : 3));
@@ -64,8 +58,6 @@ void FeelNoPainCard::applyEffect(Character* caster, Character* target, BattleMan
 //____________________________________BarricadeCard____________________________________
 BarricadeCard::BarricadeCard():PowerCard(CardType::Power, "Barricade",
     "Block is not removed at the start of your turn", 3) {}
-
-void BarricadeCard::upgrade() { Card::upgrade(); }
 
 void BarricadeCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
     //if (caster) 

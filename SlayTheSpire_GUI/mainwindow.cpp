@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, battleManager);
+    battleManager->spawnEnemy(new Enemy("Slime", 50, 50));
     initializePlayerDeck(15);
     playerObject->drawCards(5);
     updateHandUI();
@@ -118,26 +119,33 @@ void MainWindow::on_EndTurnButton_clicked()
 }
 
 void MainWindow::updateHandUI() {
-    QPushButton* buttons[] = { ui->cardButton_1, ui->cardButton_2, ui->cardButton_4, ui->cardButton_5, ui->cardButton_3 };
-
+    QLayout* layout = ui->CardsContainer->layout();
+    QLayoutItem *child;
+    while ((child = layout->takeAt(0)) != nullptr) {
+        delete child->widget();
+        delete child;
+    }
     const std::vector<Card*>& playerHand = playerObject->getHand();
+    for (size_t i = 0; i < playerHand.size(); ++i) {
+        if (playerHand[i] == nullptr) continue;
 
-    for (int i = 0; i < 5; ++i) {
-        buttons[i]->setIcon(QIcon());
-        if (i < playerHand.size() && playerHand[i] != nullptr) {
-            buttons[i]->show();
-            buttons[i]->setEnabled(playerHand[i]->isPlayable());
-            buttons[i]->setText("");
+        QPushButton* cardBtn = new QPushButton();
+        cardBtn->setFixedSize(120, 160);
 
-            QString cardName = QString::fromStdString(playerHand[i]->getName());
-            QString imgPath = ":/images/cards/" + cardName + ".png";
+        QString cardName = QString::fromStdString(playerHand[i]->getName());
+        cardBtn->setIcon(QIcon(":/images/cards/" + cardName + ".png"));
+        cardBtn->setIconSize(cardBtn->size());
+        cardBtn->setEnabled(playerHand[i]->isPlayable());
 
-            QIcon cardIcon(imgPath);
-            buttons[i]->setIcon(cardIcon);
-            buttons[i]->setIconSize(buttons[i]->size());
-        }
-        else
-            buttons[i]->hide();
+        connect(cardBtn, &QPushButton::clicked, [=]() {
+            const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
+            if (!allEnemies.empty()) {
+                Enemy* target = allEnemies[0];
+                playerObject->playCard(playerHand[i], target);
+                updateHandUI();
+            }
+        });
+        layout->addWidget(cardBtn);
     }
 }
 

@@ -37,6 +37,7 @@ private:
     BattleManager* battleManager;
     Player* playerObject;
     QLabel* backgroundLabel;
+    QLabel* enemyLabel;
     void updateHandUI();
     void drawRandomCards(int numberOfCards);
     void initializePlayerDeck(int totalCards);

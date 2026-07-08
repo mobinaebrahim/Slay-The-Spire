@@ -27,3 +27,41 @@ int BattleManager::GetTotalDamageToAllEnemies(int damage) {
     }
     return totalDealt;
 }
+
+void BattleManager::playerTurn() {
+    isPlayerTurn = true;
+    player->drawCards(5); 
+}
+
+void BattleManager::enemyTurn() {
+    isPlayerTurn = false;
+    player->endTurnCleanUp(); 
+
+    for (Enemy* enemy : enemies) {
+        if (enemy->getHp() > 0) 
+            enemy->executeAction(player); 
+    }
+    playerTurn(); 
+}
+
+void BattleManager::playCardAction(Card* card, Enemy* target) {
+    if (!isPlayerTurn) 
+        return;
+    player->playCard(card, target);
+    if (target && target->getHp() <= 0) 
+        removeEnemy(target);
+}
+
+void BattleManager::startCombat() {
+    playerTurn();
+}
+
+bool BattleManager::isCombatOver() {
+    if (player->getHp() <= 0) 
+        return true;
+
+    if (enemies.empty()) 
+        return true;
+
+    return false;
+}

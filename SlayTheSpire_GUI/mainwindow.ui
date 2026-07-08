@@ -7,141 +7,123 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="cardButton_1">
-    <property name="geometry">
-     <rect>
-      <x>45</x>
-      <y>7</y>
-      <width>201</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>300</width>
-      <height>250</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="cardButton_4">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>10</y>
-      <width>201</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/new/prefix1/images/cards/Bash.png</normaloff>:/new/prefix1/images/cards/Bash.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>300</width>
-      <height>250</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="cardButton_2">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>10</y>
-      <width>201</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>300</width>
-      <height>250</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="cardButton_3">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>300</y>
-      <width>201</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/new/prefix1/images/cards/Immolate.png</normaloff>:/new/prefix1/images/cards/Immolate.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>300</width>
-      <height>250</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="cardButton_5">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>297</y>
-      <width>201</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/new/prefix1/images/cards/Reaper.png</normaloff>:/new/prefix1/images/cards/Reaper.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>300</width>
-      <height>250</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="EndTurnButton">
-    <property name="geometry">
-     <rect>
-      <x>730</x>
-      <y>530</y>
-      <width>56</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>End Turn</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="cardButton_1">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>300</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cardButton_4">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/new/prefix1/images/cards/Bash.png</normaloff>:/new/prefix1/images/cards/Bash.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>300</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cardButton_2">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>300</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cardButton_5">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/new/prefix1/images/cards/Reaper.png</normaloff>:/new/prefix1/images/cards/Reaper.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>300</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cardButton_3">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/new/prefix1/images/cards/Immolate.png</normaloff>:/new/prefix1/images/cards/Immolate.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>300</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="EndTurnButton">
+      <property name="text">
+       <string>End Turn</string>
+      </property>
+     </widget>
+    </item>
+    <item alignment="Qt::AlignmentFlag::AlignBottom">
+     <widget class="QWidget" name="CardsContainer" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>250</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -155,8 +137,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

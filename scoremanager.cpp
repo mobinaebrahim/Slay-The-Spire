@@ -29,6 +29,7 @@ bool ScoreManager::create_table()
         "character TEXT, "
         "score INTEGER, "
         "floor_reached INTEGER, "
+        "play_duration INTEGER, "
         "date_achieved TEXT)"
         );
 
@@ -40,7 +41,7 @@ bool ScoreManager::create_table()
     return true;
 }
 
-bool ScoreManager::add_score(const QString &username, const QString &character, int score, int floorReached)
+bool ScoreManager::add_score(const QString &username, const QString &character, int score, int floorReached,int playDuration)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO scoreboard (username, character, score, floor_reached, date_achieved) "
@@ -48,6 +49,7 @@ bool ScoreManager::add_score(const QString &username, const QString &character, 
     query.bindValue(":username", username);
     query.bindValue(":character", character);
     query.bindValue(":score", score);
+    query.bindValue(":duration", playDuration);
     query.bindValue(":floor", floorReached);
 
     if (!query.exec()) {
@@ -58,7 +60,7 @@ bool ScoreManager::add_score(const QString &username, const QString &character, 
     return true;
 }
 
-QList<Score_entry> ScoreManager::get_scores(const QString &characterFilter, const QString &sortBy)
+/*QList<Score_entry> ScoreManager::get_scores(const QString &characterFilter, const QString &sortBy)
 {
     QList<Score_entry> results;
 
@@ -92,6 +94,51 @@ QList<Score_entry> ScoreManager::get_scores(const QString &characterFilter, cons
         entry.character = query.value("character").toString();
         entry.score = query.value("score").toInt();
         entry.floor_reached = query.value("floor_reached").toInt();
+        entry.date_achieved = query.value("date_achieved").toString();
+        results.append(entry);
+    }
+
+    return results;
+}*/
+
+QList<Score_entry> ScoreManager::get_scores(const QString &characterFilter, const QString &sortBy)
+{
+    QList<Score_entry> results;
+
+    QString queryStr = "SELECT username, character, score, floor_reached, date_achieved "
+                       "FROM scoreboard s1 "
+                       "WHERE score = (SELECT MAX(score) FROM scoreboard s2 "
+                       "WHERE s2.username = s1.username AND s2.character = s1.character)";
+
+    if (characterFilter != "All") {
+        queryStr += " AND s1.character = :character";
+    }
+
+    if (sortBy == "time") {
+        queryStr += " ORDER BY play_duration ASC";
+    } else {
+        queryStr += " ORDER BY score DESC";
+    }
+
+    QSqlQuery query;
+    query.prepare(queryStr);
+
+    if (characterFilter != "All") {
+        query.bindValue(":character", characterFilter);
+    }
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching scores:" << query.lastError().text();
+        return results;
+    }
+
+    while (query.next()) {
+        Score_entry entry;
+        entry.username = query.value("username").toString();
+        entry.character = query.value("character").toString();
+        entry.score = query.value("score").toInt();
+        entry.floor_reached = query.value("floor_reached").toInt();
+        entry.play_duration = query.value("play_duration").toInt();
         entry.date_achieved = query.value("date_achieved").toString();
         results.append(entry);
     }

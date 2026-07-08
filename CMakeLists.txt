@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Sql)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Sql)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Sql Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Sql Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick)
 
 set(PROJECT_SOURCES
@@ -39,6 +39,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         usermanager.h usermanager.cpp
         staticsitempage.h staticsitempage.cpp staticsitempage.ui
         scoremanager.h scoremanager.cpp
+        friendmanager.h friendmanager.cpp
+        smtp/emailaddress.cpp smtp/emailaddress.h smtp/mimeattachment.cpp smtp/mimeattachment.h smtp/mimebase64encoder.cpp smtp/mimebase64encoder.h smtp/mimebase64formatter.cpp smtp/mimebase64formatter.h smtp/mimebytearrayattachment.cpp smtp/mimebytearrayattachment.h smtp/mimecontentencoder.cpp smtp/mimecontentencoder.h smtp/mimecontentformatter.cpp smtp/mimecontentformatter.h smtp/mimefile.cpp smtp/mimefile.h smtp/mimehtml.cpp smtp/mimehtml.h smtp/mimeinlinefile.cpp smtp/mimeinlinefile.h smtp/mimemessage.cpp smtp/mimemessage.h smtp/mimemultipart.cpp smtp/mimemultipart.h smtp/mimepart.cpp smtp/mimepart.h smtp/mimeqpencoder.cpp smtp/mimeqpencoder.h smtp/mimeqpformatter.cpp smtp/mimeqpformatter.h smtp/mimetext.cpp smtp/mimetext.h smtp/quotedprintable.cpp smtp/quotedprintable.h smtp/smtpclient.cpp smtp/smtpclient.h smtp/smtpmime_global.h
+        authpage.h authpage.cpp authpage.ui
+        friendspage.h friendspage.cpp friendspage.ui
+
 
 
 
@@ -71,6 +76,7 @@ target_link_libraries(slay-the-spire PRIVATE
     Qt6::Multimedia
     Qt6::MultimediaWidgets
     Qt6::Sql
+    Qt6::Network
 )
 target_link_libraries(slay-the-spire PRIVATE Qt${QT_VERSION_MAJOR}::Quick)
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

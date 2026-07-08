@@ -19,6 +19,7 @@ public:
 private:
     Ui::Dialogregisterpage *ui;
     void handle_register_sub();
+    void handle_verify_code();
 };
 
 #endif // REGISTERPAGE_H

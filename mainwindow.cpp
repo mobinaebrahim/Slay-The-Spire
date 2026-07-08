@@ -87,27 +87,9 @@ MainWindow::MainWindow(QWidget *parent)
         friendsDlg->exec();
     });
 
-    //---test leaderboard---
-    /*connect(ui->btnTestAddScore, &QPushButton::clicked, this, [this](){
-        QString currentUser = user_manager::instance().get_current_username();
-        int randomScore = QRandomGenerator::global()->bounded(100, 1000);
-        int randomFloor = QRandomGenerator::global()->bounded(1, 20);
-
-        ScoreManager::instance().add_scores(currentUser, "Ironclad", randomScore, randomFloor);
-        QMessageBox::information(this, "Test", "Added score: " + QString::number(randomScore));
-    });*/
 
 
-    connect(ui->btnTestAddScore, &QPushButton::clicked, this, [this](){
-        QString currentUser = user_manager::instance().get_current_username();
-        int random_score = QRandomGenerator::global()->bounded(100, 1000);
-        int random_floor = QRandomGenerator::global()->bounded(1, 20);
-        int random_duration = QRandomGenerator::global()->bounded(300, 3600);
 
-        ScoreManager::instance().add_score(currentUser, "Ironclad", random_score, random_floor, random_duration);
-
-        QMessageBox::information(this, "Test", "Added score: " + QString::number(random_score));
-    });
 
 }
 

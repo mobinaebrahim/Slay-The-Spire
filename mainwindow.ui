@@ -128,19 +128,6 @@
          <string>compendium</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="btnTestAddScore">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>520</y>
-          <width>90</width>
-          <height>29</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>test</string>
-        </property>
-       </widget>
        <widget class="QPushButton" name="btnFriends">
         <property name="geometry">
          <rect>

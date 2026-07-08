@@ -8,10 +8,11 @@
 #include <QGraphicsView>
 #include <QAudioOutput>
 #include <QResizeEvent>
-#include "loginpage.h"
-#include "registerpage.h"
+#include <QRandomGenerator>
+#include <QMessageBox>
+#include "authpage.h"
 #include "staticsitempage.h"
-
+#include "scoremanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

@@ -1,0 +1,108 @@
+* [33m6afa49f[m[33m ([m[1;31morigin/feature_database_setup[m[33m, [m[1;32mfeature_database_setup[m[33m)[m fix : update and add friend and score to data base
+[31m|[m *   [33me79222a[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on feature-friend-page: 8f45943 feat : add friend page
+[31m|[m [32m|[m[33m\[m  
+[31m|[m [32m|[m * [33mc84f8d2[m index on feature-friend-page: 8f45943 feat : add friend page
+[31m|[m [32m|[m[32m/[m  
+[31m|[m * [33m8f45943[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature-friend-page[m[33m, [m[1;31morigin/feature-friend-page[m[33m, [m[1;32mfeature_friendpage[m[33m)[m feat : add friend page
+[31m|[m * [33mb4fda0c[m feat : add friend page
+[31m|[m * [33m93b9b9d[m[33m ([m[1;31morigin/feature_menu[m[33m, [m[1;32mfeature_menu[m[33m)[m fix : change login and register page
+[31m|[m * [33me952238[m fix : edit handle_register_sub func
+[31m|[m * [33m7cf6104[m feat : edit mainmenu and add leaderboard
+[31m|[m * [33m5b9f2c8[m feat : add main menu
+[31m|[m * [33mf56b533[m pref : improve ui styling
+[31m|[m * [33m70d8bb9[m Improve UI styling
+[31m|[m * [33m1283c7a[m fix : save current user
+[31m|[m * [33mb9c80f0[m fix : save current user
+[31m|[m * [33m5860d46[m fix : change  password line edit
+[31m|[m * [33me9b3be6[m feat: add login dialogpage
+[31m|[m * [33m2620e38[m feat: add register dialogpage
+[31m|[m * [33mc6daa9b[m fit : add register page
+[31m|[m[31m/[m  
+* [33ma5f1d1a[m fix : use signal/slot
+* [33m5f6f38d[m feat: add somefunction
+* [33ma0dd740[m feat: add database setup
+* [33m6c69208[m[33m ([m[1;31morigin/feature-menu[m[33m, [m[1;32mfeature-menu[m[33m)[m assets : add background video
+* [33m29ff349[m chore: initial project setup
+* [33m8a403a9[m[33m ([m[1;31morigin/mainmenu[m[33m, [m[1;31morigin/feature-main-menu[m[33m)[m chore : initial project setup
+* [33m9fc2b0a[m[33m ([m[1;31morigin/feature-Encounters[m[33m)[m fix: calculate_total_damage func changed into calculateOutgoingDamage
+* [33m05401ae[m fix: upgrade funcs added & applyEffects funcs fixed and uncommented in Status Cards classes
+* [33mb6d216b[m fix: upgrade funcs added & applyEffects funcs fixed and uncommented in Power Cards classes
+* [33m832091d[m fix: DemonForm effect and onTurnStart func added & onTurnEnd func fixed
+* [33md47371b[m fix: upgrade funcs added & applyEffects funcs fixed and uncommented in Curse Cards classes
+* [33me3544dd[m fix: upgrade funcs added & applyEffects funcs fixed and uncommented in Skill Cards classes
+* [33m60df26e[m fix: upgrade funcs added & applyEffects funcs fixed and uncommented in AttackCards classes
+* [33m96b12f6[m feat: dealDamageToAllEnemies & GetTotalDamageToAllEnemies funcs added to BattleManager class
+* [33mc138692[m fix: playCard func fixed / countCardsByName & isHandAllAttacks added
+* [33m2ccdb28[m fix: getCost function fixed
+* [33md0ac072[m fix: calculateTotalDamage func divided into 2 funcs & takeDamage func fixed
+* [33mbd53290[m feat: dealDamageToAllEnemies and GetTotalDamageToAllEnemies funcs added
+* [33m7712326[m fix: upgrade func added
+* [33m1a09822[m feat: implement the first Boss (KingSlime)
+* [33m1f80f7a[m feat: implement initial part of BattleManager class
+* [33m75405bb[m enemies & characters & scene images added
+* [33mc48ef85[m feat: implement the last two elite enemies (BookOfStabbing & Taskmaster)
+* [33m75b1691[m fix: random hp for ThreeSentries fixed
+* [33m5feda05[m feat: implement the first two elite enemies (GremlinKnob & ThreeSentries)
+* [33me72c706[m fix: playcard func edited & onPlayerPlayedCard func added
+* [33m71b03f0[m feat: implement last part af normal enemies (Blue and Red Slavers)
+* [33m944c377[m fix: hasEffect & playCard functions added to character and player classes
+* [33m778c1cb[m fix: EntangledEffect added to statusEffect class
+* [33m8a4b51c[m feat: implement forth part of normal enemies (Thief & SphericGuardian)
+* [33m298e1c8[m fix: loseGold func added to player class / special intent added to enemy's intents
+* [33mf6dd8b6[m feat: implement third part of normal enemies (MediumSlime & LargeSlime)
+* [33m163e0a4[m fix: addCardToDiscardPile function added to player class
+* [33m65a66d4[m feat: implement second part of normal enemies (Louse & SmallSlime)
+* [33m8842972[m fix: making takeDamage function virtual
+* [33m266b247[m feat: implement first part of normal enemies (Cultist & JawWorm)
+* [33m7d2268d[m fix: intentBlock attribute added to enemy class
+* [33mdee83f9[m fix: Combined added to enemies intent types
+* [33m098a1b7[m feat: implement enemy class
+* [33m84ea348[m fix: addCopiesToHand function in player class fixed
+* [33m6123687[m fix: changes in fnctions for random cards in player hand
+* [33md905521[m fix: fixing the problem of random cards
+* [33mb45b4a4[m feat: functions for cards in hand added and edited
+* [33m546b7a8[m feat: addCardToDrawPile function added to class player
+* [33m0922e5d[m feat: endTurnCleanUp function added in player class
+* [33mcbc9f06[m feat: implement player class
+* [33mf740490[m fix: return value of calculate_total_block function changed from void to int
+* [33m272c01a[m character class added(parent of player and enemy)
+* [33m9071ab1[m WeakEffect & FrailEffect & MetallicizeEffect added(end of buffes and debuffes)
+* [33m8bfb531[m DexterityEffect & VulnerableEffect & modifyBlock and onTurnEnd functions added
+* [33m0eb161e[m strengthEffect added
+* [33ma25bfdc[m feat: implement base structure of statusEffect(Buffs & Debuffs)
+* [33mcc6f736[m[33m ([m[1;31morigin/feature-cards-gui[m[33m)[m fix card click indices and updateHandUI button order to match layout
+* [33m6e274dc[m function for random cards in hand added(drawRandomCards)
+* [33m7395dc4[m other cards photos & two functions for showing cards added(updateHandUI & createCardByName)
+* [33md9ddf47[m fix: constructors of some classes were private
+* [33mfba8396[m function isPlayable added for cards
+*   [33m1e71203[m Merge branch 'main' into feature-cards-gui
+[35m|[m[36m\[m  
+[35m|[m * [33mcab6254[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature_friendpage[m[33m, [m[1;31morigin/HEAD[m[33m)[m getType function added
+* [36m|[m [33md269f4a[m adding card images and a hand cards buttons
+* [36m|[m [33mc870fdc[m refactor: commenting some couts in cards functions
+* [36m|[m [33mefe536b[m feat: add player hand cards with PNG icons and fix click effect
+* [36m|[m [33mb16edf8[m[33m ([m[1;31morigin/feature-status-curse-cards[m[33m)[m fix: two lines of applyEffect function in wound and burn cards were deleted
+* [36m|[m [33m010488c[m feat: implement the last part of curse cards(J.A.X & CurseOfBell & Regret)
+* [36m|[m [33mfdce06a[m feat: implement first part of curse cards(base structure)
+* [36m|[m [33m71707ff[m fix: fix applyEffect function of StatusCard class
+* [36m|[m [33med1af0e[m fix: fix default cost of status cards
+* [36m|[m [33m0ac4ac9[m feat: implement the last part of status cards(Wound & Burn)
+* [36m|[m [33m6747e40[m feat: implement second part of status cards(Daze & Slime)
+* [36m|[m [33m9c6f06a[m feat: implement first part of status cards(base structure)
+* [36m|[m [33m0fd70e8[m[33m ([m[1;31morigin/feature-power-cards[m[33m)[m feat: implement the last part of power cards(FeelNoPain & Barricade)
+* [36m|[m [33mb51f50e[m feat: implement third part of power cards(Demon Form & Brutality)
+* [36m|[m [33mf69b4f0[m feat: implement second part of power cards(Inflame & Metallicize)
+* [36m|[m [33m4f9ec59[m feat: implement first part of power cards(base structure)
+* [36m|[m [33m1147f25[m[33m ([m[1;31morigin/feature-skill-cards[m[33m)[m feat: implement the last part of skill cards(ShrugItOff & Bloodletting & Disarm)
+* [36m|[m [33m9f5d211[m feat: implement forth part of skill cards(Dual Wield & Entrench)
+* [36m|[m [33mc51045a[m feat: implement third part of skill cards(Limit Break & Offering & Impervious)
+* [36m|[m [33ma0e8ff0[m feat: implement second part of skill cards(Defend & Exhume)
+* [36m|[m [33m47ad63e[m feat: implement first part of skill cards(base structure)
+* [36m|[m [33m82729db[m[33m ([m[1;31morigin/feature-attack-cards[m[33m)[m feat: implement the last part of attack cards(PerfectedStrike & Clash)
+* [36m|[m [33m0fb5dbd[m implement forth part of attack cards(Bash & Twin Strike)
+* [36m|[m [33mc0a1b95[m feat: implement third part of attack cards(Whirlwind & Blood For Blood)
+* [36m|[m [33m8f1ad46[m feat: implement third part of attack cards(Whirlwind & Blood for Blood)
+* [36m|[m [33m6469b17[m feat: implement second part of attack cards (Feed & Immolate)
+* [36m|[m [33m26ce81e[m feat: implement first part of attack cards
+[36m|[m[36m/[m  
+* [33m4e78c17[m feat: add basic card structure

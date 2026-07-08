@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-#include "loginpage.h"
-#include "registerpage.h"
 #include "usermanager.h"
 #include <QApplication>
 #include "scoremanager.h"

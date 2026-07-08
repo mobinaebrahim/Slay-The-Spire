@@ -19,12 +19,6 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        loginpage.cpp
-        loginpage.h
-        loginpage.ui
-        registerpage.cpp
-        registerpage.h
-        registerpage.ui
         usermanager.h
         usermanager.cpp
         resources.qrc
@@ -34,8 +28,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(slay-the-spire
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        loginpage.h loginpage.cpp loginpage.ui
-        registerpage.h registerpage.cpp registerpage.ui
+
+
         usermanager.h usermanager.cpp
         staticsitempage.h staticsitempage.cpp staticsitempage.ui
         scoremanager.h scoremanager.cpp

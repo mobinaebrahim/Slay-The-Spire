@@ -38,7 +38,7 @@ public:
     Louse();
     void chooseAction() override;
     void executeAction(Character* target) override;
-    void takeDamage(int incomingDamage) override;
+    int takeDamage(int incomingDamage) override;
 };
 
 class SmallSlime : public Enemy {

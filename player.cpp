@@ -118,8 +118,11 @@ void Player::addBurnToDiscard(int count) {
 
 void Player::TurnStartEffect(string effect) {
     Character::TurnStartEffect(effect);
-    if (effect == "Brutality") 
+    if (effect == "Brutality") {
+        decreaseHp(1);
         drawCards(1);
+    }
+        
 }
 
 void Player::endTurnCleanUp() {

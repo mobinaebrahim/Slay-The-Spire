@@ -29,10 +29,10 @@ void GremlinKnob::chooseAction() {
 
 void GremlinKnob::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) 
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
 
     else {
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
         target->applyStatus(new VulnerableEffect(2));
     }
     chooseAction();
@@ -59,7 +59,7 @@ void ThreeSentries::chooseAction() {
 
 void ThreeSentries::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) 
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
     else {
         Player* player = dynamic_cast <Player*> (target);
         player->addCardToDiscardPile(new DazeCard());
@@ -101,11 +101,11 @@ void BookOfStabbing::chooseAction() {
 
 void BookOfStabbing::executeAction(Character* target) {
     if (intentValue == 21) {
-        target->takeDamage(calculate_total_damage(21));
+        target->takeDamage(calculateOutgoingDamage(21));
     }
     else {
         for (int i = 0; i < intentValue; i++) 
-            target->takeDamage(calculate_total_damage(6)); 
+            target->takeDamage(calculateOutgoingDamage(6)); 
         stabCount++;
     }
     chooseAction();
@@ -125,7 +125,7 @@ void Taskmaster::chooseAction() {
 }
 
 void Taskmaster::executeAction(Character* target) {
-    target->takeDamage(calculate_total_damage(intentValue));
+    target->takeDamage(calculateOutgoingDamage(intentValue));
 
     Player* player = dynamic_cast<Player*>(target);
     if (player) 

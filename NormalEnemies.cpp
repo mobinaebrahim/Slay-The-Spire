@@ -28,7 +28,7 @@ void Cultist::executeAction(Character* target) {
     }
     else if (currentIntent == IntentType::Attack) {
         if (target) {
-            int finalDamage = calculate_total_damage(intentValue);
+            int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }
     }
@@ -73,13 +73,13 @@ void JawWorm::chooseAction() {
 void JawWorm::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) {
         if (target) {
-            int finalDamage = calculate_total_damage(intentValue);
+            int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }
     }
     else if (currentIntent == IntentType::Combined) {
         if (target) {
-            int finalDamage = calculate_total_damage(intentValue);
+            int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }
         this->block += intentBlock;
@@ -119,7 +119,7 @@ void Louse::chooseAction() {
 void Louse::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) {
         if (target) {
-            int finalDamage = calculate_total_damage(intentValue);
+            int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }
     }
@@ -165,7 +165,7 @@ void SmallSlime::chooseAction() {
 void SmallSlime::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) {
         if (target) {
-            int finalDamage = calculate_total_damage(intentValue);
+            int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }
     }
@@ -204,12 +204,12 @@ void MediumSlime::chooseAction() {
 void MediumSlime::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) { 
         if (target) 
-            target->takeDamage(calculate_total_damage(intentValue));
+            target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else if (currentIntent == IntentType::Debuff) {
         if (target) {
             if (intentValue == 7) {
-                target->takeDamage(calculate_total_damage(7));
+                target->takeDamage(calculateOutgoingDamage(7));
                 Player* player = dynamic_cast<Player*>(target);
                 if (player) 
                     player->addCardToDiscardPile(new SlimeCard());
@@ -260,12 +260,12 @@ void LargeSlime::executeAction(Character* target) {
     else {
         if (currentIntent == IntentType::Attack) {
             if (target)
-                target->takeDamage(calculate_total_damage(intentValue));
+                target->takeDamage(calculateOutgoingDamage(intentValue));
         }
         else if (currentIntent == IntentType::Debuff) {
             if (target) {
                 if (intentValue == 7) {
-                    target->takeDamage(calculate_total_damage(7));
+                    target->takeDamage(calculateOutgoingDamage(7));
                     Player* p = dynamic_cast<Player*>(target);
                     if (p)
                         p->addCardToDiscardPile(new SlimeCard());
@@ -304,7 +304,7 @@ void Thief::chooseAction() {
 void Thief::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack) {
         if (target) {
-            target->takeDamage(calculate_total_damage(intentValue));
+            target->takeDamage(calculateOutgoingDamage(intentValue));
             Player* p = dynamic_cast<Player*>(target);
             if (p)
                 p->loseGold(15);
@@ -350,17 +350,17 @@ void SphericGuardian::chooseAction() {
 void SphericGuardian::executeAction(Character* target){
     if (isFirstTurn) {
         this->addBlock(intentBlock);
-        target->takeDamage(calculate_total_damage(10));
+        target->takeDamage(calculateOutgoingDamage(10));
         target->applyStatus(new FrailEffect(5)); 
         isFirstTurn = false;
     }
     else if (currentIntent == IntentType::Combined) {
-            target->takeDamage(calculate_total_damage(intentValue));
+            target->takeDamage(calculateOutgoingDamage(intentValue));
             this->addBlock(intentBlock);
     }
     else {
-        target->takeDamage(calculate_total_damage(intentValue));
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     chooseAction();
 }
@@ -386,9 +386,9 @@ void BlueSlaver::chooseAction() {
 
 void BlueSlaver::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack)
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
     else if (currentIntent == IntentType::Combined) {
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
         target->applyStatus(new WeakEffect(1)); 
     }
     chooseAction();
@@ -429,14 +429,14 @@ void RedSlaver:: executeAction(Character* target) {
         isFirstTurn = false;
 
     if (currentIntent == IntentType::Attack) {
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else if (currentIntent == IntentType::Debuff) {
             hasEntangled = true;
             target->applyStatus(new EntangledEffect(1));
     }
     else {
-        target->takeDamage(calculate_total_damage(intentValue));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
         target->applyStatus(new VulnerableEffect(1));
     }
     chooseAction();

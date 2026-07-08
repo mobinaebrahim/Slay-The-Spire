@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include<QDebug>
 #include<Qfile>
+#include <QLabel>
 
 #include "../card.h"
 #include "../AttackCard.h"
@@ -27,6 +28,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QPixmap bkgnd(":/images/scene.png");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    backgroundLabel = new QLabel(this);
+    backgroundLabel->setPixmap(QPixmap(":/images/scene.png").scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    backgroundLabel->setGeometry(0, 0, this->width(), this->height());
+    backgroundLabel->lower();
+
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, battleManager);
@@ -39,6 +49,15 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete playerObject;
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);
+    if (backgroundLabel) {
+        backgroundLabel->resize(this->size());
+        QPixmap original(":/images/scene.png");
+        backgroundLabel->setPixmap(original.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    }
 }
 
 void MainWindow::on_cardButton_1_clicked() {

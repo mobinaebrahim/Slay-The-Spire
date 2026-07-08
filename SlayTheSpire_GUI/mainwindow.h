@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 #include <vector>
 #include <string>
 #include "../Player.h"
@@ -35,9 +36,13 @@ private:
     std::vector<Card*> playerHand;
     BattleManager* battleManager;
     Player* playerObject;
+    QLabel* backgroundLabel;
     void updateHandUI();
     void drawRandomCards(int numberOfCards);
     void initializePlayerDeck(int totalCards);
+
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 };
 
 Card* createCardByName(const std::string& name);

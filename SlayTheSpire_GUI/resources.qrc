@@ -34,5 +34,29 @@
         <file>images/cards/Wound.png</file>
         <file>images/cards/Strike.png</file>
         <file>images/cards/TwinStrike.png</file>
+        <file>images/enemies/BlueSlaver.png</file>
+        <file>images/enemies/BookOfStabbing.png</file>
+        <file>images/enemies/Cultist.png</file>
+        <file>images/enemies/GremlinKnob.png</file>
+        <file>images/enemies/HexaGhost.png</file>
+        <file>images/enemies/JawWorm.png</file>
+        <file>images/enemies/KingSlime.png</file>
+        <file>images/enemies/LargeSlime.png</file>
+        <file>images/enemies/Looter.png</file>
+        <file>images/enemies/Louse (2).png</file>
+        <file>images/enemies/Louse.png</file>
+        <file>images/enemies/MediumSlime.png</file>
+        <file>images/enemies/Mugger.png</file>
+        <file>images/enemies/RedSlaver.png</file>
+        <file>images/enemies/SmallSlime.png</file>
+        <file>images/enemies/SphericGuardian.png</file>
+        <file>images/enemies/Taskmaster.png</file>
+        <file>images/enemies/TheChamp.png</file>
+        <file>images/enemies/ThreeSentries.png</file>
+        <file>images/characters/Defect.png</file>
+        <file>images/characters/IronClad.png</file>
+        <file>images/characters/Silent.png</file>
+        <file>images/characters/Watcher.png</file>
+        <file>images/scene.png</file>
     </qresource>
 </RCC>

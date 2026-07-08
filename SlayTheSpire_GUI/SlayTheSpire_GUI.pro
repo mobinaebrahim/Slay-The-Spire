@@ -76,4 +76,5 @@ DISTFILES += \
     images/cards/Slime.png \
     images/cards/Wound.png \
     images/cards/Writhe.png \
-    images/cards/offering.png
+    images/cards/offering.png \
+    images/scene.png

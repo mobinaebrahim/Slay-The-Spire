@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>401</width>
+    <height>321</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -245,6 +245,63 @@
    <property name="echoMode">
     <enum>QLineEdit::EchoMode::Password</enum>
    </property>
+  </widget>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>401</width>
+     <height>321</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QWidget {
+    background-color: transparent;
+    border-image: url(:/assets/login-register-menu/confirm.png) 0 0 0 0 stretch stretch;
+}
+</string>
+   </property>
+   <widget class="QLineEdit" name="lineEdit_verifycode">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>100</y>
+      <width>191</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 0);
+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="verifycode_button">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>180</y>
+      <width>90</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>confrim</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="back_button1">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>180</y>
+      <width>90</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>back</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

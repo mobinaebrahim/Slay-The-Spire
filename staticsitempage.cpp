@@ -75,7 +75,7 @@ void StaticsItemPage::refresh_leaderboard()
     else if (ui->btndefect->isChecked()) characterFilter = "Defect";
     else if (ui->btnwatcher->isChecked()) characterFilter = "Watcher";
 
-    QString sortBy = ui->btntime->isChecked() ? "date" : "score";
+    QString sortBy = ui->btntime->isChecked() ? "time" : "score";
 
     QList<Score_entry> scores = ScoreManager::instance().get_scores(characterFilter, sortBy);
 

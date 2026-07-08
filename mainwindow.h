@@ -13,6 +13,8 @@
 #include "authpage.h"
 #include "staticsitempage.h"
 #include "scoremanager.h"
+#include "friendspage.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

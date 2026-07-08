@@ -81,6 +81,12 @@ MainWindow::MainWindow(QWidget *parent)
         statsDlg->exec();
     });
 
+    connect(ui->btnFriends, &QPushButton::clicked, this, [this](){
+        friendspage *friendsDlg = new friendspage(this);
+        friendsDlg->setAttribute(Qt::WA_DeleteOnClose);
+        friendsDlg->exec();
+    });
+
     //---test leaderboard---
     /*connect(ui->btnTestAddScore, &QPushButton::clicked, this, [this](){
         QString currentUser = user_manager::instance().get_current_username();

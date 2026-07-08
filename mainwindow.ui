@@ -106,7 +106,7 @@
         <property name="geometry">
          <rect>
           <x>180</x>
-          <y>740</y>
+          <y>780</y>
           <width>131</width>
           <height>29</height>
          </rect>
@@ -139,6 +139,19 @@
         </property>
         <property name="text">
          <string>test</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnFriends">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>740</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>friends</string>
         </property>
        </widget>
       </widget>

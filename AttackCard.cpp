@@ -8,6 +8,11 @@ AttackCard::AttackCard(CardType t, string n, string d, int e, int damage, int up
 
 AttackCard::~AttackCard() = default;
 
+void AttackCard::upgrade() {
+	Card::upgrade();
+	baseDamage = upgradedDamage;
+}
+
 void AttackCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (target) 
 		target->takeDamage(isUpgraded ? upgradedDamage : baseDamage);
@@ -16,11 +21,6 @@ void AttackCard::applyEffect(Character* caster, Character* target, BattleManager
 //___________________________________ReaperCard______________________________________
 ReaperCard::ReaperCard(): AttackCard(CardType::Attack, "Reaper", 
 	"Deal 4 damage to all enemies - Heal HP equal to unblocked damage - Exhaust", 2, 4, 5) {}
-
-void ReaperCard::upgrade() {
-	Card::upgrade(); 
-	baseDamage = upgradedDamage; 
-}
 
 void ReaperCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
@@ -34,11 +34,6 @@ void ReaperCard::applyEffect(class Character* caster, class Character* target, B
 //____________________________________FeedCard_______________________________________
 FeedCard::FeedCard(): AttackCard(CardType::Attack, "Feed",
 	"Deal 10 damage - If fatal, raise max HP by 3 - Exhaust", 1, 10, 12) {}
-
-void FeedCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
 
 void FeedCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
@@ -56,11 +51,6 @@ void FeedCard::applyEffect(class Character* caster, class Character* target, Bat
 ImmolateCard::ImmolateCard(): AttackCard(CardType::Attack, "Immolate",
 	"Deal 21 damage to all enemies - Add 2 BURN into discard pile", 2, 21, 28) {}
 
-void ImmolateCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
-
 void ImmolateCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
 		int baseDamage = isUpgraded ? upgradedDamage : this->baseDamage;
@@ -74,11 +64,6 @@ void ImmolateCard::applyEffect(class Character* caster, class Character* target,
 //__________________________________WhirlwindCard_____________________________________
 WhirlwindCard::WhirlwindCard() : AttackCard(CardType::Attack, "Whirlwind",
 	"Deal 5 damage to all enemies X times (X = your current energy)", 0, 5, 8) {}
-
-void WhirlwindCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
 
 void WhirlwindCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
 	if (caster && target) {
@@ -97,11 +82,6 @@ void WhirlwindCard::applyEffect(class Character* caster, class Character* target
 //__________________________________Blood_for_BloodCard_____________________________________
 Blood_for_BloodCard::Blood_for_BloodCard() : AttackCard(CardType::Attack, "Blood for Blood",
 	"Deal 18 damage - Costs 1 less for each time you lose HP this combat", 4, 18, 22) {} 
-
-void Blood_for_BloodCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
 
 int Blood_for_BloodCard::getCost(Character* caster) {
 	if (!caster) 
@@ -123,11 +103,6 @@ void Blood_for_BloodCard::applyEffect(class Character* caster, class Character* 
 BashCard::BashCard():AttackCard(CardType::Attack, "Bash",
 	"Deal 8 damage - Apply 2 Vulnerable", 2, 8, 10) {}
 
-void BashCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
-
 void BashCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
 		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
@@ -141,11 +116,6 @@ void BashCard::applyEffect(Character* caster, Character* target, BattleManager* 
 TwinStrikeCard::TwinStrikeCard():AttackCard(CardType::Attack, "TwinStrike",
 	"Deal 6 damage twice", 1, 6, 8) {}
 
-void TwinStrikeCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
-
 void TwinStrikeCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
 		int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
@@ -158,11 +128,6 @@ void TwinStrikeCard::applyEffect(Character* caster, Character* target, BattleMan
 //___________________________________PerfectedStrikeCard____________________________________
 PerfectedStrike::PerfectedStrike():AttackCard(CardType::Attack, "PerfectedStrike",
 	"Deal 6 damage + 2 additional for every Strike card in deck", 2, 6, 6) {}
-
-void PerfectedStrike::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
 
 void PerfectedStrike::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	if (caster && target) {
@@ -178,11 +143,6 @@ void PerfectedStrike::applyEffect(Character* caster, Character* target, BattleMa
 //________________________________________ClashCard_________________________________________
 ClashCard::ClashCard():AttackCard(CardType::Attack, "Clash",
 	"Deal 14 damage - Can only be played if every card in hand is an attack", 0, 14, 18) {}
-
-void ClashCard::upgrade() {
-	Card::upgrade();
-	baseDamage = upgradedDamage;
-}
 
 void ClashCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
 	Player* player = dynamic_cast<Player*>(caster);

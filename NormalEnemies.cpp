@@ -128,7 +128,7 @@ void Louse::executeAction(Character* target) {
     chooseAction();
 }
 
-void Louse::takeDamage(int incomingDamage) {
+int Louse::takeDamage(int incomingDamage) {
     Enemy::takeDamage(incomingDamage);
 
     if (this->hp > 0 && !hasCurledUp) {

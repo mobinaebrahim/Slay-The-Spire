@@ -1,7 +1,7 @@
 #ifndef STATUSEFFECT_H
 #define STATUSEFFECT_H
 #include <string>
-#include "character.h"
+class Character;
 using namespace std;
 
 class StatusEffect {

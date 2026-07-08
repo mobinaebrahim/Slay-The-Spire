@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 using namespace std;
+class BattleManager;
+class Card;
 
 enum class IntentType { Attack, Defend, Buff, Debuff, Combined, Special};
 

@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "BattleManager.h"
 #include <cstdlib>
 
 Enemy::Enemy(string n, int h, int max)

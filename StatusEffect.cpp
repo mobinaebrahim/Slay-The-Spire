@@ -1,4 +1,5 @@
 #include "StatusEffect.h"
+#include "character.h"
 
 //_______________________________________StatusEffect_______________________________________
 StatusEffect:: StatusEffect(string name, int amount) : name(name), amount(amount) {}

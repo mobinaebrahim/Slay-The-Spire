@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 using namespace std;
+class BattleManager;
 
 class Player : public Character {
 private:

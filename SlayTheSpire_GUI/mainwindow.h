@@ -33,6 +33,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     std::vector<Card*> playerHand;
+    BattleManager* battleManager;
     Player* playerObject;
     void updateHandUI();
     void drawRandomCards(int numberOfCards);

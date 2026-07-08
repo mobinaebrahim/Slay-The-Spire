@@ -8,7 +8,11 @@ CONFIG += c++17
 
 SOURCES += \
     ../AttackCard.cpp \
+    ../BattleManager.cpp \
+    ../BossStruggles.cpp \
     ../CurseCard.cpp \
+    ../EliteEnemies.cpp \
+    ../NormalEnemies.cpp \
     ../PowerCard.cpp \
     ../SkillCard.cpp \
     ../StatusCard.cpp \
@@ -22,7 +26,11 @@ SOURCES += \
 
 HEADERS += \
     ../AttackCard.h \
+    ../BattleManager.h \
+    ../BossStruggles.h \
     ../CurseCard.h \
+    ../EliteEnemies.h \
+    ../NormalEnemies.h \
     ../PowerCard.h \
     ../SkillCard.h \
     ../StatusCard.h \

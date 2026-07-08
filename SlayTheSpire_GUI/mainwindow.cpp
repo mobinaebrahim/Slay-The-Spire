@@ -15,6 +15,12 @@
 #include "../PowerCard.h"
 #include "../StatusCard.h"
 #include "../Player.h"
+#include "../BattleManager.h"
+#include "../BossStruggles.h"
+#include "../character.h"
+#include "../NormalEnemies.h"
+#include "../EliteEnemies.h"
+#include "../enemy.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     std::srand(std::time(nullptr));
-    playerObject = new Player("Dina", 80, 80, 3);
+    battleManager = new BattleManager();
+    playerObject = new Player("Dina", 80, 80, 3, battleManager);
     initializePlayerDeck(15);
     playerObject->drawCards(5);
     updateHandUI();
@@ -123,8 +130,8 @@ Card* createCardByName(const std::string& name) {
     if (name == "Immolate")        return new ImmolateCard();
     if (name == "PerfectedStrike") return new PerfectedStrike();
     if (name == "Reaper")          return new ReaperCard();
-    if (name == "Strike")          return new AttackCard(CardType::Attack, "Strike", "Deal 6 damage", 1, 6);
-    if (name == "Bludgeon")        return new AttackCard(CardType::Attack, "Bludgeon", "Deal 32 damage", 3, 32);
+    if (name == "Strike")          return new AttackCard(CardType::Attack, "Strike", "Deal 6 damage", 1, 6, 9);
+    if (name == "Bludgeon")        return new AttackCard(CardType::Attack, "Bludgeon", "Deal 32 damage", 3, 32, 42);
     if (name == "TwinStrike")      return new TwinStrikeCard();
     if (name == "Whirlwind")       return new WhirlwindCard();
     if (name == "Barricade")       return new BarricadeCard();

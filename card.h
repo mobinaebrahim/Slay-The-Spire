@@ -3,8 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include "BattleManager.h"
 using namespace std;
+class BattleManager;
 
 enum class CardType{ Attack, Skill, Power, Status, Curse};
 

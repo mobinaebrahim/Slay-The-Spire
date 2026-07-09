@@ -23,6 +23,7 @@ private:
     QButtonGroup *typeGroup;
 
     void refresh_leaderboard();
+    QString format_duration(int totalSeconds);
 
 };
 

@@ -37,6 +37,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         smtp/emailaddress.cpp smtp/emailaddress.h smtp/mimeattachment.cpp smtp/mimeattachment.h smtp/mimebase64encoder.cpp smtp/mimebase64encoder.h smtp/mimebase64formatter.cpp smtp/mimebase64formatter.h smtp/mimebytearrayattachment.cpp smtp/mimebytearrayattachment.h smtp/mimecontentencoder.cpp smtp/mimecontentencoder.h smtp/mimecontentformatter.cpp smtp/mimecontentformatter.h smtp/mimefile.cpp smtp/mimefile.h smtp/mimehtml.cpp smtp/mimehtml.h smtp/mimeinlinefile.cpp smtp/mimeinlinefile.h smtp/mimemessage.cpp smtp/mimemessage.h smtp/mimemultipart.cpp smtp/mimemultipart.h smtp/mimepart.cpp smtp/mimepart.h smtp/mimeqpencoder.cpp smtp/mimeqpencoder.h smtp/mimeqpformatter.cpp smtp/mimeqpformatter.h smtp/mimetext.cpp smtp/mimetext.h smtp/quotedprintable.cpp smtp/quotedprintable.h smtp/smtpclient.cpp smtp/smtpclient.h smtp/smtpmime_global.h
         authpage.h authpage.cpp authpage.ui
         friendspage.h friendspage.cpp friendspage.ui
+        savemanager.h savemanager.cpp
 
 
 

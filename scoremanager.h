@@ -7,17 +7,17 @@
 struct Score_entry {
     QString username;
     QString character;
-    int score;
-    int floor_reached;
-    int play_duration;
-    QString date_achieved;
+    int total_score;
+    int highest_floor;
+    int total_wins;
+    int total_duration;
 };
 
 class ScoreManager
 {
 public:
     static ScoreManager& instance();
-    bool add_score(const QString &username, const QString &character, int score, int floorReached,int playDuration);
+    bool add_score(const QString &username, const QString &character, int score, int floorReached, int playDuration, bool isVictory);
     QList<Score_entry> get_scores(const QString &characterFilter = "All", const QString &sortBy = "score");
 
 

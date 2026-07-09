@@ -1,6 +1,8 @@
 #include "staticsitempage.h"
 #include "ui_staticsitempage.h"
 #include "scoremanager.h"
+#include "friendmanager.h"
+#include "usermanager.h"
 
 StaticsItemPage::StaticsItemPage(QWidget *parent)
     : QDialog(parent)
@@ -16,18 +18,15 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
         close();
     });
 
-
     ui->btnironclad->setStyleSheet(
         "QPushButton {"
         "   background-image: url(:/images/bg.png);"
         "   border-image: url(:/images/pic1.png);"
         "}"
-    );
+        );
     connect(ui->btnLeaderboard,&QPushButton::clicked,this,[this]{
         ui->stackedWidget->setCurrentWidget(ui->leaderboard);
-
     });
-
 
     //---leaderboard---
     ui->btnRetun1->raise();
@@ -48,23 +47,18 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
     regionGroup->addButton(ui->btnfriends);
     regionGroup->setExclusive(true);
 
-
     typeGroup = new QButtonGroup(this);
-    typeGroup->addButton(ui->btnscore);
-    typeGroup->addButton(ui->btntime);
-    typeGroup->addButton(ui->btnchain);
+    typeGroup->addButton(ui->btnTotalScore);
+    typeGroup->addButton(ui->btnHighestFloor);
+    typeGroup->addButton(ui->btnTotalWins);
+    typeGroup->addButton(ui->btnTotalTime);
     typeGroup->setExclusive(true);
 
     connect(characterGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
+    connect(regionGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
     connect(typeGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
 
-    refresh_leaderboard();
-
-
-    ui->table_scores->setColumnCount(4);
-    ui->table_scores->setHorizontalHeaderLabels({"Username", "Character", "Score", "Floor"});
-
-
+    //connect(ui->btnShowScoreboard, &QPushButton::clicked, this, &StaticsItemPage::refresh_leaderboard);
 }
 
 void StaticsItemPage::refresh_leaderboard()
@@ -75,17 +69,61 @@ void StaticsItemPage::refresh_leaderboard()
     else if (ui->btndefect->isChecked()) characterFilter = "Defect";
     else if (ui->btnwatcher->isChecked()) characterFilter = "Watcher";
 
-    QString sortBy = ui->btntime->isChecked() ? "time" : "score";
+    QString sortBy = "score";
+    QString columnLabel = "Score";
+    if (ui->btnHighestFloor->isChecked()) { sortBy = "floor"; columnLabel = "Floor"; }
+    else if (ui->btnTotalWins->isChecked()) { sortBy = "wins"; columnLabel = "Wins"; }
+    else if (ui->btnTotalTime->isChecked()) { sortBy = "time"; columnLabel = "Time"; }
 
     QList<Score_entry> scores = ScoreManager::instance().get_scores(characterFilter, sortBy);
+
+    if (ui->btnfriends->isChecked()) {
+        QString currentUser = user_manager::instance().get_current_username();
+        QStringList friendsList = FriendManager::instance().getFriendsList(currentUser);
+        friendsList.append(currentUser);
+
+        QList<Score_entry> filtered;
+        for (const Score_entry &entry : scores) {
+            if (friendsList.contains(entry.username)) {
+                filtered.append(entry);
+            }
+        }
+        scores = filtered;
+    }
+
+    ui->table_scores->setColumnCount(3);
+    ui->table_scores->setHorizontalHeaderLabels({"Username", "Character", columnLabel});
 
     ui->table_scores->setRowCount(scores.size());
     for (int i = 0; i < scores.size(); i++) {
         ui->table_scores->setItem(i, 0, new QTableWidgetItem(scores[i].username));
         ui->table_scores->setItem(i, 1, new QTableWidgetItem(scores[i].character));
-        ui->table_scores->setItem(i, 2, new QTableWidgetItem(QString::number(scores[i].score)));
-        ui->table_scores->setItem(i, 3, new QTableWidgetItem(QString::number(scores[i].floor_reached)));
+
+        QString valueText;
+        if (sortBy == "floor") valueText = QString::number(scores[i].highest_floor);
+        else if (sortBy == "wins") valueText = QString::number(scores[i].total_wins);
+        else if (sortBy == "time") valueText = format_duration(scores[i].total_duration);
+        else valueText = QString::number(scores[i].total_score);
+
+        ui->table_scores->setItem(i, 2, new QTableWidgetItem(valueText));
     }
+}
+
+QString StaticsItemPage::format_duration(int totalSeconds)
+{
+    int hours = totalSeconds / 3600;
+    int minutes = (totalSeconds % 3600) / 60;
+    int seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+        return QString("%1:%2:%3")
+        .arg(hours)
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(seconds, 2, 10, QChar('0'));
+    }
+    return QString("%1:%2")
+        .arg(minutes)
+        .arg(seconds, 2, 10, QChar('0'));
 }
 
 StaticsItemPage::~StaticsItemPage()

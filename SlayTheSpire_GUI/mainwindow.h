@@ -24,11 +24,6 @@ public:
     ~MainWindow() override;
 
 private slots:
-    void on_cardButton_1_clicked();
-    void on_cardButton_2_clicked();
-    void on_cardButton_3_clicked();
-    void on_cardButton_4_clicked();
-    void on_cardButton_5_clicked();
     void on_EndTurnButton_clicked();
 
 private:

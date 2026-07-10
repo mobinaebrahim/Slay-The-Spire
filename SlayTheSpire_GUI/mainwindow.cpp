@@ -8,6 +8,10 @@
 #include<QDebug>
 #include<Qfile>
 #include <QLabel>
+#include <QLayout>
+#include <QLayoutItem>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 #include "../card.h"
 #include "../AttackCard.h"
@@ -28,6 +32,16 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QHBoxLayout* cardLayout = new QHBoxLayout(ui->CardsContainer);
+    ui->CardsContainer->setLayout(cardLayout);
+
+    ui->EndTurnButton->setFixedHeight(40);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(this->centralWidget());
+    mainLayout->addWidget(ui->EndTurnButton);
+    mainLayout->addStretch();
+    mainLayout->addWidget(ui->CardsContainer);
 
     QPixmap bkgnd(":/images/scene.png");
     bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -61,46 +75,6 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void MainWindow::on_cardButton_1_clicked() {
-    const auto& hand = playerObject->getHand();
-    if (0 < hand.size()) {
-        playerObject->exhaustCard(hand[0]);
-        updateHandUI();
-    }
-}
-
-void MainWindow::on_cardButton_2_clicked() {
-    const auto& hand = playerObject->getHand();
-    if (1 < hand.size()) {
-        playerObject->exhaustCard(hand[1]);
-        updateHandUI();
-    }
-}
-
-void MainWindow::on_cardButton_3_clicked() {
-    const auto& hand = playerObject->getHand();
-    if (4 < hand.size()) {
-        playerObject->exhaustCard(hand[4]);
-        updateHandUI();
-    }
-}
-
-void MainWindow::on_cardButton_4_clicked() {
-    const auto& hand = playerObject->getHand();
-    if (2 < hand.size()) {
-        playerObject->exhaustCard(hand[2]);
-        updateHandUI();
-    }
-}
-
-void MainWindow::on_cardButton_5_clicked() {
-    const auto& hand = playerObject->getHand();
-    if (3 < hand.size()) {
-        playerObject->exhaustCard(hand[3]);
-        updateHandUI();
-    }
-}
-
 void MainWindow::on_EndTurnButton_clicked()
 {
     const auto& hand = playerObject->getHand();
@@ -120,35 +94,41 @@ void MainWindow::on_EndTurnButton_clicked()
 
 void MainWindow::updateHandUI() {
     QLayout* layout = ui->CardsContainer->layout();
+    if (!layout) return;
+
     QLayoutItem *child;
     while ((child = layout->takeAt(0)) != nullptr) {
-        delete child->widget();
+        if (child->widget()) {
+            child->widget()->hide();
+            delete child->widget();
+        }
         delete child;
     }
+
     const std::vector<Card*>& playerHand = playerObject->getHand();
-    for (size_t i = 0; i < playerHand.size(); ++i) {
-        if (playerHand[i] == nullptr) continue;
+
+    for (Card* card : playerHand) {
+        if (!card) continue;
 
         QPushButton* cardBtn = new QPushButton();
         cardBtn->setFixedSize(120, 160);
 
-        QString cardName = QString::fromStdString(playerHand[i]->getName());
+        QString cardName = QString::fromStdString(card->getName());
         cardBtn->setIcon(QIcon(":/images/cards/" + cardName + ".png"));
         cardBtn->setIconSize(cardBtn->size());
-        cardBtn->setEnabled(playerHand[i]->isPlayable());
+        cardBtn->setEnabled(card->isPlayable());
 
         connect(cardBtn, &QPushButton::clicked, [=]() {
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
             if (!allEnemies.empty()) {
-                Enemy* target = allEnemies[0];
-                playerObject->playCard(playerHand[i], target);
+                playerObject->playCard(card, allEnemies[0]);
                 updateHandUI();
             }
         });
+
         layout->addWidget(cardBtn);
     }
 }
-
 Card* createCardByName(const std::string& name) {
     if (name == "Bash")            return new BashCard();
     if (name == "Blood for Blood") return new Blood_for_BloodCard();

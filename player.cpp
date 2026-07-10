@@ -17,8 +17,6 @@ void Player::decreaseEnergy(int amount) {
 
 void Player::increaseEnergy(int amount) {
     currentEnergy += amount;
-    if (currentEnergy > maxEnergy)
-        currentEnergy = maxEnergy; 
 }
 
 int Player::getEnergy() const {
@@ -150,6 +148,7 @@ void Player::loseGold(int amount) {
 }
 
 void Player::playCard(Card* card, Character* target) {
+
     if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
         return;
 
@@ -164,7 +163,11 @@ void Player::playCard(Card* card, Character* target) {
             if (enemy != nullptr)
                 enemy->onPlayerPlayedCard(card);
         }
-        //this->exhaustCard(card);
+        auto it = std::find(hand.begin(), hand.end(), card);
+        if (it != hand.end()) {
+            hand.erase(it);
+            discardPile.push_back(card);
+        }
     }
 }
 

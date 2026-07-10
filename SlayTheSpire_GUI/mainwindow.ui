@@ -14,116 +14,41 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QPushButton" name="cardButton_1">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>300</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="cardButton_4">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/new/prefix1/images/cards/Bash.png</normaloff>:/new/prefix1/images/cards/Bash.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>300</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="cardButton_2">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/new/prefix1/images/cards/Strike_R.png</normaloff>:/new/prefix1/images/cards/Strike_R.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>300</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="cardButton_5">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/new/prefix1/images/cards/Reaper.png</normaloff>:/new/prefix1/images/cards/Reaper.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>300</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="cardButton_3">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/new/prefix1/images/cards/Immolate.png</normaloff>:/new/prefix1/images/cards/Immolate.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>300</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="EndTurnButton">
-      <property name="text">
-       <string>End Turn</string>
-      </property>
-     </widget>
-    </item>
-    <item alignment="Qt::AlignmentFlag::AlignBottom">
-     <widget class="QWidget" name="CardsContainer" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>250</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <widget class="QPushButton" name="EndTurnButton">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>6</y>
+      <width>56</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>End Turn</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="CardsContainer" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>179</y>
+      <width>788</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>250</height>
+     </size>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -14,15 +14,9 @@ GameMap::GameMap(int totalFloors, int minRoomsPerFloor, int maxRoomsPerFloor)
     m_treasureFloor = m_totalFloors / 2;
     m_bossFloor = m_totalFloors - 1;
 
-    // Spread the two campfire floors: one before Treasure, one after
-    m_campfireFloor1 = qMax(1, m_totalFloors / 4);
-    m_campfireFloor2 = qMin(m_totalFloors - 2, (3 * m_totalFloors) / 4);
-
-    // Safety: if they accidentally collide with a locked floor, shift them
-    if (m_campfireFloor1 == m_enemyFloor) m_campfireFloor1++;
-    if (m_campfireFloor2 == m_bossFloor) m_campfireFloor2--;
-    if (m_campfireFloor1 == m_treasureFloor) m_campfireFloor1--;
-    if (m_campfireFloor2 == m_treasureFloor) m_campfireFloor2++;
+    // Campfire floors are picked randomly each time generate() runs (see pickCampfireFloors)
+    m_campfireFloor1 = -1;
+    m_campfireFloor2 = -1;
 }
 
 GameMap::~GameMap()
@@ -42,8 +36,24 @@ void GameMap::clearMap()
 void GameMap::generate()
 {
     clearMap();
+    pickCampfireFloors();
     buildSkeleton();
     assignRoomTypes();
+}
+
+void GameMap::pickCampfireFloors()
+{
+    // First campfire floor: somewhere between the enemy floor and the treasure floor
+    int lowStart = m_enemyFloor + 1;
+    int lowEnd = m_treasureFloor - 1;
+    if (lowEnd < lowStart) lowEnd = lowStart; // safety for very small maps
+    m_campfireFloor1 = QRandomGenerator::global()->bounded(lowStart, lowEnd + 1);
+
+    // Second campfire floor: somewhere between the treasure floor and the boss floor
+    int highStart = m_treasureFloor + 1;
+    int highEnd = m_bossFloor - 1;
+    if (highEnd < highStart) highEnd = highStart; // safety for very small maps
+    m_campfireFloor2 = QRandomGenerator::global()->bounded(highStart, highEnd + 1);
 }
 
 // ============================================================

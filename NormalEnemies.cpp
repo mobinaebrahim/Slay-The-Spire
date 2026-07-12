@@ -395,7 +395,7 @@ void BlueSlaver::executeAction(Character* target) {
 }
 
 //________________________________________RedSlaver________________________________________
-RedSlaver:: RedSlaver() : Enemy("Red Slaver", 48, 48), isFirstTurn(true), hasEntangled(false) {
+RedSlaver:: RedSlaver() : Enemy("RedSlaver", 48, 48), isFirstTurn(true), hasEntangled(false) {
     int hp = 46 + (rand() % 5);
     this->hp = hp; this->maxHp = hp;
     chooseAction();

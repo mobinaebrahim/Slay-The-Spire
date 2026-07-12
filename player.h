@@ -29,6 +29,7 @@ public:
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);
     int getEnergy() const;
+    int getMaxEnergy() const { return maxEnergy; }
     void increaseMaxHP(int amount);
     void drawCards(int count);
     void addBurnToDiscard(int count);

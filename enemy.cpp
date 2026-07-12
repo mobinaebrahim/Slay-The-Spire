@@ -21,6 +21,9 @@ string Enemy::getIntentString() const {
         return "Intent: Buff (getting stronger by " + to_string(intentValue) + " )";
     if (currentIntent == IntentType::Debuff)
         return "Intent: Debuff (wants to have negative effect on you) ";
-    else if(currentIntent == IntentType::Combined)
+    if(currentIntent == IntentType::Combined)
         return "Intent: Attack for " + to_string(intentValue) + " DMG + Defend for " + to_string(intentBlock) + " BLOCK";
+    if (currentIntent == IntentType::Special)
+        return "Intent: Special";
+    return "Intent: Unknown";
 }

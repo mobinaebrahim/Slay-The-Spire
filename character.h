@@ -41,6 +41,8 @@ public:
     int getHp() const { return hp; }
     int getBlock() const { return block; }
     string getName() const { return name; }
+    int getMaxHp() const { return maxHp; }
+    const std::vector<StatusEffect*>& getEffects() const { return effects; }
 };
 
 #endif

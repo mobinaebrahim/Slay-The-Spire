@@ -1,4 +1,5 @@
 #include "BattleManager.h"
+#include <algorithm>
 
 void BattleManager:: spawnEnemy(Enemy* newEnemy) {
     enemies.push_back(newEnemy);
@@ -7,11 +8,21 @@ void BattleManager:: spawnEnemy(Enemy* newEnemy) {
 void BattleManager::removeEnemy(Enemy* enemy) {
     for (auto it = enemies.begin(); it != enemies.end(); ++it) {
         if (*it == enemy) {
-            enemies.erase(it);
-            delete enemy;
+            enemiesToRemove.push_back(enemy);
             break;
         }
     }
+}
+
+void BattleManager::cleanupDeadEnemies() {
+    for (Enemy* enemy : enemiesToRemove) {
+        auto it = std::find(enemies.begin(), enemies.end(), enemy);
+        if (it != enemies.end()) {
+            enemies.erase(it);
+            delete enemy;
+        }
+    }
+    enemiesToRemove.clear();
 }
 
 void BattleManager::dealDamageToAllEnemies(int damage) {

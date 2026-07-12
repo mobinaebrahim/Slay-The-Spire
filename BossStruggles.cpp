@@ -34,7 +34,7 @@ void KingSlime::executeAction(Character* target) {
 }
 
 int KingSlime::takeDamage(int amount) {
-    Enemy::takeDamage(amount);
+    int actualDamage = Enemy::takeDamage(amount);
 
     if (this->hp <= (this->maxHp / 2) && !hasSplit) {
         hasSplit = true;
@@ -42,6 +42,7 @@ int KingSlime::takeDamage(int amount) {
         myManager->spawnEnemy(new LargeSlime());
         myManager->removeEnemy(this);
     }
+    return actualDamage;
 }
 
 //__________________________________________Hexaghost__________________________________________
@@ -125,7 +126,7 @@ void Hexaghost::executeAction(Character* target) {
 }
 
 //__________________________________________TheChamp___________________________________________
-TheChamp::TheChamp() : Enemy("TheChamp", 150, 150) {
+TheChamp::TheChamp() : Enemy("TheChamp", 150, 150), isTauntTurn(false) {
     int randomHp = 150 + (rand() % 101);
     this->hp = randomHp;
     this->maxHp = randomHp;

@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         usermanager.h
         usermanager.cpp
+        savemanager.h
+        savemanager.cpp
         resources.qrc
 )
 

@@ -18,7 +18,6 @@ public:
 
 private:
     Ui::StaticsItemPage *ui;
-    QButtonGroup *characterGroup;
     QButtonGroup *regionGroup;
     QButtonGroup *typeGroup;
 

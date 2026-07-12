@@ -169,19 +169,6 @@ Qwidget#overlaywidget{
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_5">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>110</y>
-       <width>63</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
@@ -223,81 +210,6 @@ Qwidget#overlaywidget{
      </property>
      <property name="text">
       <string>return</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnsilent">
-     <property name="geometry">
-      <rect>
-       <x>220</x>
-       <y>140</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/silent.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btndefect">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>140</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/defect.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnwatcher">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>140</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/watcher.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
      </property>
     </widget>
     <widget class="QPushButton" name="btnfriends">
@@ -350,36 +262,11 @@ QPushButton:checked {
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnironclad">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>140</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/ironclad.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QWidget" name="widget" native="true">
      <property name="geometry">
       <rect>
-       <x>-70</x>
-       <y>0</y>
+       <x>-10</x>
+       <y>-20</y>
        <width>1920</width>
        <height>1080</height>
       </rect>
@@ -397,8 +284,7 @@ QPushButton:checked {
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">
-</string>
+       <string notr="true"/>
       </property>
      </widget>
      <widget class="QPushButton" name="btnTotalScore">
@@ -468,16 +354,11 @@ QPushButton:checked {
     </widget>
     <zorder>widget</zorder>
     <zorder>label_4</zorder>
-    <zorder>label_5</zorder>
     <zorder>label_6</zorder>
     <zorder>label_7</zorder>
     <zorder>btnRetun1</zorder>
-    <zorder>btnsilent</zorder>
-    <zorder>btndefect</zorder>
-    <zorder>btnwatcher</zorder>
     <zorder>btnfriends</zorder>
     <zorder>btnglobal</zorder>
-    <zorder>btnironclad</zorder>
    </widget>
   </widget>
  </widget>

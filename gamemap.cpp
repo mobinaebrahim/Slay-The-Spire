@@ -3,17 +3,26 @@
 #include <QRandomGenerator>
 #include <QDebug>
 #include <cmath>
-#include <climits>
+#include <algorithm>
 
 GameMap::GameMap(int totalFloors, int minRoomsPerFloor, int maxRoomsPerFloor)
     : m_totalFloors(totalFloors)
     , m_minRooms(minRoomsPerFloor)
     , m_maxRooms(maxRoomsPerFloor)
 {
-    // طبقه‌ی وسط به‌عنوان Treasure در نظر گرفته میشه (برای ۱۱ طبقه => اندیس ۵ یعنی طبقه ۶)
     m_enemyFloor = 0;
     m_treasureFloor = m_totalFloors / 2;
     m_bossFloor = m_totalFloors - 1;
+
+    // Spread the two campfire floors: one before Treasure, one after
+    m_campfireFloor1 = qMax(1, m_totalFloors / 4);
+    m_campfireFloor2 = qMin(m_totalFloors - 2, (3 * m_totalFloors) / 4);
+
+    // Safety: if they accidentally collide with a locked floor, shift them
+    if (m_campfireFloor1 == m_enemyFloor) m_campfireFloor1++;
+    if (m_campfireFloor2 == m_bossFloor) m_campfireFloor2--;
+    if (m_campfireFloor1 == m_treasureFloor) m_campfireFloor1--;
+    if (m_campfireFloor2 == m_treasureFloor) m_campfireFloor2++;
 }
 
 GameMap::~GameMap()
@@ -35,11 +44,10 @@ void GameMap::generate()
     clearMap();
     buildSkeleton();
     assignRoomTypes();
-    fixCampfireRule();
 }
 
 // ============================================================
-// مرحله ۱: ساخت اسکلت
+// Step 1: Build the skeleton
 // ============================================================
 
 void GameMap::buildSkeleton()
@@ -49,7 +57,7 @@ void GameMap::buildSkeleton()
     for (int f = 0; f < m_totalFloors; ++f) {
         int count;
         if (f == m_bossFloor) {
-            count = 1; // طبقه‌ی Boss همیشه فقط یک اتاق داره
+            count = 1;
         } else {
             count = QRandomGenerator::global()->bounded(m_minRooms, m_maxRooms + 1);
         }
@@ -59,7 +67,6 @@ void GameMap::buildSkeleton()
         }
     }
 
-    // اتصال هر جفت طبقه‌ی پشت‌سرهم
     for (int f = 0; f < m_totalFloors - 1; ++f) {
         connectFloors(f, f + 1);
         validateFloor(f + 1);
@@ -75,10 +82,7 @@ void GameMap::connectFloors(int floorA, int floorB)
     int nB = roomsB.size();
 
     for (int i = 0; i < nA; ++i) {
-        // موقعیت درصدی این اتاق در طبقه‌ی خودش
         double pct = (nA == 1) ? 0.0 : static_cast<double>(i) / (nA - 1);
-
-        // همون درصد رو روی طبقه‌ی بعد پروجکت می‌کنیم
         double target = pct * (nB - 1);
 
         int lower = static_cast<int>(std::floor(target));
@@ -104,9 +108,8 @@ void GameMap::validateFloor(int floorB)
 
     for (int j = 0; j < nB; ++j) {
         if (!roomsB[j]->parents().isEmpty())
-            continue; // این اتاق قبلاً حداقل یه ورودی داره، مشکلی نداره
+            continue;
 
-        // بی‌راهه! نزدیک‌ترین اتاق طبقه‌ی پایین‌تر رو پیدا کن و اجباری وصلش کن
         double pctB = (nB == 1) ? 0.0 : static_cast<double>(j) / (nB - 1);
         double targetA = pctB * (nA - 1);
 
@@ -118,12 +121,12 @@ void GameMap::validateFloor(int floorB)
 }
 
 // ============================================================
-// مرحله ۲: تعیین نوع اتاق‌ها
+// Step 2: Assign room types
 // ============================================================
 
 void GameMap::assignRoomTypes()
 {
-    // قوانین ثابت - این طبقه‌ها مستقیم پر میشن، بدون رندوم
+    // Fixed rules - these floors are filled directly
     for (MapNode *node : m_floors[m_enemyFloor])
         node->setRoomType(RoomType::ENEMY);
 
@@ -133,155 +136,52 @@ void GameMap::assignRoomTypes()
     for (MapNode *node : m_floors[m_bossFloor])
         node->setRoomType(RoomType::BOSS);
 
-    // بقیه‌ی طبقه‌ها با رندوم + اعتبارسنجی (retry loop)
+    // The two campfire floors - all their rooms. Since the map is layered
+    // (every path must pass through every floor), this guarantees without
+    // exception that every path has exactly 2 campfires - no need to trace
+    // individual paths.
+    for (MapNode *node : m_floors[m_campfireFloor1])
+        node->setRoomType(RoomType::CAMPFIRE);
+
+    for (MapNode *node : m_floors[m_campfireFloor2])
+        node->setRoomType(RoomType::CAMPFIRE);
+
+    // Remaining floors - fully random, no extra campfires
     for (int f = 0; f < m_totalFloors; ++f) {
-        if (f == m_enemyFloor || f == m_treasureFloor || f == m_bossFloor)
+        bool locked = (f == m_enemyFloor || f == m_treasureFloor || f == m_bossFloor ||
+                       f == m_campfireFloor1 || f == m_campfireFloor2);
+        if (locked)
             continue;
 
         for (MapNode *node : m_floors[f]) {
-            RoomType chosen;
-            int attempts = 0;
-            const int maxAttempts = 20;
-
-            do {
-                chosen = randomRoomType(f);
-                attempts++;
-            } while (violatesRules(node, chosen) && attempts < maxAttempts);
-
-            node->setRoomType(chosen);
+            node->setRoomType(randomRoomType(f));
         }
     }
 }
 
 RoomType GameMap::randomRoomType(int floorIndex) const
 {
-    // ELITE فقط از طبقه‌ی Treasure به بعد مجازه (تقلید از قانون بازی اصلی)
+    // ELITE is only allowed from the Treasure floor onward
     bool eliteAllowed = (floorIndex >= m_treasureFloor);
 
-    int roll = QRandomGenerator::global()->bounded(100); // عدد ۰ تا ۹۹
+    int roll = QRandomGenerator::global()->bounded(100);
 
     if (eliteAllowed) {
-        // ENEMY 40% | EVENT 25% | ELITE 15% | SHOP 10% | CAMPFIRE 10%
-        if (roll < 40) return RoomType::ENEMY;
-        if (roll < 65) return RoomType::EVENT;
-        if (roll < 80) return RoomType::ELITE;
-        if (roll < 90) return RoomType::SHOP;
-        return RoomType::CAMPFIRE;
+        // ENEMY 45% | EVENT 25% | ELITE 20% | SHOP 10%
+        if (roll < 45) return RoomType::ENEMY;
+        if (roll < 70) return RoomType::EVENT;
+        if (roll < 90) return RoomType::ELITE;
+        return RoomType::SHOP;
     } else {
-        // بدون ELITE: وزنش بین بقیه پخش میشه
-        // ENEMY 50% | EVENT 30% | SHOP 10% | CAMPFIRE 10%
-        if (roll < 50) return RoomType::ENEMY;
-        if (roll < 80) return RoomType::EVENT;
-        if (roll < 90) return RoomType::SHOP;
-        return RoomType::CAMPFIRE;
+        // ENEMY 55% | EVENT 30% | SHOP 15%
+        if (roll < 55) return RoomType::ENEMY;
+        if (roll < 85) return RoomType::EVENT;
+        return RoomType::SHOP;
     }
-}
-
-bool GameMap::violatesRules(MapNode *node, RoomType candidate) const
-{
-    if (candidate == RoomType::CAMPFIRE) {
-        // نمی‌خوایم دو تا Campfire پشت‌سرهم (مستقیم وصل) داشته باشیم
-        for (MapNode *parent : node->parents()) {
-            if (parent->roomType() == RoomType::CAMPFIRE)
-                return true;
-        }
-    }
-    return false;
 }
 
 // ============================================================
-// مرحله ۳: تعمیر دقیق قانون «حداقل ۲ Campfire در هر مسیر»
-// ============================================================
-
-void GameMap::computeMinCampfire()
-{
-    for (int f = 0; f < m_totalFloors; ++f) {
-        for (MapNode *node : m_floors[f]) {
-            int best = 0;
-
-            if (f > 0) {
-                best = INT_MAX;
-                for (MapNode *parent : node->parents()) {
-                    best = std::min(best, parent->minCampfire());
-                }
-                if (best == INT_MAX)
-                    best = 0; // احتیاط، نباید پیش بیاد چون validateFloor این حالت رو حذف کرده
-            }
-
-            int bonus = (node->roomType() == RoomType::CAMPFIRE) ? 1 : 0;
-            node->setMinCampfire(best + bonus);
-        }
-    }
-}
-
-void GameMap::fixCampfireRule()
-{
-    const int maxIterations = 50;
-
-    for (int iter = 0; iter < maxIterations; ++iter) {
-        computeMinCampfire();
-
-        MapNode *bossNode = m_floors[m_bossFloor][0];
-        if (bossNode->minCampfire() >= 2)
-            return; // همه‌ی مسیرها حداقل ۲ تا Campfire دارن، تمومه
-
-        // دنبال ضعیف‌ترین مسیر می‌گردیم: از Boss به عقب، هر بار والدی رو انتخاب
-        // می‌کنیم که کمترین minCampfire رو داره (یعنی بدشانس‌ترین مسیر)
-        QVector<MapNode*> path;
-        MapNode *current = bossNode;
-        path.append(current);
-
-        while (!current->parents().isEmpty()) {
-            MapNode *worstParent = nullptr;
-            int worstValue = INT_MAX;
-
-            for (MapNode *parent : current->parents()) {
-                if (parent->minCampfire() < worstValue) {
-                    worstValue = parent->minCampfire();
-                    worstParent = parent;
-                }
-            }
-
-            current = worstParent;
-            path.append(current);
-        }
-
-        // به‌جای اینکه همیشه اولین اتاق قفل‌نشده (نزدیک‌ترین به Boss) رو انتخاب کنیم،
-        // همه‌ی گزینه‌های معتبر این مسیر رو جمع می‌کنیم و رندوم یکی رو انتخاب می‌کنیم.
-        // این کار باعث میشه Campfireها به‌جای خوشه‌بستن دور Boss، تو کل مسیر پخش بشن.
-        QVector<MapNode*> candidates;
-        for (MapNode *node : path) {
-            bool locked = (node->floor() == m_enemyFloor ||
-                           node->floor() == m_treasureFloor ||
-                           node->floor() == m_bossFloor);
-            if (locked)
-                continue;
-            if (node->roomType() != RoomType::CAMPFIRE) {
-                candidates.append(node);
-            }
-        }
-
-        MapNode *toFix = nullptr;
-        if (!candidates.isEmpty()) {
-            int pick = QRandomGenerator::global()->bounded(candidates.size());
-            toFix = candidates[pick];
-        }
-
-        if (!toFix) {
-            // نباید پیش بیاد مگه اینکه نقشه خیلی کوچیک باشه؛ برای جلوگیری از
-            // حلقه‌ی بی‌نهایت اینجا متوقف می‌کنیم
-            qWarning() << "fixCampfireRule: no fixable node found on the weakest path";
-            return;
-        }
-
-        toFix->setRoomType(RoomType::CAMPFIRE);
-    }
-
-    qWarning() << "fixCampfireRule: reached max iterations without satisfying the rule";
-}
-
-// ============================================================
-// دسترسی‌ها و چاپ تست
+// Accessors and test printing
 // ============================================================
 
 MapNode* GameMap::nodeAt(int floor, int indexInFloor) const
@@ -307,7 +207,6 @@ int GameMap::roomCountAt(int floor) const
 
 void GameMap::printToConsole() const
 {
-    // از بالاترین طبقه (Boss) به سمت پایین چاپ می‌کنیم تا شکل نقشه رو یادآوری کنه
     for (int f = m_totalFloors - 1; f >= 0; --f) {
         QString line = QString("Floor %1: ").arg(f + 1, 2);
 

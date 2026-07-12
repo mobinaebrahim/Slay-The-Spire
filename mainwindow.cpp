@@ -62,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnStatics->raise();
     ui->btnQuit->raise();
     ui->btnCompendium->raise();
+    ui->btnContinue->hide();
+    ui->btnAbandon->hide();
 
     connect(ui->btnQuit,&QPushButton::clicked, this, [this](){
         this->close();
@@ -87,6 +89,38 @@ MainWindow::MainWindow(QWidget *parent)
         friendsDlg->exec();
     });
 
+    connect(ui->btnPlay, &QPushButton::clicked, this, &MainWindow::handle_play_button);
+
+    connect(ui->btnContinue, &QPushButton::clicked, this, [this](){
+        QMessageBox::information(this, "Continue", "Continuing your saved game!");
+        // TODO: add actual continue game logic here using load_save
+
+        // Reset UI state for next time
+        ui->btnContinue->hide();
+        ui->btnAbandon->hide();
+        ui->btnPlay->show();
+    });
+
+    connect(ui->btnAbandon, &QPushButton::clicked, this, [this](){
+        QString currentUser = user_manager::instance().get_current_username();
+        QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
+
+        if (!saves.isEmpty()) {
+            SaveManager::instance().delete_save(saves[0].id);
+        }
+
+        QMessageBox::information(this, "New Game", "Old save deleted. Starting a new game!");
+        // TODO: add actual new game start logic here
+
+        ui->btnContinue->hide();
+        ui->btnAbandon->hide();
+        ui->btnPlay->show();
+    });
+
+    //---test the map ---
+    GameMap testMap;
+    testMap.generate();
+    testMap.printToConsole();
 
 
 
@@ -122,5 +156,20 @@ void MainWindow::go_to_menu()
     ui->stackedWidget->setCurrentWidget(ui->page_menu);
 }
 
+void MainWindow::handle_play_button()
+{
+    QString currentUser = user_manager::instance().get_current_username();
+    QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
+
+    if (saves.isEmpty()) {
+        QMessageBox::information(this, "New Game", "Starting a new game!");
+    }
+
+    else {
+        ui->btnPlay->hide();
+        ui->btnContinue->show();
+        ui->btnAbandon->show();
+    }
+}
 
 

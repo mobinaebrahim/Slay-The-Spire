@@ -4,6 +4,8 @@
 #include "scoremanager.h"
 #include "friendmanager.h"
 #include "savemanager.h"
+#include "gamemap.h"
+
 
 
 //---SMTP library---

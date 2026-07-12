@@ -26,6 +26,8 @@ public:
     RoomType roomType() const;
     void setRoomType(RoomType type);
 
+    // Connects this node to a room on the next floor (bidirectional:
+    // registers itself as parent on the child too)
     void addChild(MapNode *child);
 
     const QVector<MapNode*>& children() const;
@@ -37,9 +39,7 @@ public:
     bool available() const;
     void setAvailable(bool v);
 
-    int minCampfire() const;
-    void setMinCampfire(int v);
-
+    // A single letter representing the room type, used only for console test printing
     QChar typeLetter() const;
 
 private:
@@ -47,12 +47,11 @@ private:
     int m_index;
     RoomType m_roomType = RoomType::UNSET;
 
-    QVector<MapNode*> m_children;
-    QVector<MapNode*> m_parents;
+    QVector<MapNode*> m_children; // rooms on the next floor this node connects to
+    QVector<MapNode*> m_parents;  // rooms on the previous floor that connect to this node
+
     bool m_visited = false;
     bool m_available = false;
-
-    int m_minCampfire = 0;
 };
 
 #endif // MAPNODE_H

@@ -31,7 +31,7 @@ void MapNode::addChild(MapNode *child)
     if (!child)
         return;
 
-    // جلوگیری از اتصال تکراری (مثلاً اگه اعتبارسنجی دوباره همون اتصال رو بخواد اضافه کنه)
+    // Prevent duplicate connections (e.g. if validation tries to add the same link twice)
     if (m_children.contains(child))
         return;
 
@@ -67,16 +67,6 @@ bool MapNode::available() const
 void MapNode::setAvailable(bool v)
 {
     m_available = v;
-}
-
-int MapNode::minCampfire() const
-{
-    return m_minCampfire;
-}
-
-void MapNode::setMinCampfire(int v)
-{
-    m_minCampfire = v;
 }
 
 QChar MapNode::typeLetter() const

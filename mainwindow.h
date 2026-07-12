@@ -14,6 +14,9 @@
 #include "staticsitempage.h"
 #include "scoremanager.h"
 #include "friendspage.h"
+#include "savemanager.h"
+#include "usermanager.h"
+#include "gamemap.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -45,6 +48,8 @@ private:
     QGraphicsScene *scene;
     QGraphicsView *view;
     QAudioOutput *audioOutput;
+
+    void handle_play_button();
 };
 
 #endif // MAINWINDOW_H

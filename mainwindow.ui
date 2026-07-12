@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
+    <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <widget class="QWidget" name="page_home">
        <widget class="QPushButton" name="btnRegister">
@@ -139,6 +139,45 @@
         </property>
         <property name="text">
          <string>friends</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnPlay">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>580</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>play</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnContinue">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>600</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>continue</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnAbandon">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>560</y>
+          <width>131</width>
+          <height>29</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>abandon</string>
         </property>
        </widget>
       </widget>

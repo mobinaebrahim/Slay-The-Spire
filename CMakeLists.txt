@@ -40,6 +40,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         authpage.h authpage.cpp authpage.ui
         friendspage.h friendspage.cpp friendspage.ui
         savemanager.h savemanager.cpp
+        mapnode.cpp mapnode.h
+
+        mapnode.h mapnode.cpp
+        gamemap.h gamemap.cpp
 
 
 

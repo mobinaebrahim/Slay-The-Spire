@@ -121,6 +121,39 @@ MainWindow::MainWindow(QWidget *parent)
     GameMap testMap;
     testMap.generate();
     testMap.printToConsole();
+    testMap.startRun();
+
+    qDebug() << "=== Path test started ===";
+
+    int steps = 0;
+    while (!testMap.isAtBoss() && steps < 20) {
+        // Find every available room across the whole map
+        QVector<MapNode*> available;
+        for (int f = 0; f < testMap.floorCount(); ++f) {
+            for (int i = 0; i < testMap.roomCountAt(f); ++i) {
+                MapNode *n = testMap.nodeAt(f, i);
+                if (n->available())
+                    available.append(n);
+            }
+        }
+
+        if (available.isEmpty()) {
+            qDebug() << "ERROR: no available rooms, but haven't reached the boss yet!";
+            break;
+        }
+
+        // Pick one at random (simulating a player click)
+        int pick = QRandomGenerator::global()->bounded(available.size());
+        MapNode *choice = available[pick];
+
+        bool ok = testMap.selectRoom(choice);
+        qDebug() << "Step" << steps << ": floor" << (choice->floor() + 1)
+                 << "type" << choice->typeLetter() << "->" << (ok ? "OK" : "FAILED");
+
+        steps++;
+    }
+
+    qDebug() << "=== Reached boss?" << (testMap.isAtBoss() ? "YES" : "NO") << "===";
 
 
 

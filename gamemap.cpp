@@ -3,6 +3,7 @@
 #include <QRandomGenerator>
 #include <QDebug>
 #include <cmath>
+#include <climits>
 #include <algorithm>
 
 GameMap::GameMap(int totalFloors, int minRoomsPerFloor, int maxRoomsPerFloor)
@@ -13,10 +14,8 @@ GameMap::GameMap(int totalFloors, int minRoomsPerFloor, int maxRoomsPerFloor)
     m_enemyFloor = 0;
     m_treasureFloor = m_totalFloors / 2;
     m_bossFloor = m_totalFloors - 1;
-
-    // Campfire floors are picked randomly each time generate() runs (see pickCampfireFloors)
-    m_campfireFloor1 = -1;
-    m_campfireFloor2 = -1;
+    m_checkFloor1 = -1;
+    m_checkFloor2 = -1;
 }
 
 GameMap::~GameMap()
@@ -36,24 +35,26 @@ void GameMap::clearMap()
 void GameMap::generate()
 {
     clearMap();
-    pickCampfireFloors();
+    pickCheckFloors();
     buildSkeleton();
     assignRoomTypes();
+    guaranteeCampfireCoverage();
 }
 
-void GameMap::pickCampfireFloors()
+void GameMap::pickCheckFloors()
 {
-    // First campfire floor: somewhere between the enemy floor and the treasure floor
+    // Small buffer of 1 floor before each checkpoint (not too tight, so the
+    // checkpoint floor can land anywhere across the map, not just squeezed
+    // near the end).
     int lowStart = m_enemyFloor + 1;
     int lowEnd = m_treasureFloor - 1;
-    if (lowEnd < lowStart) lowEnd = lowStart; // safety for very small maps
-    m_campfireFloor1 = QRandomGenerator::global()->bounded(lowStart, lowEnd + 1);
+    if (lowEnd < lowStart) lowEnd = lowStart;
+    m_checkFloor1 = QRandomGenerator::global()->bounded(lowStart, lowEnd + 1);
 
-    // Second campfire floor: somewhere between the treasure floor and the boss floor
     int highStart = m_treasureFloor + 1;
     int highEnd = m_bossFloor - 1;
-    if (highEnd < highStart) highEnd = highStart; // safety for very small maps
-    m_campfireFloor2 = QRandomGenerator::global()->bounded(highStart, highEnd + 1);
+    if (highEnd < highStart) highEnd = highStart;
+    m_checkFloor2 = QRandomGenerator::global()->bounded(highStart, highEnd + 1);
 }
 
 // ============================================================
@@ -131,12 +132,11 @@ void GameMap::validateFloor(int floorB)
 }
 
 // ============================================================
-// Step 2: Assign room types
+// Step 2: Assign room types (includes an ordinary random chance of CAMPFIRE)
 // ============================================================
 
 void GameMap::assignRoomTypes()
 {
-    // Fixed rules - these floors are filled directly
     for (MapNode *node : m_floors[m_enemyFloor])
         node->setRoomType(RoomType::ENEMY);
 
@@ -146,20 +146,11 @@ void GameMap::assignRoomTypes()
     for (MapNode *node : m_floors[m_bossFloor])
         node->setRoomType(RoomType::BOSS);
 
-    // The two campfire floors - all their rooms. Since the map is layered
-    // (every path must pass through every floor), this guarantees without
-    // exception that every path has exactly 2 campfires - no need to trace
-    // individual paths.
-    for (MapNode *node : m_floors[m_campfireFloor1])
-        node->setRoomType(RoomType::CAMPFIRE);
-
-    for (MapNode *node : m_floors[m_campfireFloor2])
-        node->setRoomType(RoomType::CAMPFIRE);
-
-    // Remaining floors - fully random, no extra campfires
+    // Every other floor - ordinary random assignment, including a normal
+    // chance of CAMPFIRE like any other room type. No floor is dedicated
+    // entirely to campfire at this stage.
     for (int f = 0; f < m_totalFloors; ++f) {
-        bool locked = (f == m_enemyFloor || f == m_treasureFloor || f == m_bossFloor ||
-                       f == m_campfireFloor1 || f == m_campfireFloor2);
+        bool locked = (f == m_enemyFloor || f == m_treasureFloor || f == m_bossFloor);
         if (locked)
             continue;
 
@@ -171,23 +162,73 @@ void GameMap::assignRoomTypes()
 
 RoomType GameMap::randomRoomType(int floorIndex) const
 {
-    // ELITE is only allowed from the Treasure floor onward
     bool eliteAllowed = (floorIndex >= m_treasureFloor);
-
     int roll = QRandomGenerator::global()->bounded(100);
 
     if (eliteAllowed) {
-        // ENEMY 45% | EVENT 25% | ELITE 20% | SHOP 10%
-        if (roll < 45) return RoomType::ENEMY;
-        if (roll < 70) return RoomType::EVENT;
-        if (roll < 90) return RoomType::ELITE;
-        return RoomType::SHOP;
+        // ENEMY 35% | EVENT 22% | ELITE 18% | SHOP 10% | CAMPFIRE 15%
+        if (roll < 35) return RoomType::ENEMY;
+        if (roll < 57) return RoomType::EVENT;
+        if (roll < 75) return RoomType::ELITE;
+        if (roll < 85) return RoomType::SHOP;
+        return RoomType::CAMPFIRE;
     } else {
-        // ENEMY 55% | EVENT 30% | SHOP 15%
-        if (roll < 55) return RoomType::ENEMY;
-        if (roll < 85) return RoomType::EVENT;
-        return RoomType::SHOP;
+        // ENEMY 42% | EVENT 28% | SHOP 15% | CAMPFIRE 15%
+        if (roll < 42) return RoomType::ENEMY;
+        if (roll < 70) return RoomType::EVENT;
+        if (roll < 85) return RoomType::SHOP;
+        return RoomType::CAMPFIRE;
     }
+}
+
+// ============================================================
+// Step 3: Fix only the specific rooms missing campfire coverage
+// ============================================================
+
+void GameMap::computeMinCampfire()
+{
+    for (int f = 0; f < m_totalFloors; ++f) {
+        for (MapNode *node : m_floors[f]) {
+            int best = 0;
+
+            if (f > 0) {
+                best = INT_MAX;
+                for (MapNode *parent : node->parents()) {
+                    best = std::min(best, parent->minCampfire());
+                }
+                if (best == INT_MAX)
+                    best = 0;
+            }
+
+            int bonus = (node->roomType() == RoomType::CAMPFIRE) ? 1 : 0;
+            node->setMinCampfire(best + bonus);
+        }
+    }
+}
+
+void GameMap::guaranteeCampfireCoverage()
+{
+    // First pass: based on whatever campfires random chance already placed,
+    // see which rooms on checkFloor1 have NOT seen a single campfire yet.
+    computeMinCampfire();
+    for (MapNode *node : m_floors[m_checkFloor1]) {
+        if (node->minCampfire() < 1) {
+            node->setRoomType(RoomType::CAMPFIRE);
+        }
+    }
+
+    // Recompute (checkFloor1 changed some room types), then check the second
+    // checkpoint against the "at least 2" requirement.
+    computeMinCampfire();
+    for (MapNode *node : m_floors[m_checkFloor2]) {
+        if (node->minCampfire() < 2) {
+            node->setRoomType(RoomType::CAMPFIRE);
+        }
+    }
+
+    // Recompute once more so floors AFTER checkFloor2 (including the boss)
+    // reflect the fix - otherwise their cached values would be stale.
+    computeMinCampfire();
 }
 
 // ============================================================
@@ -226,4 +267,49 @@ void GameMap::printToConsole() const
 
         qDebug().noquote() << line;
     }
+}
+
+void GameMap::startRun()
+{
+    for (auto &floorVec : m_floors) {
+        for (MapNode *n : floorVec) {
+            n->setVisited(false);
+            n->setAvailable(false);
+        }
+    }
+
+    m_currentNode = nullptr;
+
+    for (MapNode *n : m_floors[m_enemyFloor]) {
+        n->setAvailable(true);
+    }
+}
+
+bool GameMap::selectRoom(MapNode *target)
+{
+    if (!target || !target->available())
+        return false;
+
+    for (MapNode *n : m_floors[target->floor()]) {
+        n->setAvailable(false);
+    }
+
+    target->setVisited(true);
+    m_currentNode = target;
+
+    for (MapNode *child : target->children()) {
+        child->setAvailable(true);
+    }
+
+    return true;
+}
+
+MapNode* GameMap::currentNode() const
+{
+    return m_currentNode;
+}
+
+bool GameMap::isAtBoss() const
+{
+    return m_currentNode && m_currentNode->floor() == m_bossFloor;
 }

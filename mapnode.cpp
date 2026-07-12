@@ -69,6 +69,16 @@ void MapNode::setAvailable(bool v)
     m_available = v;
 }
 
+int MapNode::minCampfire() const
+{
+    return m_minCampfire;
+}
+
+void MapNode::setMinCampfire(int v)
+{
+    m_minCampfire = v;
+}
+
 QChar MapNode::typeLetter() const
 {
     switch (m_roomType) {

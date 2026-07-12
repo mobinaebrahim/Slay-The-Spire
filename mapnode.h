@@ -39,6 +39,10 @@ public:
     bool available() const;
     void setAvailable(bool v);
 
+    // Used by the campfire-coverage check
+    int minCampfire() const;
+    void setMinCampfire(int v);
+
     // A single letter representing the room type, used only for console test printing
     QChar typeLetter() const;
 
@@ -52,6 +56,8 @@ private:
 
     bool m_visited = false;
     bool m_available = false;
+
+    int m_minCampfire = 0;
 };
 
 #endif // MAPNODE_H

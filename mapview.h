@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QMap>
 #include "gamemap.h"
 
 class MapView : public QGraphicsView
@@ -14,5 +15,7 @@ public:
     void buildScene(GameMap *map);
 private:
     QGraphicsScene *m_scene;
+    QMap<MapNode*, QPointF> m_positions;
+
 };
 #endif // MAPVIEW_H

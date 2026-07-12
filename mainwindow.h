@@ -23,7 +23,7 @@
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-class MainWindow;
+class MainMenuWindow;
 }
 QT_END_NAMESPACE
 
@@ -44,7 +44,7 @@ private slots:
     void on_exit_button_clicked();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainMenuWindow *ui;
     QMediaPlayer *player;
     QGraphicsVideoItem *videoItem;
     QGraphicsScene *scene;

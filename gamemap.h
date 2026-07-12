@@ -2,6 +2,8 @@
 #define GAMEMAP_H
 
 #include <QVector>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 #include "mapnode.h"
 
 class GameMap
@@ -23,8 +25,12 @@ public:
     MapNode* currentNode() const;
     bool isAtBoss() const;
 
+    void buildScene(GameMap *map);
+
 private:
     void pickCheckFloors();
+    QGraphicsScene *m_scene;
+
 
     // Step 1: Build the skeleton (room counts + connections)
     void buildSkeleton();

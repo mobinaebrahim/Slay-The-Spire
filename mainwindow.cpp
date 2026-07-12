@@ -118,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     //---test the map ---
+    //console test
     GameMap testMap;
     testMap.generate();
     testMap.printToConsole();
@@ -154,6 +155,15 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     qDebug() << "=== Reached boss?" << (testMap.isAtBoss() ? "YES" : "NO") << "===";
+
+    //grafic test
+    GameMap *testMap1 = new GameMap();
+    testMap1->generate();
+
+    MapView *testView = new MapView(this);
+    testView->resize(600, 600);
+    testView->buildScene(testMap1);
+    testView->show();
 
 
 

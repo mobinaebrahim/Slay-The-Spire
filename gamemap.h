@@ -11,25 +11,33 @@ public:
     ~GameMap();
 
     void generate();
-
-    // Prints the map to the console for testing without a GUI
     void printToConsole() const;
 
     MapNode* nodeAt(int floor, int indexInFloor) const;
     int floorCount() const;
     int roomCountAt(int floor) const;
 
+    // Path navigation
+    void startRun();
+    bool selectRoom(MapNode *target);
+    MapNode* currentNode() const;
+    bool isAtBoss() const;
+
 private:
-    void pickCampfireFloors();
+    void pickCheckFloors();
 
     // Step 1: Build the skeleton (room counts + connections)
     void buildSkeleton();
     void connectFloors(int floorA, int floorB);
     void validateFloor(int floorB);
 
-    // Step 2: Assign room types
+    // Step 2: Assign room types (includes an ordinary random chance of CAMPFIRE)
     void assignRoomTypes();
     RoomType randomRoomType(int floorIndex) const;
+
+    // Step 3: Fix only the specific rooms that are missing a campfire on their path so far
+    void guaranteeCampfireCoverage();
+    void computeMinCampfire();
 
     void clearMap();
 
@@ -39,14 +47,16 @@ private:
     int m_minRooms;
     int m_maxRooms;
 
-    // Indices of the locked floors (computed from m_totalFloors)
     int m_enemyFloor;
     int m_treasureFloor;
     int m_bossFloor;
 
-    // The two floors that become fully campfire (spread across the map, not adjacent)
-    int m_campfireFloor1;
-    int m_campfireFloor2;
+    // Two checkpoint floors used only to verify campfire coverage - NOT forced
+    // to be entirely campfire. Only individual deficient rooms get fixed here.
+    int m_checkFloor1;
+    int m_checkFloor2;
+
+    MapNode *m_currentNode = nullptr;
 };
 
 #endif // GAMEMAP_H

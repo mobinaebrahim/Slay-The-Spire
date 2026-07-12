@@ -10,7 +10,6 @@ public:
     explicit GameMap(int totalFloors = 11, int minRoomsPerFloor = 2, int maxRoomsPerFloor = 4);
     ~GameMap();
 
-    // Runs the full map generation process from scratch
     void generate();
 
     // Prints the map to the console for testing without a GUI
@@ -21,6 +20,8 @@ public:
     int roomCountAt(int floor) const;
 
 private:
+    void pickCampfireFloors();
+
     // Step 1: Build the skeleton (room counts + connections)
     void buildSkeleton();
     void connectFloors(int floorA, int floorB);

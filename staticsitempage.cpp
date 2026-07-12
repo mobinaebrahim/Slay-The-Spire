@@ -18,12 +18,6 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
         close();
     });
 
-    ui->btnironclad->setStyleSheet(
-        "QPushButton {"
-        "   background-image: url(:/images/bg.png);"
-        "   border-image: url(:/images/pic1.png);"
-        "}"
-        );
     connect(ui->btnLeaderboard,&QPushButton::clicked,this,[this]{
         ui->stackedWidget->setCurrentWidget(ui->leaderboard);
     });
@@ -33,14 +27,6 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
     connect(ui->btnRetun1, &QPushButton::clicked, this, [this](){
         ui->stackedWidget->setCurrentWidget(ui->main);
     });
-
-    characterGroup = new QButtonGroup(this);
-    characterGroup->addButton(ui->btnironclad);
-    characterGroup->addButton(ui->btnsilent);
-    characterGroup->addButton(ui->btndefect);
-    characterGroup->addButton(ui->btnwatcher);
-    //characterGroup->addButton(ui->btnFilterAll);
-    characterGroup->setExclusive(true);
 
     regionGroup = new QButtonGroup(this);
     regionGroup->addButton(ui->btnglobal);
@@ -54,7 +40,6 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
     typeGroup->addButton(ui->btnTotalTime);
     typeGroup->setExclusive(true);
 
-    connect(characterGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
     connect(regionGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
     connect(typeGroup, &QButtonGroup::buttonClicked, this, &StaticsItemPage::refresh_leaderboard);
 
@@ -63,19 +48,13 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
 
 void StaticsItemPage::refresh_leaderboard()
 {
-    QString characterFilter = "All";
-    if (ui->btnironclad->isChecked()) characterFilter = "Ironclad";
-    else if (ui->btnsilent->isChecked()) characterFilter = "Silent";
-    else if (ui->btndefect->isChecked()) characterFilter = "Defect";
-    else if (ui->btnwatcher->isChecked()) characterFilter = "Watcher";
-
     QString sortBy = "score";
     QString columnLabel = "Score";
     if (ui->btnHighestFloor->isChecked()) { sortBy = "floor"; columnLabel = "Floor"; }
     else if (ui->btnTotalWins->isChecked()) { sortBy = "wins"; columnLabel = "Wins"; }
     else if (ui->btnTotalTime->isChecked()) { sortBy = "time"; columnLabel = "Time"; }
 
-    QList<Score_entry> scores = ScoreManager::instance().get_scores(characterFilter, sortBy);
+    QList<Score_entry> scores = ScoreManager::instance().get_scores(sortBy);
 
     if (ui->btnfriends->isChecked()) {
         QString currentUser = user_manager::instance().get_current_username();
@@ -91,13 +70,12 @@ void StaticsItemPage::refresh_leaderboard()
         scores = filtered;
     }
 
-    ui->table_scores->setColumnCount(3);
-    ui->table_scores->setHorizontalHeaderLabels({"Username", "Character", columnLabel});
+    ui->table_scores->setColumnCount(2);
+    ui->table_scores->setHorizontalHeaderLabels({"Username", columnLabel});
 
     ui->table_scores->setRowCount(scores.size());
     for (int i = 0; i < scores.size(); i++) {
         ui->table_scores->setItem(i, 0, new QTableWidgetItem(scores[i].username));
-        ui->table_scores->setItem(i, 1, new QTableWidgetItem(scores[i].character));
 
         QString valueText;
         if (sortBy == "floor") valueText = QString::number(scores[i].highest_floor);
@@ -105,7 +83,7 @@ void StaticsItemPage::refresh_leaderboard()
         else if (sortBy == "time") valueText = format_duration(scores[i].total_duration);
         else valueText = QString::number(scores[i].total_score);
 
-        ui->table_scores->setItem(i, 2, new QTableWidgetItem(valueText));
+        ui->table_scores->setItem(i, 1, new QTableWidgetItem(valueText));
     }
 }
 

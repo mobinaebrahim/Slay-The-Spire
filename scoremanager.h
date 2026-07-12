@@ -6,7 +6,6 @@
 
 struct Score_entry {
     QString username;
-    QString character;
     int total_score;
     int highest_floor;
     int total_wins;
@@ -17,8 +16,8 @@ class ScoreManager
 {
 public:
     static ScoreManager& instance();
-    bool add_score(const QString &username, const QString &character, int score, int floorReached, int playDuration, bool isVictory);
-    QList<Score_entry> get_scores(const QString &characterFilter = "All", const QString &sortBy = "score");
+    bool add_score(const QString &username, int score, int floorReached, int playDuration, bool isVictory);
+    QList<Score_entry> get_scores( const QString &sortBy = "score");
 
 
 private:

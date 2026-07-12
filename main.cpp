@@ -3,6 +3,8 @@
 #include <QApplication>
 #include "scoremanager.h"
 #include "friendmanager.h"
+#include "savemanager.h"
+
 
 //---SMTP library---
 #include "smtp/smtpclient.h"
@@ -64,6 +66,7 @@ int main(int argc, char *argv[])
     user_manager::instance();
     ScoreManager::instance();
     FriendManager::instance();
+    SaveManager::instance();
 
 
     MainWindow w;

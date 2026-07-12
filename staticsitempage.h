@@ -24,6 +24,7 @@ private:
     void refresh_leaderboard();
     QString format_duration(int totalSeconds);
     void refresh_history();
+    void refresh_character_stats();
 
 };
 

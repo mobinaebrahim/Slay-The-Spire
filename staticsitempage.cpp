@@ -27,6 +27,17 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
         refresh_history();
     });
 
+    connect(ui->btnCharStat, &QPushButton::clicked, this, [this]{
+        ui->stackedWidget->setCurrentWidget(ui->charstats);
+        refresh_character_stats();
+    });
+
+    //---charstats---
+
+    connect(ui->btnReturnCharstats, &QPushButton::clicked, this, [this](){
+        ui->stackedWidget->setCurrentWidget(ui->main);
+    });
+
     //---history---
 
     connect(ui->btnReturnHistory, &QPushButton::clicked, this, [this](){
@@ -131,6 +142,17 @@ QString StaticsItemPage::format_duration(int totalSeconds)
     return QString("%1:%2")
         .arg(minutes)
         .arg(seconds, 2, 10, QChar('0'));
+}
+
+void StaticsItemPage::refresh_character_stats()
+{
+    QString current_user = user_manager::instance().get_current_username();
+    Score_entry stats = ScoreManager::instance().get_character_stats(current_user);
+
+    ui->label_totalScore->setText("Total Score: " + QString::number(stats.total_score));
+    ui->label_highestFloor->setText("Highest Floor: " + QString::number(stats.highest_floor));
+    ui->label_totalWins->setText("Total Wins: " + QString::number(stats.total_wins));
+    ui->label_totalTime->setText("Total Time: " + format_duration(stats.total_duration));
 }
 
 StaticsItemPage::~StaticsItemPage()

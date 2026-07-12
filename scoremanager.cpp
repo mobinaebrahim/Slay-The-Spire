@@ -207,3 +207,38 @@ QList<Run_entry> ScoreManager::get_run_history(const QString &username)
 
     return results;
 }
+
+Score_entry ScoreManager::get_character_stats(const QString &username)
+{
+    Score_entry entry;
+    entry.username = username;
+    entry.total_score = 0;
+    entry.highest_floor = 0;
+    entry.total_wins = 0;
+    entry.total_duration = 0;
+
+    QSqlQuery query;
+    query.prepare(
+        "SELECT "
+        "SUM(score) AS total_score, "
+        "MAX(floor_reached) AS highest_floor, "
+        "SUM(CASE WHEN is_victory = 1 THEN 1 ELSE 0 END) AS total_wins, "
+        "SUM(play_duration) AS total_duration "
+        "FROM scoreboard WHERE username = ?"
+        );
+    query.addBindValue(username);
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching character stats:" << query.lastError().text();
+        return entry;
+    }
+
+    if (query.next()) {
+        entry.total_score = query.value("total_score").toInt();
+        entry.highest_floor = query.value("highest_floor").toInt();
+        entry.total_wins = query.value("total_wins").toInt();
+        entry.total_duration = query.value("total_duration").toInt();
+    }
+
+    return entry;
+}

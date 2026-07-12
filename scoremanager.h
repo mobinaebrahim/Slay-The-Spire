@@ -28,6 +28,7 @@ public:
     bool add_score(const QString &username, int score, int floorReached, int playDuration, bool isVictory);
     QList<Score_entry> get_scores( const QString &sortBy = "score");
     QList<Run_entry> get_run_history(const QString &username);
+    Score_entry get_character_stats(const QString &username);
 
 private:
     ScoreManager();

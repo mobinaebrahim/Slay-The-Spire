@@ -360,6 +360,31 @@ QPushButton:checked {
     <zorder>btnfriends</zorder>
     <zorder>btnglobal</zorder>
    </widget>
+   <widget class="QWidget" name="history">
+    <widget class="QTableWidget" name="table_history">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>270</y>
+       <width>651</width>
+       <height>351</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnReturnHistory">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>630</y>
+       <width>90</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>return</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources/>

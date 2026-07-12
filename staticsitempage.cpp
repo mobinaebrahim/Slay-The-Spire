@@ -22,6 +22,17 @@ StaticsItemPage::StaticsItemPage(QWidget *parent)
         ui->stackedWidget->setCurrentWidget(ui->leaderboard);
     });
 
+    connect(ui->btnHistory, &QPushButton::clicked, this, [this]{
+        ui->stackedWidget->setCurrentWidget(ui->history);
+        refresh_history();
+    });
+
+    //---history---
+
+    connect(ui->btnReturnHistory, &QPushButton::clicked, this, [this](){
+        ui->stackedWidget->setCurrentWidget(ui->main);
+    });
+
     //---leaderboard---
     ui->btnRetun1->raise();
     connect(ui->btnRetun1, &QPushButton::clicked, this, [this](){
@@ -84,6 +95,24 @@ void StaticsItemPage::refresh_leaderboard()
         else valueText = QString::number(scores[i].total_score);
 
         ui->table_scores->setItem(i, 1, new QTableWidgetItem(valueText));
+    }
+}
+
+void StaticsItemPage::refresh_history()
+{
+    QString currentUser = user_manager::instance().get_current_username();
+    QList<Run_entry> history = ScoreManager::instance().get_run_history(currentUser);
+
+    ui->table_history->setColumnCount(5);
+    ui->table_history->setHorizontalHeaderLabels({"Score", "Floor", "Time", "Result", "Date"});
+
+    ui->table_history->setRowCount(history.size());
+    for (int i = 0; i < history.size(); i++) {
+        ui->table_history->setItem(i, 0, new QTableWidgetItem(QString::number(history[i].score)));
+        ui->table_history->setItem(i, 1, new QTableWidgetItem(QString::number(history[i].floor_reached)));
+        ui->table_history->setItem(i, 2, new QTableWidgetItem(format_duration(history[i].play_duration)));
+        ui->table_history->setItem(i, 3, new QTableWidgetItem(history[i].is_victory ? "Victory" : "Defeat"));
+        ui->table_history->setItem(i, 4, new QTableWidgetItem(history[i].date_achieved));
     }
 }
 

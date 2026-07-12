@@ -179,3 +179,31 @@ QList<Score_entry> ScoreManager::get_scores(const QString &sortBy)
 
     return results;
 }
+
+QList<Run_entry> ScoreManager::get_run_history(const QString &username)
+{
+    QList<Run_entry> results;
+
+    QSqlQuery query;
+    query.prepare("SELECT username, score, floor_reached, play_duration, is_victory, date_achieved "
+                  "FROM scoreboard WHERE username = ? ORDER BY date_achieved DESC");
+    query.addBindValue(username);
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching run history:" << query.lastError().text();
+        return results;
+    }
+
+    while (query.next()) {
+        Run_entry entry;
+        entry.username = query.value("username").toString();
+        entry.score = query.value("score").toInt();
+        entry.floor_reached = query.value("floor_reached").toInt();
+        entry.play_duration = query.value("play_duration").toInt();
+        entry.is_victory = query.value("is_victory").toInt() == 1;
+        entry.date_achieved = query.value("date_achieved").toString();
+        results.append(entry);
+    }
+
+    return results;
+}

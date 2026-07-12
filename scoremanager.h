@@ -12,13 +12,22 @@ struct Score_entry {
     int total_duration;
 };
 
+struct Run_entry {
+    QString username;
+    int score;
+    int floor_reached;
+    int play_duration;
+    bool is_victory;
+    QString date_achieved;
+};
+
 class ScoreManager
 {
 public:
     static ScoreManager& instance();
     bool add_score(const QString &username, int score, int floorReached, int playDuration, bool isVictory);
     QList<Score_entry> get_scores( const QString &sortBy = "score");
-
+    QList<Run_entry> get_run_history(const QString &username);
 
 private:
     ScoreManager();

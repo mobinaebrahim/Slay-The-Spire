@@ -17,6 +17,8 @@
 #include "savemanager.h"
 #include "usermanager.h"
 #include "gamemap.h"
+#include "mapview.h"
+
 
 
 QT_BEGIN_NAMESPACE

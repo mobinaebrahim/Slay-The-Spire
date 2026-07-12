@@ -44,6 +44,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 
         mapnode.h mapnode.cpp
         gamemap.h gamemap.cpp
+        mapview.h mapview.cpp
 
 
 

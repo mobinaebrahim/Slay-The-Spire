@@ -46,6 +46,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         gamemap.h gamemap.cpp
         mapview.h mapview.cpp
         mappage.h mappage.cpp mappage.ui
+        mapnodeitem.h
 
 
 

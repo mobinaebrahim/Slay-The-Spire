@@ -1,4 +1,5 @@
 #include "mapview.h"
+#include "mapnodeitem.h"
 
 MapView::MapView(QWidget *parent)
     : QGraphicsView(parent)
@@ -52,16 +53,22 @@ void MapView::buildScene(GameMap *map)
 
             QBrush brush;
             if (node->available()) {
-                brush = QBrush(Qt::yellow);   // can be clicked right now
+                brush = QBrush(Qt::yellow);
             } else if (node->visited()) {
-                brush = QBrush(Qt::darkGray); // already passed through
+                brush = QBrush(Qt::darkGray);
             } else {
-                brush = QBrush(Qt::lightGray); // still locked
+                brush = QBrush(Qt::lightGray);
             }
 
-            m_scene->addEllipse(pos.x() - nodeRadius, pos.y() - nodeRadius,
-                                nodeRadius * 2, nodeRadius * 2,
-                                QPen(Qt::black), brush);
+            MapNodeItem *item = new MapNodeItem(node,
+                                                pos.x() - nodeRadius, pos.y() - nodeRadius,
+                                                nodeRadius * 2, nodeRadius * 2);
+            item->setPen(QPen(Qt::black));
+            item->setBrush(brush);
+
+            connect(item, &MapNodeItem::clicked, this, &MapView::roomClicked);
+
+            m_scene->addItem(item);
         }
     }
 }

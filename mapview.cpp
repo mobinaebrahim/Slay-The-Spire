@@ -74,6 +74,11 @@ void MapView::buildScene(GameMap *map)
 
     // Step 2: draw connection lines (must be drawn before the circles so
     // the circles end up on top of them, not underneath)
+    QPen pathPen(QColor(90, 60, 30));
+    pathPen.setWidth(6);
+    pathPen.setStyle(Qt::DashLine);
+    pathPen.setCapStyle(Qt::RoundCap);
+
     for (int f = 0; f < map->floorCount(); ++f) {
         for (int i = 0; i < map->roomCountAt(f); ++i) {
             MapNode *node = map->nodeAt(f, i);
@@ -81,7 +86,7 @@ void MapView::buildScene(GameMap *map)
 
             for (MapNode *child : node->children()) {
                 QPointF to = m_positions[child];
-                m_scene->addLine(from.x(), from.y(), to.x(), to.y());
+                m_scene->addLine(from.x(), from.y(), to.x(), to.y(), pathPen);
             }
         }
     }

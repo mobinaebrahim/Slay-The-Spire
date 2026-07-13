@@ -20,13 +20,59 @@ MapPage::MapPage(QWidget *parent)
             bool ok = m_gameMap->selectRoom(node);
             if (ok) {
                 m_mapView->buildScene(m_gameMap);
-
-                if (m_gameMap->isAtBoss()) {
-                    // TODO: go to boss fight screen
-                }
+                handleRoomEntered(node);
             }
         });
     });
+}
+
+void MapPage::handleRoomEntered(MapNode *node)
+{
+    switch (node->roomType()) {
+    case RoomType::ENEMY:    openCombat(node);   break;
+    case RoomType::ELITE:    openElite(node);    break;
+    case RoomType::EVENT:    openEvent(node);    break;
+    case RoomType::SHOP:     openShop(node);     break;
+    case RoomType::CAMPFIRE: openCampfire(node); break;
+    case RoomType::TREASURE: openTreasure(node); break;
+    case RoomType::BOSS:     openBossFight(node);break;
+    default: break;
+    }
+}
+
+void MapPage::openCombat(MapNode *node)
+{
+    QMessageBox::information(this, "Combat", "Entered a normal enemy room.");
+}
+
+void MapPage::openElite(MapNode *node)
+{
+    QMessageBox::information(this, "Elite", "Entered an elite room.");
+}
+
+void MapPage::openEvent(MapNode *node)
+{
+    QMessageBox::information(this, "Event", "Entered an event room.");
+}
+
+void MapPage::openShop(MapNode *node)
+{
+    QMessageBox::information(this, "Shop", "Entered a shop room.");
+}
+
+void MapPage::openCampfire(MapNode *node)
+{
+    QMessageBox::information(this, "Campfire", "Entered a campfire room.");
+}
+
+void MapPage::openTreasure(MapNode *node)
+{
+    QMessageBox::information(this, "Treasure", "Entered a treasure room.");
+}
+
+void MapPage::openBossFight(MapNode *node)
+{
+    QMessageBox::information(this, "Boss", "You reached the boss!");
 }
 
 MapPage::~MapPage()

@@ -36,6 +36,10 @@ MapPage::MapPage(QWidget *parent)
     layout->addWidget(m_mapView);
     setLayout(layout);
 
+    QTimer::singleShot(0, this, [this](){
+        m_mapView->buildScene(m_gameMap);
+    });
+
     connect(m_mapView, &MapView::roomClicked, this, [this](MapNode *node){
         QTimer::singleShot(0, this, [this, node](){
             bool ok = m_gameMap->selectRoom(node);

@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QMap>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsColorizeEffect>
 #include "gamemap.h"
 
 

@@ -2,6 +2,7 @@
 #define MAPPAGE_H
 
 #include <QDialog>
+#include <QTimer>
 #include "mapview.h"
 #include "gamemap.h"
 

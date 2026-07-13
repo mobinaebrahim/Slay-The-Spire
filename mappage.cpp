@@ -1,8 +1,9 @@
 #include "mappage.h"
 
 MapPage::MapPage(QWidget *parent)
-    : QDialog(parent)
+    : QWidget(parent)
 {
+    setWindowFlags(Qt::Window);
     resize(800, 800);
     setWindowTitle("Map");
 

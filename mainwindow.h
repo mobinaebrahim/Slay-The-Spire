@@ -10,6 +10,7 @@
 #include <QResizeEvent>
 #include <QRandomGenerator>
 #include <QMessageBox>
+
 #include "authpage.h"
 #include "staticsitempage.h"
 #include "scoremanager.h"
@@ -18,6 +19,7 @@
 #include "usermanager.h"
 #include "gamemap.h"
 #include "mapview.h"
+#include "mappage.h"
 
 
 

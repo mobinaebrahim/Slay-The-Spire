@@ -156,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     qDebug() << "=== Reached boss?" << (testMap.isAtBoss() ? "YES" : "NO") << "===";
 
-    //grafic test
+    /*//grafic test
     GameMap *testMap1 = new GameMap();
     testMap1->generate();
     testMap1->startRun();
@@ -166,7 +166,7 @@ MainWindow::MainWindow(QWidget *parent)
     testView->buildScene(testMap1);
     testView->show();
 
-
+*/
 
 
 }
@@ -206,14 +206,20 @@ void MainWindow::handle_play_button()
     QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
 
     if (saves.isEmpty()) {
-        QMessageBox::information(this, "New Game", "Starting a new game!");
-    }
+        MapPage *mapDlg = new MapPage(nullptr);
+        mapDlg->setAttribute(Qt::WA_DeleteOnClose);
 
+        this->hide();
+
+        connect(mapDlg, &QObject::destroyed, this, [this](){
+            this->show();
+        });
+
+        mapDlg->show();
+    }
     else {
         ui->btnPlay->hide();
         ui->btnContinue->show();
         ui->btnAbandon->show();
     }
 }
-
-

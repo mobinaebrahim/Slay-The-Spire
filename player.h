@@ -24,12 +24,18 @@ private:
     vector<Card*> exhaustPile;
 
 public:
-    Player(string n, int h, int max, int en, BattleManager* bm);
+    Player(string n, int h, int max, int en, int g, BattleManager* bm);
+
+    int getGold() const { return gold; }
+    int getDrawPileSize() const { return drawPile.size(); }
+    int getDiscardPileSize() const { return discardPile.size(); }
+    int getEnergy() const {return currentEnergy;}
+    int getMaxEnergy() const { return maxEnergy; }
+    int getHandSize(){ return hand.size(); }
+    const vector<Card*>& getHand() const { return hand; }
 
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);
-    int getEnergy() const;
-    int getMaxEnergy() const { return maxEnergy; }
     void increaseMaxHP(int amount);
     void drawCards(int count);
     void addBurnToDiscard(int count);
@@ -39,10 +45,8 @@ public:
     void exhaust_card_automatically(Card* card);
     Card* chooseCardFromHand(); 
     void addCopiesToHand(Card* chosenCard, int count);
-    int getHandSize();
     void add_block_when_exhausted();
     void TurnStartEffect(string effect) override;
-    const vector<Card*>& getHand() const { return hand; }
     void endTurnCleanUp();
     void addCardToDrawPile(Card* card);
     void addCardToDiscardPile(Card* card);

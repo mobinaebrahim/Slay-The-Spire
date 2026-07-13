@@ -58,5 +58,11 @@
         <file>images/characters/Silent.png</file>
         <file>images/characters/Watcher.png</file>
         <file>images/scene.png</file>
+        <file>images/icons/discard_pile.png</file>
+        <file>images/icons/draw_pile.png</file>
+        <file>images/icons/end_turn.png</file>
+        <file>images/icons/energy.png</file>
+        <file>images/icons/gold.png</file>
+        <file>images/icons/hp.png</file>
     </qresource>
 </RCC>

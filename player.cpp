@@ -6,8 +6,8 @@
 
 extern Card* createCardByName(const std::string& name);
 
-Player::Player(string n, int h, int max, int energy, BattleManager* bm):
-    Character(n, h, max), currentEnergy(energy), maxEnergy(energy), battleManagerPtr(bm) {}
+Player::Player(string n, int h, int max, int energy, int g, BattleManager* bm):
+    Character(n, h, max), currentEnergy(energy), maxEnergy(energy), gold(99), battleManagerPtr(bm) {}
 
 void Player::decreaseEnergy(int amount) {
     currentEnergy -= amount;
@@ -17,10 +17,6 @@ void Player::decreaseEnergy(int amount) {
 
 void Player::increaseEnergy(int amount) {
     currentEnergy += amount;
-}
-
-int Player::getEnergy() const {
-    return currentEnergy;
 }
 
 void Player::increaseMaxHP(int amount) {
@@ -92,10 +88,6 @@ void Player::addCopiesToHand(Card* chosenCard, int count) {
         if (newCopy)
             hand.push_back(newCopy);
     }
-}
-
-int Player::getHandSize() {
-    return hand.size();
 }
 
 void Player::add_block_when_exhausted() {

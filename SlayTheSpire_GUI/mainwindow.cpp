@@ -32,37 +32,120 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setMinimumSize(1280, 720);
 
-    // playerInfoGroup = new QGroupBox("Player", this);
-    // QVBoxLayout* playerLayout = new QVBoxLayout(playerInfoGroup);
+    playerEnergyOrb = new QLabel(this);
+    playerEnergyOrb->setFixedSize(70, 70);
+    playerEnergyOrb->setPixmap(QPixmap(":/images/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    // playerNameLabel = new QLabel("Name: Dina");
-    // playerHpLabel = new QLabel("HP: 80/80");
-    // playerBlockLabel = new QLabel("Block: 0");
-    // playerEnergyLabel = new QLabel("Energy: 3/3");
-    // playerStatusLabel = new QLabel("Status: None");
+    energyOrbCountLabel = new QLabel(playerEnergyOrb);
+    energyOrbCountLabel->setGeometry(0, 0, 70, 70);
+    energyOrbCountLabel->setAlignment(Qt::AlignCenter);
+    energyOrbCountLabel->setStyleSheet("background: transparent; color: white; font-weight: 900; font-size: 20px;");
 
-    // QFont font = playerNameLabel->font();
-    // font.setPointSize(11);
-    // playerNameLabel->setFont(font);
-    // playerHpLabel->setFont(font);
-    // playerBlockLabel->setFont(font);
-    // playerEnergyLabel->setFont(font);
-    // playerStatusLabel->setFont(font);
+    topHudBar = new QWidget(this);
+    topHudBar->setStyleSheet(
+        "background-color: rgba(300, 300, 300, 250); "
+        "border-bottom: 2px solid rgba(255, 215, 130, 60);"
+        );
 
-    // playerLayout->addWidget(playerNameLabel);
-    // playerLayout->addWidget(playerHpLabel);
-    // playerLayout->addWidget(playerBlockLabel);
-    // playerLayout->addWidget(playerEnergyLabel);
-    // playerLayout->addWidget(playerStatusLabel);
+    playerHeartIcon = new QLabel(this);
+    playerHeartIcon->setFixedSize(40, 40);
+    playerHeartIcon->setPixmap(QPixmap(":/images/icons/hp.png").scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    playerHeartIcon->move(14, 6);
 
-    // enemyInfoGroup = new QGroupBox("Enemies", this);
-    // enemyListLayout = new QVBoxLayout(enemyInfoGroup);
+    playerHpTopLabel = new QLabel(this);
+    playerHpTopLabel->setGeometry(58, 24, 70, 24);
+    playerHpTopLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
 
-    // QHBoxLayout* infoLayout = new QHBoxLayout;
-    // infoLayout->addWidget(playerInfoGroup);
-    // infoLayout->addWidget(enemyInfoGroup);
-    // infoLayout->addStretch();
+    goldIconLabel = new QLabel(this);
+    goldIconLabel->setFixedSize(46, 46);
+    goldIconLabel->setPixmap(QPixmap(":/images/icons/gold.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    goldIconLabel->move(150, 3);
+
+    goldCountLabel = new QLabel(goldIconLabel);
+    goldCountLabel->setGeometry(14, 30, 32, 16);
+    goldCountLabel->setAlignment(Qt::AlignCenter);
+    goldCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
+
+    drawPileIconLabel = new QLabel(this);
+    drawPileIconLabel->setFixedSize(84, 84);
+    drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    drawPileCountLabel = new QLabel(drawPileIconLabel);
+    drawPileCountLabel->setGeometry(12, 28, 28, 16);
+    drawPileCountLabel->setAlignment(Qt::AlignCenter);
+    drawPileCountLabel->setStyleSheet(
+        "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
+        "font-size: 11px; border-radius: 4px;");
+
+    discardPileIconLabel = new QLabel(this);
+    discardPileIconLabel->setFixedSize(84, 84);
+    discardPileIconLabel->setPixmap(QPixmap(":/images/icons/discard_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    discardPileCountLabel = new QLabel(discardPileIconLabel);
+    discardPileCountLabel->setGeometry(12, 28, 28, 16);
+    discardPileCountLabel->setAlignment(Qt::AlignCenter);
+    discardPileCountLabel->setStyleSheet(
+        "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
+        "font-size: 11px; border-radius: 4px;");
+
+    ui->EndTurnButton->setText("");
+    ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
+    ui->EndTurnButton->setIconSize(QSize(320, 100));
+    ui->EndTurnButton->setFixedSize(230, 82);
+    ui->EndTurnButton->setContentsMargins(0, 0, 0, 0);
+    ui->EndTurnButton->setStyleSheet(
+        "QPushButton { border: none; background: transparent; } "
+        "QPushButton:hover { background: rgba(200,200,200,25); border-radius: 5px; } "
+        "QPushButton:pressed { background: rgba(200,200,200,50); border-radius: 5px; } "
+        "QPushButton:disabled { opacity: 0.3; }");
+
+    ui->EndTurnButton->setParent(this);
+
+    playerHpBar = new QProgressBar(this);
+    playerHpBar->setTextVisible(true);
+    playerHpBar->setRange(0, 80);
+    playerHpBar->setStyleSheet(
+        "QProgressBar { border: 2px solid #3a1f1f; border-radius: 6px; "
+        "background: #2b1414; color: white; font-weight: bold; text-align: center; }"
+        "QProgressBar::chunk { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:0, "
+        "stop:0 #8e0e0e, stop:1 #d94040); border-radius: 4px; }"
+        );
+
+    playerBlockBadge = new QLabel(this);
+    playerBlockBadge->setAlignment(Qt::AlignCenter);
+    playerBlockBadge->setFixedSize(30, 30);
+    playerBlockBadge->setStyleSheet(
+        "background-color: #2b3a55; color: #9fd8ff; border: 2px solid #5c85b0; "
+        "border-radius: 15px; font-weight: bold;"
+        );
+    playerBlockBadge->hide();
+
+    enemyHpBar = new QProgressBar(this);
+    enemyHpBar->setTextVisible(true);
+    enemyHpBar->setStyleSheet(playerHpBar->styleSheet());
+
+    enemyBlockBadge = new QLabel(this);
+    enemyBlockBadge->setAlignment(Qt::AlignCenter);
+    enemyBlockBadge->setFixedSize(30, 30);
+    enemyBlockBadge->setStyleSheet(playerBlockBadge->styleSheet());
+    enemyBlockBadge->hide();
+
+    enemyIntentLabel = new QLabel(this);
+    enemyIntentLabel->setAlignment(Qt::AlignCenter);
+    enemyIntentLabel->setFixedHeight(28);
+    enemyIntentLabel->setStyleSheet(
+        "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
+        "padding: 3px; font-weight: bold;"
+        );
+
+    enemyNameLabel = new QLabel(this);
+    enemyNameLabel->setAlignment(Qt::AlignCenter);
+    enemyNameLabel->setFixedHeight(20);
+    enemyNameLabel->setStyleSheet(
+        "color: white; font-weight: bold; font-size: 13px; "
+        "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
 
     playerSpriteLabel = new QLabel(this);
     playerSpriteLabel->setPixmap(QPixmap(":/images/characters/IronClad.png").scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -77,30 +160,38 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    mainLayout->addWidget(ui->EndTurnButton);
-    //mainLayout->addLayout(infoLayout);
-
     mainLayout->addStretch(1);
     mainLayout->addStretch(3);
 
-    mainLayout->addWidget(ui->CardsContainer);
+    QHBoxLayout* bottomBarLayout = new QHBoxLayout();
+    bottomBarLayout->addWidget(playerEnergyOrb, 0, Qt::AlignBottom);
+    bottomBarLayout->addWidget(ui->CardsContainer, 1);
+    bottomBarLayout->addWidget(drawPileIconLabel, 0, Qt::AlignBottom);
+    bottomBarLayout->addWidget(discardPileIconLabel, 0, Qt::AlignBottom);
+    bottomBarLayout->addSpacing(12);
+    mainLayout->addLayout(bottomBarLayout);
 
     delete this->centralWidget()->layout();
     this->centralWidget()->setLayout(mainLayout);
 
     QHBoxLayout* cardLayout = new QHBoxLayout(ui->CardsContainer);
     ui->CardsContainer->setLayout(cardLayout);
-    ui->EndTurnButton->setFixedHeight(40);
 
     backgroundLabel = new QLabel(this);
     backgroundLabel->setPixmap(QPixmap(":/images/scene.png").scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     backgroundLabel->setGeometry(0, 0, this->width(), this->height());
     backgroundLabel->lower();
+    topHudBar->raise();
+    playerHeartIcon->raise();
+    playerHpTopLabel->raise();
+    goldIconLabel->raise();
+    goldCountLabel->raise();
+    ui->EndTurnButton->raise();
 
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
-    playerObject = new Player("Dina", 80, 80, 3, battleManager);
-    battleManager->spawnEnemy(new GremlinKnob());
+    playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
+    battleManager->spawnEnemy(new JawWorm());
     initializePlayerDeck(15);
     playerObject->drawCards(5);
 
@@ -125,6 +216,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
         QPixmap original(":/images/scene.png");
         backgroundLabel->setPixmap(original.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     }
+
     int spriteSize = 200;
     int gap = 550;
 
@@ -134,6 +226,36 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     playerSpriteLabel->setGeometry(currentStartX, basePlayerY, spriteSize, spriteSize);
     enemySpriteLabel->setGeometry(currentStartX + spriteSize + gap, baseEnemyY, spriteSize, spriteSize);
+
+    int barWidth = 180, barHeight = 22;
+
+    topHudBar->setGeometry(0, 0, this->width(), 48);
+
+    playerHpBar->setGeometry(
+        currentStartX + spriteSize / 2 - barWidth / 2,
+        basePlayerY + spriteSize + 8,
+        barWidth, barHeight);
+
+    playerBlockBadge->setGeometry(currentStartX + spriteSize - 30, basePlayerY - 8, 30, 30);
+
+    int enemyX2 = currentStartX + spriteSize + gap;
+
+    enemyHpBar->setGeometry(
+        enemyX2 + spriteSize / 2 - barWidth / 2,
+        baseEnemyY - 32,
+        barWidth, barHeight);
+
+    enemyBlockBadge->setGeometry( enemyX2 + spriteSize - 30, baseEnemyY - 8, 30, 30);
+
+    enemyIntentLabel->setGeometry(enemyX2 - 20, baseEnemyY - 65, spriteSize + 40, 28);
+
+    enemyNameLabel->setGeometry(enemyX2 - 20, baseEnemyY - 90, spriteSize + 40, 20);
+
+    int endTurnW = 230, endTurnH = 82;
+    ui->EndTurnButton->setGeometry(
+        this->width() - endTurnW + 30,
+        this->height() - endTurnH - 100,
+        endTurnW, endTurnH);
 }
 
 void MainWindow::on_EndTurnButton_clicked()
@@ -246,61 +368,65 @@ void MainWindow::initializePlayerDeck(int totalCards) {
 }
 
 
+static QString intentToShortText(Enemy* enemy) {
+    switch (enemy->getIntentType()) {
+    case IntentType::Attack:   return "⚔ " + QString::number(enemy->getIntentValue());
+    case IntentType::Defend:   return "🛡 Block";
+    case IntentType::Buff:     return "⬆ Buff";
+    case IntentType::Debuff:   return "⬇ Debuff";
+    case IntentType::Combined: return "⚔🛡 " + QString::number(enemy->getIntentValue());
+    case IntentType::Special:  return "❓ Special";
+    }
+    return "?";
+}
+
 void MainWindow::updateCharacterUI() {
     if (!playerObject) return;
 
-    // playerNameLabel->setText(QString("Name: %1").arg(QString::fromStdString(playerObject->getName())));
-    // playerHpLabel->setText(QString("HP: %1/%2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
-    // playerBlockLabel->setText(QString("Block: %1").arg(playerObject->getBlock()));
-    // playerEnergyLabel->setText(QString("Energy: %1/%2").arg(playerObject->getEnergy()).arg(playerObject->getMaxEnergy()));
+    playerHpBar->setMaximum(playerObject->getMaxHp());
+    playerHpBar->setValue(playerObject->getHp());
+    playerHpBar->setFormat(QString("%1 / %2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
 
-    // QString statusText;
-    // for (auto* effect : playerObject->getEffects()) {
-    //     statusText += QString::fromStdString(effect->getName()) + ":" + QString::number(effect->getAmount()) + " ";
-    // }
-    // if (statusText.isEmpty())
-    //statusText = "None";
-    // playerStatusLabel->setText("Status: " + statusText);
+    int pBlock = playerObject->getBlock();
+    playerBlockBadge->setVisible(pBlock > 0);
+    if (pBlock > 0)
+        playerBlockBadge->setText(QString::number(pBlock));
+
+    energyOrbCountLabel->setText(QString("%1/%2").arg(playerObject->getEnergy()).arg(playerObject->getMaxEnergy()));
+
+    goldCountLabel->setText(QString::number(playerObject->getGold()));
+    playerHpTopLabel->setText(QString("%1/%2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
+    drawPileCountLabel->setText(QString::number(playerObject->getDrawPileSize()));
+    discardPileCountLabel->setText(QString::number(playerObject->getDiscardPileSize()));
 
     const auto& enemies = battleManager->getEnemies();
-    if (!enemies.empty()) {
+    bool hasEnemy = !enemies.empty();
+
+    enemySpriteLabel->setVisible(hasEnemy);
+    enemyHpBar->setVisible(hasEnemy);
+    enemyIntentLabel->setVisible(hasEnemy);
+    enemyNameLabel->setVisible(hasEnemy);
+    enemyBlockBadge->setVisible(false);
+
+    if (hasEnemy) {
         Enemy* enemy = enemies[0];
         QString enemyName = QString::fromStdString(enemy->getName());
+
         QPixmap enemyPixmap = getEnemyPixmap(enemyName);
         enemySpriteLabel->setPixmap(enemyPixmap.scaled(250, 250, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        enemySpriteLabel->show();
-    } else
-        enemySpriteLabel->hide();
+        enemyNameLabel->setText(enemyName);
 
-    // QLayoutItem* child;
-    // while ((child = enemyListLayout->takeAt(0)) != nullptr) {
-    //     if (child->widget()) {
-    //         child->widget()->hide();
-    //         delete child->widget();
-    //     }
-    //     delete child;
-    // }
+        enemyHpBar->setMaximum(enemy->getMaxHp());
+        enemyHpBar->setValue(enemy->getHp());
+        enemyHpBar->setFormat(QString("%1 / %2").arg(enemy->getHp()).arg(enemy->getMaxHp()));
 
-    // if (enemies.empty()) {
-    //     QLabel* emptyLabel = new QLabel("No enemies", enemyInfoGroup);
-    //     enemyListLayout->addWidget(emptyLabel);
-    // } else {
-    //     for (Enemy* enemy : enemies) {
-    //         QGroupBox* enemyBox = new QGroupBox(enemyInfoGroup);
-    //         QHBoxLayout* enemyBoxLayout = new QHBoxLayout(enemyBox);
+        int eBlock = enemy->getBlock();
+        enemyBlockBadge->setVisible(eBlock > 0);
+        if (eBlock > 0)
+            enemyBlockBadge->setText(QString::number(eBlock));
 
-    //         QVBoxLayout* infoLayout = new QVBoxLayout();
-    //         infoLayout->addWidget(new QLabel(QString("Name: %1").arg(QString::fromStdString(enemy->getName())), enemyBox));
-    //         infoLayout->addWidget(new QLabel(QString("HP: %1/%2").arg(enemy->getHp()).arg(enemy->getMaxHp()), enemyBox));
-    //         infoLayout->addWidget(new QLabel(QString("Block: %1").arg(enemy->getBlock()), enemyBox));
-    //         infoLayout->addWidget(new QLabel(QString("Intent: %1").arg(QString::fromStdString(enemy->getIntentString())), enemyBox));
-
-    //         enemyBoxLayout->addLayout(infoLayout);
-    //         enemyBoxLayout->addStretch();
-
-    //         enemyListLayout->addWidget(enemyBox);
-    //     }
-    // }
+        enemyIntentLabel->setText(intentToShortText(enemy));
+    }
 }
 
 QPixmap MainWindow::getEnemyPixmap(const QString& enemyName) {

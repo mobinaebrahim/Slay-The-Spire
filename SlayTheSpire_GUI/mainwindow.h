@@ -11,6 +11,7 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QProgressBar>
 #include "../Player.h"
 
 class Card;
@@ -37,22 +38,35 @@ private:
     std::vector<Card*> playerHand;
     BattleManager* battleManager;
     Player* playerObject;
-    QLabel* backgroundLabel;
-    QLabel* enemyLabel;
     void updateHandUI();
     void drawRandomCards(int numberOfCards);
     void initializePlayerDeck(int totalCards);
 
-    QGroupBox* playerInfoGroup;
-    QGroupBox* enemyInfoGroup;
-    QVBoxLayout* enemyListLayout;
+    QLabel* backgroundLabel;
+    QLabel* enemyLabel;
     QLabel* playerSpriteLabel;
     QLabel* enemySpriteLabel;
-    QLabel* playerNameLabel;
-    QLabel* playerHpLabel;
-    QLabel* playerBlockLabel;
-    QLabel* playerEnergyLabel;
-    QLabel* playerStatusLabel;
+    QProgressBar* playerHpBar;
+    QLabel* playerBlockBadge;
+    QWidget* topHudBar;
+    QLabel* playerHeartIcon;
+    QLabel* playerHpTopLabel;
+
+    QProgressBar* enemyHpBar;
+    QLabel*       enemyBlockBadge;
+    QLabel*       enemyIntentLabel;
+    QLabel* enemyNameLabel;
+
+    QLabel* playerEnergyOrb;
+    QLabel* energyOrbCountLabel;
+
+    QLabel* goldIconLabel;
+    QLabel* goldCountLabel;
+
+    QLabel* drawPileIconLabel;
+    QLabel* drawPileCountLabel;
+    QLabel* discardPileIconLabel;
+    QLabel* discardPileCountLabel;
 
     QTimer* animationTimer;
     float angle = 0;

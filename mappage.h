@@ -20,7 +20,6 @@ private:
 
     void handleRoomEntered(MapNode *node);
 
-
     void openCombat(MapNode *node);
     void openElite(MapNode *node);
     void openEvent(MapNode *node);

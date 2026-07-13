@@ -6,6 +6,7 @@
 #include <QMap>
 #include "gamemap.h"
 
+
 class MapView : public QGraphicsView
 {
     Q_OBJECT
@@ -19,6 +20,7 @@ signals:
 private:
     QGraphicsScene *m_scene;
     QMap<MapNode*, QPointF> m_positions;
+    QString iconPathForRoomType(RoomType type) const;
 };
 
 #endif // MAPVIEW_H

@@ -40,6 +40,20 @@ void MapPage::handleRoomEntered(MapNode *node)
     }
 }
 
+QString MapView::iconPathForRoomType(RoomType type) const
+{
+    switch (type) {
+    case RoomType::ENEMY:    return ":/assets/map/enemy.png";
+    case RoomType::ELITE:    return ":/assets/map/elite.png";
+    case RoomType::EVENT:    return ":/assets/map/event.png";
+    case RoomType::SHOP:     return ":/assets/map/shop.png";
+    case RoomType::CAMPFIRE: return ":/assets/map/campfire.png";
+    case RoomType::TREASURE: return ":/assets/map/treasure.png";
+    case RoomType::BOSS:     return ":/assets/map/boss.png";
+    default: return QString();
+    }
+}
+
 void MapPage::openCombat(MapNode *node)
 {
     QMessageBox::information(this, "Combat", "Entered a normal enemy room.");

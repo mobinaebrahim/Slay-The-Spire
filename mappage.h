@@ -5,7 +5,7 @@
 #include "mapview.h"
 #include "gamemap.h"
 
-class MapPage : public QDialog
+class MapPage : public QWidget
 {
     Q_OBJECT
 public:

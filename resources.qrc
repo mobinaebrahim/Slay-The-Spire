@@ -29,5 +29,12 @@
         <file>assets/mainmenu/history.png</file>
         <file>assets/mainmenu/charstst.png</file>
         <file>assets/mainmenu/leaderboards/ironclad.png</file>
+        <file>assets/map/boss.png</file>
+        <file>assets/map/campfire.png</file>
+        <file>assets/map/elite.png</file>
+        <file>assets/map/enemy.png</file>
+        <file>assets/map/event.png</file>
+        <file>assets/map/shop.png</file>
+        <file>assets/map/treasure.png</file>
     </qresource>
 </RCC>

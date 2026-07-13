@@ -16,13 +16,16 @@ MapPage::MapPage(QWidget *parent)
     m_mapView->setGeometry(0, 0, width(), height());
 
     connect(m_mapView, &MapView::roomClicked, this, [this](MapNode *node){
-        bool ok = m_gameMap->selectRoom(node);
-        if (ok) {
-            m_mapView->buildScene(m_gameMap);
+        QTimer::singleShot(0, this, [this, node](){
+            bool ok = m_gameMap->selectRoom(node);
+            if (ok) {
+                m_mapView->buildScene(m_gameMap);
 
-            if (m_gameMap->isAtBoss()) {
+                if (m_gameMap->isAtBoss()) {
+                    // TODO: go to boss fight screen
+                }
             }
-        }
+        });
     });
 }
 

@@ -31,6 +31,38 @@ void MapView::buildScene(GameMap *map)
         }
     }
 
+    // Add a background image sized to cover the whole map, placed behind everything
+    qreal minX = 0, maxX = 0, minY = 0, maxY = 0;
+    bool first = true;
+    for (auto it = m_positions.constBegin(); it != m_positions.constEnd(); ++it) {
+        QPointF p = it.value();
+        if (first) {
+            minX = maxX = p.x();
+            minY = maxY = p.y();
+            first = false;
+        } else {
+            minX = qMin(minX, p.x());
+            maxX = qMax(maxX, p.x());
+            minY = qMin(minY, p.y());
+            maxY = qMax(maxY, p.y());
+        }
+    }
+
+    qreal padding = 150; // extra space around the outermost rooms
+    QRectF bgRect(minX - padding, minY - padding,
+                  (maxX - minX) + padding * 2,
+                  (maxY - minY) + padding * 2);
+
+    QPixmap bgPixmap(":/assets/map/background.png");
+    if (!bgPixmap.isNull()) {
+        QPixmap scaledBg = bgPixmap.scaled(bgRect.size().toSize(),
+                                           Qt::IgnoreAspectRatio,
+                                           Qt::SmoothTransformation);
+        QGraphicsPixmapItem *bgItem = m_scene->addPixmap(scaledBg);
+        bgItem->setPos(bgRect.topLeft());
+        bgItem->setZValue(-10); // make sure it stays behind the lines and circles
+    }
+
     // Step 2: draw connection lines (must be drawn before the circles so
     // the circles end up on top of them, not underneath)
     for (int f = 0; f < map->floorCount(); ++f) {

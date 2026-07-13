@@ -13,9 +13,9 @@ void MapView::buildScene(GameMap *map)
     m_scene->clear();
     m_positions.clear();
 
-    const int verticalSpacing = 220;
-    const int horizontalSpacing = 190;
-    const int nodeRadius = 60;
+    const int verticalSpacing = 280;
+    const int horizontalSpacing = 250;
+    const int nodeRadius = 90;
 
     // Step 1: calculate and store each room's position (nothing drawn yet)
     for (int f = 0; f < map->floorCount(); ++f) {
@@ -48,10 +48,19 @@ void MapView::buildScene(GameMap *map)
         }
     }
 
-    qreal padding = 150; // extra space around the outermost rooms
-    QRectF bgRect(minX - padding, minY - padding,
-                  (maxX - minX) + padding * 2,
-                  (maxY - minY) + padding * 2);
+    qreal padding = 150;
+    qreal contentWidth = (maxX - minX) + padding * 2;
+    qreal contentHeight = (maxY - minY) + padding * 2;
+
+    // Make sure the background is at least as big as the visible viewport,
+    // so there's no gray gap on the sides
+    qreal finalWidth = qMax(contentWidth, (qreal)this->viewport()->width());
+    qreal finalHeight = qMax(contentHeight, (qreal)this->viewport()->height());
+
+    qreal centerX = (minX + maxX) / 2.0;
+
+    QRectF bgRect(centerX - finalWidth / 2.0, minY - padding,
+                  finalWidth, finalHeight);
 
     QPixmap bgPixmap(":/assets/map/background.png");
     if (!bgPixmap.isNull()) {
@@ -110,20 +119,15 @@ void MapView::buildScene(GameMap *map)
             MapNode *node = map->nodeAt(f, i);
             QPointF pos = m_positions[node];
 
-            QBrush brush;
-            if (node->available()) {
-                brush = QBrush(Qt::yellow);
-            } else if (node->visited()) {
-                brush = QBrush(Qt::darkGray);
-            } else {
-                brush = QBrush(Qt::lightGray);
-            }
+            // Boss gets a bigger circle than everything else
+            qreal radius = (node->roomType() == RoomType::BOSS) ? nodeRadius * 1.6 : nodeRadius;
 
             MapNodeItem *item = new MapNodeItem(node,
-                                                pos.x() - nodeRadius, pos.y() - nodeRadius,
-                                                nodeRadius * 2, nodeRadius * 2);
+                                                pos.x() - radius, pos.y() - radius,
+                                                radius * 2, radius * 2);
+
             item->setPen(QPen(Qt::NoPen));
-            item->setBrush(brush);
+            item->setBrush(Qt::NoBrush); // no colored ring anymore - the circle stays invisible
 
             connect(item, &MapNodeItem::clicked, this, &MapView::roomClicked);
 
@@ -134,7 +138,7 @@ void MapView::buildScene(GameMap *map)
             QString iconPath = iconPathForRoomType(node->roomType());
             QPixmap pix(iconPath);
             if (!pix.isNull()) {
-                qreal iconSize = nodeRadius * 2.0; // slightly smaller than the circle
+                qreal iconSize = radius * 2.0; // matches the circle size (bigger for boss)
 
                 QGraphicsPixmapItem *iconItem = new QGraphicsPixmapItem(item); // child of the circle
                 QPixmap scaled = pix.scaled(iconSize, iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -143,6 +147,23 @@ void MapView::buildScene(GameMap *map)
                 QRectF ellipseRect = item->rect();
                 iconItem->setPos(ellipseRect.center().x() - scaled.width() / 2.0,
                                  ellipseRect.center().y() - scaled.height() / 2.0);
+
+                // Apply a visual effect on the icon itself based on room state
+                if (node->available()) {
+                    // Bright glowing highlight for rooms the player can click right now
+                    QGraphicsDropShadowEffect *glow = new QGraphicsDropShadowEffect;
+                    glow->setColor(QColor(255, 215, 0)); // gold/yellow glow
+                    glow->setOffset(0, 0);
+                    glow->setBlurRadius(40);
+                    iconItem->setGraphicsEffect(glow);
+                } else if (node->visited()) {
+                    // Darken rooms the player has already passed through
+                    QGraphicsColorizeEffect *dark = new QGraphicsColorizeEffect;
+                    dark->setColor(Qt::black);
+                    dark->setStrength(0.6);
+                    iconItem->setGraphicsEffect(dark);
+                }
+                // locked rooms (neither available nor visited) get no effect - shown as normal icon
             }
 
             m_scene->addItem(item);

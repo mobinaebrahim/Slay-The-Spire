@@ -159,6 +159,7 @@ MainWindow::MainWindow(QWidget *parent)
     //grafic test
     GameMap *testMap1 = new GameMap();
     testMap1->generate();
+    testMap1->startRun();
 
     MapView *testView = new MapView(this);
     testView->resize(600, 600);

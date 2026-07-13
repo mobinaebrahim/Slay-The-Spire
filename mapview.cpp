@@ -48,9 +48,11 @@ void MapView::buildScene(GameMap *map)
         }
     }
 
-    qreal padding = 150;
-    qreal contentWidth = (maxX - minX) + padding * 2;
-    qreal contentHeight = (maxY - minY) + padding * 2;
+    qreal horizontalPadding = 150;      // left/right empty space (unchanged)
+    qreal verticalPadding = 380;        // ~5cm of empty space above and below the map
+
+    qreal contentWidth = (maxX - minX) + horizontalPadding * 2;
+    qreal contentHeight = (maxY - minY) + verticalPadding * 2;
 
     // Make sure the background is at least as big as the visible viewport,
     // so there's no gray gap on the sides
@@ -59,7 +61,7 @@ void MapView::buildScene(GameMap *map)
 
     qreal centerX = (minX + maxX) / 2.0;
 
-    QRectF bgRect(centerX - finalWidth / 2.0, minY - padding,
+    QRectF bgRect(centerX - finalWidth / 2.0, minY - verticalPadding,
                   finalWidth, finalHeight);
 
     QPixmap bgPixmap(":/assets/map/background.png");
@@ -74,7 +76,7 @@ void MapView::buildScene(GameMap *map)
 
     // Step 2: draw connection lines (must be drawn before the circles so
     // the circles end up on top of them, not underneath)
-    QPen pathPen(QColor(90, 60, 30));
+    QPen pathPen(QColor(55, 35, 15)); // darker brown than before
     pathPen.setWidth(6);
     pathPen.setStyle(Qt::DashLine);
     pathPen.setCapStyle(Qt::RoundCap);

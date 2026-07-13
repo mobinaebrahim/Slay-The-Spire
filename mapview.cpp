@@ -13,9 +13,9 @@ void MapView::buildScene(GameMap *map)
     m_scene->clear();
     m_positions.clear();
 
-    const int verticalSpacing = 90;
-    const int horizontalSpacing = 80;
-    const int nodeRadius = 20;
+    const int verticalSpacing = 220;
+    const int horizontalSpacing = 190;
+    const int nodeRadius = 60;
 
     // Step 1: calculate and store each room's position (nothing drawn yet)
     for (int f = 0; f < map->floorCount(); ++f) {
@@ -90,16 +90,19 @@ void MapView::buildScene(GameMap *map)
             MapNodeItem *item = new MapNodeItem(node,
                                                 pos.x() - nodeRadius, pos.y() - nodeRadius,
                                                 nodeRadius * 2, nodeRadius * 2);
-            item->setPen(QPen(Qt::black));
+            item->setPen(QPen(Qt::NoPen));
             item->setBrush(brush);
 
             connect(item, &MapNodeItem::clicked, this, &MapView::roomClicked);
 
             // Add the room-type icon on top of the circle
+
+            //***
+            item->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
             QString iconPath = iconPathForRoomType(node->roomType());
             QPixmap pix(iconPath);
             if (!pix.isNull()) {
-                qreal iconSize = nodeRadius * 1.4; // slightly smaller than the circle
+                qreal iconSize = nodeRadius * 2.0; // slightly smaller than the circle
 
                 QGraphicsPixmapItem *iconItem = new QGraphicsPixmapItem(item); // child of the circle
                 QPixmap scaled = pix.scaled(iconSize, iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);

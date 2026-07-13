@@ -36,5 +36,7 @@
         <file>assets/map/event.png</file>
         <file>assets/map/shop.png</file>
         <file>assets/map/treasure.png</file>
+        <file>assets/map/back.png</file>
+        <file>assets/map/background.png</file>
     </qresource>
 </RCC>

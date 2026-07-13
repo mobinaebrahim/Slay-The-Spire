@@ -215,7 +215,7 @@ void MainWindow::handle_play_button()
             this->show();
         });
 
-        mapDlg->show();
+        mapDlg->showFullScreen();
     }
     else {
         ui->btnPlay->hide();

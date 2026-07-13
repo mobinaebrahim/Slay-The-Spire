@@ -50,8 +50,18 @@ void MapView::buildScene(GameMap *map)
             MapNode *node = map->nodeAt(f, i);
             QPointF pos = m_positions[node];
 
+            QBrush brush;
+            if (node->available()) {
+                brush = QBrush(Qt::yellow);   // can be clicked right now
+            } else if (node->visited()) {
+                brush = QBrush(Qt::darkGray); // already passed through
+            } else {
+                brush = QBrush(Qt::lightGray); // still locked
+            }
+
             m_scene->addEllipse(pos.x() - nodeRadius, pos.y() - nodeRadius,
-                                nodeRadius * 2, nodeRadius * 2);
+                                nodeRadius * 2, nodeRadius * 2,
+                                QPen(Qt::black), brush);
         }
     }
 }

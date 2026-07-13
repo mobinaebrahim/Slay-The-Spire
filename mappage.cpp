@@ -4,7 +4,6 @@ MapPage::MapPage(QWidget *parent)
     : QWidget(parent)
 {
     setWindowFlags(Qt::Window);
-    resize(800, 800);
     setWindowTitle("Map");
 
     m_gameMap = new GameMap();
@@ -13,7 +12,29 @@ MapPage::MapPage(QWidget *parent)
 
     m_mapView = new MapView(this);
     m_mapView->buildScene(m_gameMap);
-    m_mapView->setGeometry(0, 0, width(), height());
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    m_returnButton = new QPushButton(this);
+    m_returnButton->setFixedSize(120, 60);
+
+    m_returnButton->setStyleSheet(
+        "QPushButton {"
+        "    border-image: url(:/assets/map/back.png) 0 0 0 0 stretch stretch;"
+        "    border: none;"
+        "}"
+        );
+
+    connect(m_returnButton, &QPushButton::clicked, this, [this](){
+        this->close();
+    });
+
+    m_returnButton->move(20, 20);
+    m_returnButton->raise();
+
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(m_mapView);
+    setLayout(layout);
 
     connect(m_mapView, &MapView::roomClicked, this, [this](MapNode *node){
         QTimer::singleShot(0, this, [this, node](){
@@ -52,6 +73,15 @@ QString MapView::iconPathForRoomType(RoomType type) const
     case RoomType::BOSS:     return ":/assets/map/boss.png";
     default: return QString();
     }
+}
+
+void MapPage::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    int verticalOffset = this->width() / 3;
+
+    m_returnButton->move(20, verticalOffset);
+    m_returnButton->raise();
 }
 
 void MapPage::openCombat(MapNode *node)

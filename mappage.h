@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QTimer>
 #include <QMessageBox>
+#include <QVBoxLayout>
+#include <QPushButton>
 #include "mapview.h"
 #include "gamemap.h"
 
@@ -17,6 +19,8 @@ public:
 private:
     MapView *m_mapView;
     GameMap *m_gameMap;
+    QPushButton *m_returnButton;
+
 
     void handleRoomEntered(MapNode *node);
 
@@ -27,6 +31,9 @@ private:
     void openCampfire(MapNode *node);
     void openTreasure(MapNode *node);
     void openBossFight(MapNode *node);
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // MAPPAGE_H

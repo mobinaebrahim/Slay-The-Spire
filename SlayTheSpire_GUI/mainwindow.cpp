@@ -12,6 +12,9 @@
 #include <QLayoutItem>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
+#include <QEasingCurve>
 
 #include "../card.h"
 #include "../AttackCard.h"
@@ -188,9 +191,18 @@ MainWindow::MainWindow(QWidget *parent)
     goldCountLabel->raise();
     ui->EndTurnButton->raise();
 
+    gameOverLabel = new QLabel(this);
+    gameOverLabel->setAlignment(Qt::AlignCenter);
+    gameOverLabel->hide();
+
+    gameOverOpacityEffect = new QGraphicsOpacityEffect(gameOverLabel);
+    gameOverLabel->setGraphicsEffect(gameOverOpacityEffect);
+    gameOverOpacityEffect->setOpacity(0.0);
+
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
+    battleManager->setPlayer(playerObject);
     battleManager->spawnEnemy(new JawWorm());
     initializePlayerDeck(15);
     playerObject->drawCards(5);
@@ -260,6 +272,8 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
 void MainWindow::on_EndTurnButton_clicked()
 {
+    if (isGameOver)
+        return;
     const auto& hand = playerObject->getHand();
     for (Card* card : hand) {
         if (card && card->getName() == "Burn")
@@ -267,7 +281,12 @@ void MainWindow::on_EndTurnButton_clicked()
     }
     playerObject->endTurnCleanUp();
     battleManager->cleanupDeadEnemies();
-    playerObject->increaseEnergy(3);
+
+    checkGameOver();
+    if (isGameOver)
+        return;
+
+    playerObject->resetEnergy();
     playerObject->drawCards(5);
     updateHandUI();
     updateCharacterUI();
@@ -303,9 +322,11 @@ void MainWindow::updateHandUI() {
         connect(cardBtn, &QPushButton::clicked, [=]() {
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
             if (!allEnemies.empty()) {
-                playerObject->playCard(card, allEnemies[0]);
+                battleManager->playCardAction(card, allEnemies[0]);
+                battleManager->cleanupDeadEnemies();
                 updateHandUI();
                 updateCharacterUI();
+                checkGameOver();
             }
         });
         layout->addWidget(cardBtn);
@@ -458,4 +479,56 @@ void MainWindow::updateAnimations() {
 
     playerSpriteLabel->setGeometry(currentStartX, basePlayerY + floatOffset, 200, 200);
     enemySpriteLabel->setGeometry(currentStartX + 200 + 550, baseEnemyY - floatOffset, 200, 200);
+}
+
+void MainWindow::checkGameOver() {
+    if (isGameOver) return;
+
+    if (playerObject->getHp() <= 0) {
+        isGameOver = true;
+        ui->EndTurnButton->setEnabled(false);
+        showGameOverText("DEFEAT", QColor("#c0392b"));
+        return;
+    }
+
+    if (battleManager->getEnemies().empty()) {
+        isGameOver = true;
+        ui->EndTurnButton->setEnabled(false);
+        showGameOverText("VICTORY", QColor("#f5c518"));
+        return;
+    }
+}
+
+void MainWindow::showGameOverText(const QString& text, const QColor& color) {
+    gameOverLabel->setText(text);
+    gameOverLabel->setStyleSheet(QString("color: %1; font-size: 72px; font-weight: 900; background: transparent;").arg(color.name()));
+
+    int labelW = 600, labelH = 120;
+    QRect endRect(
+        (this->width() - labelW) / 2,
+        (this->height() - labelH) / 2,
+        labelW, labelH);
+    QRect startRect(
+        endRect.x() - 40, endRect.y() - 20,
+        labelW + 80, labelH + 40);
+
+    gameOverLabel->setGeometry(startRect);
+    gameOverLabel->show();
+    gameOverLabel->raise();
+    gameOverOpacityEffect->setOpacity(0.0);
+
+    QPropertyAnimation* fadeAnim = new QPropertyAnimation(gameOverOpacityEffect, "opacity", this);
+    fadeAnim->setDuration(900);
+    fadeAnim->setStartValue(0.0);
+    fadeAnim->setEndValue(1.0);
+    fadeAnim->setEasingCurve(QEasingCurve::OutCubic);
+
+    QPropertyAnimation* geomAnim = new QPropertyAnimation(gameOverLabel, "geometry", this);
+    geomAnim->setDuration(900);
+    geomAnim->setStartValue(startRect);
+    geomAnim->setEndValue(endRect);
+    geomAnim->setEasingCurve(QEasingCurve::OutBack);
+
+    fadeAnim->start(QAbstractAnimation::DeleteWhenStopped);
+    geomAnim->start(QAbstractAnimation::DeleteWhenStopped);
 }

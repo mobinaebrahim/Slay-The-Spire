@@ -15,6 +15,8 @@ private:
     Player* player;
     bool isPlayerTurn;
 public:
+    BattleManager() : player(nullptr), isPlayerTurn(true) {}
+
     void spawnEnemy(Enemy* newEnemy);
     void removeEnemy(Enemy* enemy);
     void cleanupDeadEnemies();
@@ -26,6 +28,7 @@ public:
     void dealDamageToAllEnemies(int damage);
     int GetTotalDamageToAllEnemies(int damage);
 
+    void setPlayer(Player* p) { player = p; }
     const vector<Enemy*>& getEnemies() const { return enemies; }
     std::vector<Enemy*> enemiesToRemove;
 };

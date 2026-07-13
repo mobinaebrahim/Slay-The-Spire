@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QProgressBar>
+#include <QGraphicsOpacityEffect>
 #include "../Player.h"
 
 class Card;
@@ -41,6 +42,8 @@ private:
     void updateHandUI();
     void drawRandomCards(int numberOfCards);
     void initializePlayerDeck(int totalCards);
+    bool isGameOver = false;
+    void checkGameOver();
 
     QLabel* backgroundLabel;
     QLabel* enemyLabel;
@@ -67,6 +70,10 @@ private:
     QLabel* drawPileCountLabel;
     QLabel* discardPileIconLabel;
     QLabel* discardPileCountLabel;
+
+    QLabel* gameOverLabel;
+    QGraphicsOpacityEffect* gameOverOpacityEffect;
+    void showGameOverText(const QString& text, const QColor& color);
 
     QTimer* animationTimer;
     float angle = 0;

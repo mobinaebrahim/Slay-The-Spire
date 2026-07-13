@@ -33,6 +33,7 @@ public:
     int getMaxEnergy() const { return maxEnergy; }
     int getHandSize(){ return hand.size(); }
     const vector<Card*>& getHand() const { return hand; }
+    void resetEnergy() { currentEnergy = maxEnergy; }
 
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);

@@ -10,17 +10,18 @@ void Character::decreaseHp(int amount) {
 
 int Character::takeDamage(int incomingDamage) {
     int finalDamage = calculateIncomingDamage(incomingDamage);
-
     int damageToHp = 0;
-    if (finalDamage <= block) {
+    if (finalDamage <= block)
         block -= finalDamage;
-    }
+
     else {
         damageToHp = finalDamage - block;
         block = 0;
         hp -= damageToHp;
+        if (hp < 0)
+            hp = 0;
     }
-
+    timesDamagedThisCombat++;
     return damageToHp;
 }
 

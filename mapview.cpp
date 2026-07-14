@@ -193,7 +193,7 @@ void MapView::addReturnButton()
         );
 
     m_returnButtonProxy = m_scene->addWidget(button);
-    m_returnButtonProxy->setPos(-600,150);
+    m_returnButtonProxy->setPos(-600,120);
     m_returnButtonProxy->setZValue(100);
 
     connect(button, &QPushButton::clicked, this, &MapView::returnClicked);

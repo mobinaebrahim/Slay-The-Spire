@@ -2,6 +2,8 @@
 #define AUTHPAGE_H
 
 #include <QDialog>
+#include <QPainter>
+#include <QPixmap>
 #include"usermanager.h"
 #include"mainwindow.h"
 #include <QRegularExpression>
@@ -29,6 +31,9 @@ private:
     void handle_forgot_code_sub();
     void handle_send_reset_code();
     void handle_new_password_sub();
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 };
 

@@ -19,8 +19,6 @@ public:
 private:
     MapView *m_mapView;
     GameMap *m_gameMap;
-    QPushButton *m_returnButton;
-
 
     void handleRoomEntered(MapNode *node);
 

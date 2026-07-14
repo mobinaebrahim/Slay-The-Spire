@@ -15,23 +15,6 @@ MapPage::MapPage(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-    m_returnButton = new QPushButton(this);
-    m_returnButton->setFixedSize(120, 60);
-
-    m_returnButton->setStyleSheet(
-        "QPushButton {"
-        "    border-image: url(:/assets/map/back.png) 0 0 0 0 stretch stretch;"
-        "    border: none;"
-        "}"
-        );
-
-    connect(m_returnButton, &QPushButton::clicked, this, [this](){
-        this->close();
-    });
-
-    m_returnButton->move(20, 20);
-    m_returnButton->raise();
-
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_mapView);
     setLayout(layout);
@@ -48,6 +31,10 @@ MapPage::MapPage(QWidget *parent)
                 handleRoomEntered(node);
             }
         });
+    });
+
+    connect(m_mapView, &MapView::returnClicked, this, [this](){
+        this->close();
     });
 }
 
@@ -82,10 +69,6 @@ QString MapView::iconPathForRoomType(RoomType type) const
 void MapPage::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    int verticalOffset = this->width() / 3;
-
-    m_returnButton->move(20, verticalOffset);
-    m_returnButton->raise();
 }
 
 void MapPage::openCombat(MapNode *node)

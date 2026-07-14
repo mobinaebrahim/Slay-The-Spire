@@ -7,6 +7,9 @@ AuthPage::AuthPage(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+
     ui->lineEdit_forgot_code->hide();
     ui->label_8->hide();
 
@@ -255,4 +258,13 @@ void AuthPage::handle_new_password_sub()
     } else {
         ui->label_newPasswordError->setText("Something went wrong. Try again!");
     }
+}
+
+void AuthPage::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    QPixmap background(":/assets/authpage/background.png");
+    painter.drawPixmap(this->rect(), background);
+
+    QWidget::paintEvent(event);
 }

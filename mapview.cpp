@@ -176,4 +176,25 @@ void MapView::buildScene(GameMap *map)
             m_scene->addItem(item);
         }
     }
+
+    addReturnButton();
+}
+
+void MapView::addReturnButton()
+{
+    QPushButton *button = new QPushButton();
+    button->setFixedSize(200, 90);
+    button->setStyleSheet(
+        "QPushButton {"
+        "    border-image: url(:/assets/map/back.png) 0 0 0 0 stretch stretch;"
+        "    border: none;"
+        "    background: transparent;"
+        "}"
+        );
+
+    m_returnButtonProxy = m_scene->addWidget(button);
+    m_returnButtonProxy->setPos(-600,150);
+    m_returnButtonProxy->setZValue(100);
+
+    connect(button, &QPushButton::clicked, this, &MapView::returnClicked);
 }

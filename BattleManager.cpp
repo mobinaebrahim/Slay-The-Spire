@@ -41,6 +41,7 @@ int BattleManager::GetTotalDamageToAllEnemies(int damage) {
 
 void BattleManager::playerTurn() {
     isPlayerTurn = true;
+    player->resetEnergy();
     player->drawCards(5); 
 }
 

@@ -13,6 +13,14 @@
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include <QGraphicsOpacityEffect>
+#include <QSoundEffect>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QSequentialAnimationGroup>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QPainter>
+#include <QPen>
 #include "../Player.h"
 
 class Card;
@@ -75,6 +83,24 @@ private:
     QGraphicsOpacityEffect* gameOverOpacityEffect;
     void showGameOverText(const QString& text, const QColor& color);
 
+    QLabel* customTooltipBox;
+    void showEnemyTooltip(Enemy* enemy);
+
+    QMediaPlayer* bgMusicPlayer;
+    QAudioOutput* bgAudioOutput;
+    QMediaPlayer* hitSoundPlayer;
+    QAudioOutput* hitSoundOutput;
+
+    QLabel* playerHitOverlay;
+    QGraphicsOpacityEffect* playerHitOpacity;
+    QLabel* enemyHitOverlay;
+    QGraphicsOpacityEffect* enemyHitOpacity;
+
+    void playHitEffect(QLabel* overlay, QGraphicsOpacityEffect* opacityEffect);
+    bool isAttackAnimating = false;
+
+    void playEnemyAttack();
+
     QTimer* animationTimer;
     float angle = 0;
     int basePlayerY;
@@ -89,6 +115,7 @@ private:
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 };
 
 Card* createCardByName(const std::string& name);

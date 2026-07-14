@@ -143,6 +143,16 @@ MainWindow::MainWindow(QWidget *parent)
         "padding: 3px; font-weight: bold;"
         );
 
+    customTooltipBox = new QLabel(this);
+    customTooltipBox->setStyleSheet(
+        "background-color: rgba(20,20,25,235); color: white; "
+        "border: 1px solid rgba(255,255,255,40); border-radius: 6px; "
+        "padding: 10px; font-size: 13px;");
+    customTooltipBox->setWordWrap(true);
+    customTooltipBox->setFixedWidth(260);
+    customTooltipBox->hide();
+    customTooltipBox->setAttribute(Qt::WA_TransparentForMouseEvents);
+
     enemyNameLabel = new QLabel(this);
     enemyNameLabel->setAlignment(Qt::AlignCenter);
     enemyNameLabel->setFixedHeight(20);
@@ -158,6 +168,10 @@ MainWindow::MainWindow(QWidget *parent)
     enemySpriteLabel = new QLabel(this);
     enemySpriteLabel->setAlignment(Qt::AlignCenter);
     enemySpriteLabel->setScaledContents(true);
+
+    enemySpriteLabel->installEventFilter(this);
+    enemyHpBar->installEventFilter(this);
+    enemyIntentLabel->installEventFilter(this);
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -198,6 +212,61 @@ MainWindow::MainWindow(QWidget *parent)
     gameOverOpacityEffect = new QGraphicsOpacityEffect(gameOverLabel);
     gameOverLabel->setGraphicsEffect(gameOverOpacityEffect);
     gameOverOpacityEffect->setOpacity(0.0);
+
+    QPixmap slashPixmap(200, 200);
+    slashPixmap.fill(Qt::transparent);
+    {
+        QPainter painter(&slashPixmap);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        QPen glowPen(QColor(255, 120, 120, 140));
+        glowPen.setWidth(14);
+        glowPen.setCapStyle(Qt::RoundCap);
+        painter.setPen(glowPen);
+        painter.drawLine(30, 30, 170, 170);
+
+        QPen corePen(QColor(255, 20, 20, 235));
+        corePen.setWidth(6);
+        corePen.setCapStyle(Qt::RoundCap);
+        painter.setPen(corePen);
+        painter.drawLine(30, 30, 170, 170);
+    }
+
+    playerHitOverlay = new QLabel(this);
+    playerHitOverlay->setFixedSize(200, 200);
+    playerHitOverlay->setPixmap(slashPixmap);
+    playerHitOverlay->hide();
+    playerHitOpacity = new QGraphicsOpacityEffect(playerHitOverlay);
+    playerHitOverlay->setGraphicsEffect(playerHitOpacity);
+    playerHitOpacity->setOpacity(0.0);
+
+    enemyHitOverlay = new QLabel(this);
+    enemyHitOverlay->setFixedSize(200, 200);
+    enemyHitOverlay->setPixmap(slashPixmap);
+    enemyHitOverlay->hide();
+    enemyHitOpacity = new QGraphicsOpacityEffect(enemyHitOverlay);
+    enemyHitOverlay->setGraphicsEffect(enemyHitOpacity);
+    enemyHitOpacity->setOpacity(0.0);
+
+    bgAudioOutput = new QAudioOutput(this);
+    bgMusicPlayer = new QMediaPlayer(this);
+    bgMusicPlayer->setAudioOutput(bgAudioOutput);
+    bgMusicPlayer->setSource(QUrl("qrc:/audio/Exordium.mp3"));
+    bgAudioOutput->setVolume(0.4);
+
+    connect(bgMusicPlayer, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status){
+        if (status == QMediaPlayer::EndOfMedia) {
+            bgMusicPlayer->setPosition(0);
+            bgMusicPlayer->play();
+        }
+    });
+    bgMusicPlayer->play();
+
+    hitSoundOutput = new QAudioOutput(this);
+    hitSoundPlayer = new QMediaPlayer(this);
+    hitSoundPlayer->setAudioOutput(hitSoundOutput);
+    hitSoundPlayer->setSource(QUrl("qrc:/audio/hit.mp3"));
+    hitSoundOutput->setVolume(0.8);
 
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
@@ -263,6 +332,9 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     enemyNameLabel->setGeometry(enemyX2 - 20, baseEnemyY - 90, spriteSize + 40, 20);
 
+    playerHitOverlay->setGeometry(currentStartX, basePlayerY, spriteSize, spriteSize);
+    enemyHitOverlay->setGeometry(enemyX2, baseEnemyY, spriteSize, spriteSize);
+
     int endTurnW = 230, endTurnH = 82;
     ui->EndTurnButton->setGeometry(
         this->width() - endTurnW + 30,
@@ -274,22 +346,21 @@ void MainWindow::on_EndTurnButton_clicked()
 {
     if (isGameOver)
         return;
+
     const auto& hand = playerObject->getHand();
     for (Card* card : hand) {
         if (card && card->getName() == "Burn")
             playerObject->decreaseHp(2);
     }
-    playerObject->endTurnCleanUp();
-    battleManager->cleanupDeadEnemies();
 
     checkGameOver();
-    if (isGameOver)
+    if (isGameOver) {
+        updateCharacterUI();
         return;
+    }
 
-    playerObject->resetEnergy();
-    playerObject->drawCards(5);
-    updateHandUI();
-    updateCharacterUI();
+    ui->EndTurnButton->setEnabled(false);
+    playEnemyAttack();
 }
 
 void MainWindow::updateHandUI() {
@@ -321,12 +392,20 @@ void MainWindow::updateHandUI() {
 
         connect(cardBtn, &QPushButton::clicked, [=]() {
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
-            if (!allEnemies.empty()) {
+            if (!allEnemies.empty() && !isAttackAnimating) {
+                bool isAttackCard = (card->getType() == CardType::Attack);
+
                 battleManager->playCardAction(card, allEnemies[0]);
                 battleManager->cleanupDeadEnemies();
                 updateHandUI();
                 updateCharacterUI();
                 checkGameOver();
+
+                if (isAttackCard && !isGameOver) {
+                    hitSoundPlayer->setPosition(0);
+                    hitSoundPlayer->play();
+                    playHitEffect(enemyHitOverlay, enemyHitOpacity);
+                }
             }
         });
         layout->addWidget(cardBtn);
@@ -429,6 +508,9 @@ void MainWindow::updateCharacterUI() {
     enemyNameLabel->setVisible(hasEnemy);
     enemyBlockBadge->setVisible(false);
 
+    if (!hasEnemy)
+        customTooltipBox->hide();
+
     if (hasEnemy) {
         Enemy* enemy = enemies[0];
         QString enemyName = QString::fromStdString(enemy->getName());
@@ -478,6 +560,7 @@ void MainWindow::updateAnimations() {
     int floatOffset = static_cast<int>(std::sin(angle) * 6);
 
     playerSpriteLabel->setGeometry(currentStartX, basePlayerY + floatOffset, 200, 200);
+    if (!isAttackAnimating)
     enemySpriteLabel->setGeometry(currentStartX + 200 + 550, baseEnemyY - floatOffset, 200, 200);
 }
 
@@ -531,4 +614,126 @@ void MainWindow::showGameOverText(const QString& text, const QColor& color) {
 
     fadeAnim->start(QAbstractAnimation::DeleteWhenStopped);
     geomAnim->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void MainWindow::showEnemyTooltip(Enemy* enemy) {
+    if (!enemy) { customTooltipBox->hide(); return; }
+
+    QString title, desc;
+    switch (enemy->getIntentType()) {
+    case IntentType::Attack:
+        title = "Attack";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage.").arg(enemy->getIntentValue());
+        break;
+    case IntentType::Defend:
+        title = "Defend";
+        desc = "This enemy intends to <b><span style='color:#5ec8ff;'>Defend</span></b> itself.";
+        break;
+    case IntentType::Buff:
+        title = "Buff";
+        desc = "This enemy intends to <b><span style='color:#ffd76a;'>strengthen</span></b> itself.";
+        break;
+    case IntentType::Debuff:
+        title = "Debuff";
+        desc = "This enemy intends to <b><span style='color:#c07af0;'>weaken</span></b> you.";
+        break;
+    case IntentType::Combined:
+        title = "Attack + Defend";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
+        "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.").arg(enemy->getIntentValue());
+        break;
+    case IntentType::Special:
+        title = "Special";
+        desc = "This enemy intends to do something special.";
+        break;
+    }
+
+    customTooltipBox->setText(QString("<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1</div>""<div>%2</div>").arg(title, desc));
+
+    customTooltipBox->adjustSize();
+
+    int tipX = enemySpriteLabel->x() - customTooltipBox->width() - 20;
+    int tipY = enemySpriteLabel->y() + 40;
+    customTooltipBox->move(tipX, tipY);
+    customTooltipBox->show();
+    customTooltipBox->raise();
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == enemySpriteLabel || obj == enemyHpBar || obj == enemyIntentLabel) {
+        if (event->type() == QEvent::Enter) {
+            const auto& enemies = battleManager->getEnemies();
+            if (!enemies.empty())
+                showEnemyTooltip(enemies[0]);
+        } else if (event->type() == QEvent::Leave) {
+            customTooltipBox->hide();
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::playHitEffect(QLabel* overlay, QGraphicsOpacityEffect* opacityEffect) {
+    overlay->show();
+    overlay->raise();
+
+    QPropertyAnimation* flashIn = new QPropertyAnimation(opacityEffect, "opacity", this);
+    flashIn->setDuration(60);
+    flashIn->setStartValue(0.0);
+    flashIn->setEndValue(1.0);
+
+    QPropertyAnimation* flashOut = new QPropertyAnimation(opacityEffect, "opacity", this);
+    flashOut->setDuration(250);
+    flashOut->setStartValue(1.0);
+    flashOut->setEndValue(0.0);
+
+    QSequentialAnimationGroup* seq = new QSequentialAnimationGroup(this);
+    seq->addAnimation(flashIn);
+    seq->addAnimation(flashOut);
+    connect(seq, &QSequentialAnimationGroup::finished, overlay, &QLabel::hide);
+    seq->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void MainWindow::playEnemyAttack() {
+    isAttackAnimating = true;
+
+    int lungeDistance = 60;
+    QRect startRect = enemySpriteLabel->geometry();
+    QRect lungeRect(startRect.x() - lungeDistance, startRect.y(), startRect.width(), startRect.height());
+
+    QPropertyAnimation* forward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
+    forward->setDuration(180);
+    forward->setStartValue(startRect);
+    forward->setEndValue(lungeRect);
+    forward->setEasingCurve(QEasingCurve::OutQuad);
+
+    connect(forward, &QPropertyAnimation::finished, this, [=]() {
+        battleManager->enemyTurn();
+        battleManager->cleanupDeadEnemies();
+
+        hitSoundPlayer->setPosition(0);
+        hitSoundPlayer->play();
+
+        playHitEffect(playerHitOverlay, playerHitOpacity);
+
+        updateCharacterUI();
+
+        QPropertyAnimation* backward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
+        backward->setDuration(200);
+        backward->setStartValue(lungeRect);
+        backward->setEndValue(startRect);
+        backward->setEasingCurve(QEasingCurve::InQuad);
+
+        connect(backward, &QPropertyAnimation::finished, this, [=]() {
+            isAttackAnimating = false;
+            checkGameOver();
+            if (!isGameOver)
+                ui->EndTurnButton->setEnabled(true);
+            updateHandUI();
+            updateCharacterUI();
+        });
+
+        backward->start(QAbstractAnimation::DeleteWhenStopped);
+    });
+
+    forward->start(QAbstractAnimation::DeleteWhenStopped);
 }

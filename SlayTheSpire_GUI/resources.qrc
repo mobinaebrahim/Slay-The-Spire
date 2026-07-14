@@ -64,5 +64,7 @@
         <file>images/icons/energy.png</file>
         <file>images/icons/gold.png</file>
         <file>images/icons/hp.png</file>
+        <file>audio/Exordium.mp3</file>
+        <file>audio/hit.mp3</file>
     </qresource>
 </RCC>

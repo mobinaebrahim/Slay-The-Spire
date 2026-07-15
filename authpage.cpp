@@ -13,6 +13,15 @@ AuthPage::AuthPage(QWidget *parent)
     ui->lineEdit_forgot_code->hide();
     ui->label_8->hide();
 
+    QGraphicsDropShadowEffect *glow = new QGraphicsDropShadowEffect(this);
+    glow->setBlurRadius(25);
+    glow->setOffset(0,0);
+    glow->setColor(QColor(120,240,255,200));
+
+    ui->btnForgotPassword->setGraphicsEffect(glow);
+
+    ui->btnForgotPassword->setGraphicsEffect(glow);
+
     connect(ui->btnConfirm, &QPushButton::clicked, this, [this](){
         QWidget *currentPage = ui->stackedWidget->currentWidget();
 

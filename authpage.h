@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QPainter>
 #include <QPixmap>
+#include <QGraphicsDropShadowEffect>
 #include"usermanager.h"
 #include"mainwindow.h"
 #include <QRegularExpression>

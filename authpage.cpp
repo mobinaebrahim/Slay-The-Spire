@@ -10,17 +10,22 @@ AuthPage::AuthPage(QWidget *parent)
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    ui->lineEdit_forgot_code->hide();
-    ui->label_8->hide();
+    //ui->lineEdit_forgot_code->hide();
+    //ui->label_8->hide();
 
     QGraphicsDropShadowEffect *glow = new QGraphicsDropShadowEffect(this);
-    glow->setBlurRadius(25);
-    glow->setOffset(0,0);
-    glow->setColor(QColor(120,240,255,200));
-
+    glow->setBlurRadius(5);
+    glow->setOffset(2,2);
+    glow->setColor(QColor(0,0,0,200));
     ui->btnForgotPassword->setGraphicsEffect(glow);
 
-    ui->btnForgotPassword->setGraphicsEffect(glow);
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setBlurRadius(3);
+    shadow->setOffset(1,1);
+    shadow->setColor(Qt::black);
+
+    ui->label_7->setGraphicsEffect(shadow);
+    ui->label_8->setGraphicsEffect(shadow);
 
     connect(ui->btnConfirm, &QPushButton::clicked, this, [this](){
         QWidget *currentPage = ui->stackedWidget->currentWidget();
@@ -73,11 +78,12 @@ AuthPage::AuthPage(QWidget *parent)
     });
 
     connect(ui->btnSendResetCode,&QPushButton::clicked,this,[this](){
-        ui->label_8->show();
-        ui->lineEdit_forgot_code->show();
-        ui->label_7->hide();
-        ui->lineEdit_forgot_username->hide();
-        ui->btnSendResetCode->hide();
+        //ui->label_8->show();
+        //ui->lineEdit_forgot_code->show();
+        //ui->label_7->hide();
+        //->lineEdit_forgot_username->hide();
+        //ui->btnSendResetCode->hide();
+        //ui->label_18->hide();
         handle_send_reset_code();
     });
 

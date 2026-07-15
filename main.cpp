@@ -1,11 +1,12 @@
+#include <QApplication>
+#include <QFontDatabase>
+
 #include "mainwindow.h"
 #include "usermanager.h"
-#include <QApplication>
 #include "scoremanager.h"
 #include "friendmanager.h"
 #include "savemanager.h"
 #include "gamemap.h"
-
 
 
 //---SMTP library---
@@ -69,6 +70,24 @@ int main(int argc, char *argv[])
     ScoreManager::instance();
     FriendManager::instance();
     SaveManager::instance();
+
+    //---font---
+
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-Medium.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-SemiBold.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-ExtraBold.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-Black.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/Cinzel-VariableFont_wght.ttf");
+
+    QFontDatabase::addApplicationFont(":/assets/font/Marcellus-Regular.ttf");
+
+    QFontDatabase::addApplicationFont(":/assets/font/IMFellEnglish-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/assets/font/IMFellEnglish-Italic.ttf");
+
+    QFontDatabase::addApplicationFont(":/assets/font/RINGM___.TTF");
+
 
 
     MainWindow w;

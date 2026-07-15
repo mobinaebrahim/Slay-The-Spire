@@ -45,5 +45,18 @@
         <file>assets/authpage/usernameicon.png</file>
         <file>assets/authpage/lineedit.png</file>
         <file>assets/authpage/background.png</file>
+        <file>assets/authpage/sendcode.png</file>
+        <file>assets/authpage/verfyicon.png</file>
+        <file>assets/font/Cinzel-Black.ttf</file>
+        <file>assets/font/Cinzel-Bold.ttf</file>
+        <file>assets/font/Cinzel-ExtraBold.ttf</file>
+        <file>assets/font/Cinzel-Medium.ttf</file>
+        <file>assets/font/Cinzel-Regular.ttf</file>
+        <file>assets/font/Cinzel-SemiBold.ttf</file>
+        <file>assets/font/Cinzel-VariableFont_wght.ttf</file>
+        <file>assets/font/IMFellEnglish-Italic.ttf</file>
+        <file>assets/font/IMFellEnglish-Regular.ttf</file>
+        <file>assets/font/Marcellus-Regular.ttf</file>
+        <file>assets/font/RINGM___.TTF</file>
     </qresource>
 </RCC>

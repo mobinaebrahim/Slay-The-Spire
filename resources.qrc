@@ -39,10 +39,11 @@
         <file>assets/map/back.png</file>
         <file>assets/map/background.png</file>
         <file>assets/authpage/back.png</file>
-        <file>assets/authpage/background.png</file>
         <file>assets/authpage/confrim.png</file>
         <file>assets/authpage/emailicon.png</file>
         <file>assets/authpage/passwordicon.png</file>
         <file>assets/authpage/usernameicon.png</file>
+        <file>assets/authpage/lineedit.png</file>
+        <file>assets/authpage/background.png</file>
     </qresource>
 </RCC>

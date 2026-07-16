@@ -6,10 +6,13 @@ friendspage::friendspage(QWidget *parent)
     , ui(new Ui::friendspage)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     ui->label_addFriendError->clear();
 
     populate_pending_requests();
     populate_friends_list();
+    connect(ui->btnBack, &QPushButton::clicked, this, &QDialog::close);
 }
 
 friendspage::~friendspage()
@@ -68,12 +71,42 @@ void friendspage::populate_friends_list()
         QHBoxLayout *layout = new QHBoxLayout(itemWidget);
 
         QLabel *nameLabel = new QLabel(friendName);
-        QPushButton *removeBtn = new QPushButton("Remove");
+        /*QFont font("Cinzel", 12, QFont::Bold);
+        nameLabel->setFont(font);
+        nameLabel->setStyleSheet(
+            "QLabel {"
+            "color: #EFD7A0;"
+            "font-size: 14px;"
+            "font-weight: bold;"
+            "background: transparent;"
+            "}"
+            );*/
 
+        nameLabel->setStyleSheet(
+            "color:#E8D2A0;"
+            );
+
+        QPushButton *removeBtn = new QPushButton();
+        removeBtn->setIcon(QIcon(":/assets/mainmenu/friend/remove.png"));
+        removeBtn->setIconSize(QSize(32,32));
+        removeBtn->setFixedSize(40,40);
+        removeBtn->setStyleSheet(
+            "QPushButton{"
+            "border:none;"
+            "background:transparent;"
+            "}"
+            );
+
+        nameLabel->setSizePolicy(
+            QSizePolicy::Expanding,
+            QSizePolicy::Preferred
+            );
         layout->addWidget(nameLabel);
         layout->addWidget(removeBtn);
         layout->setContentsMargins(5, 5, 5, 5);
-        itemWidget->setLayout(layout);
+        /*itemWidget->setStyleSheet(
+            "background: transparent;"
+            );*/
 
         QListWidgetItem *listItem = new QListWidgetItem();
         listItem->setSizeHint(itemWidget->sizeHint());
@@ -100,8 +133,28 @@ void friendspage::populate_pending_requests()
         QHBoxLayout *layout = new QHBoxLayout(itemWidget);
 
         QLabel *nameLabel = new QLabel(requester);
-        QPushButton *acceptBtn = new QPushButton("Accept");
-        QPushButton *rejectBtn = new QPushButton("Reject");
+
+        QPushButton *acceptBtn = new QPushButton();
+        acceptBtn->setIcon(QIcon(":/assets/mainmenu/friend/accept.png"));
+        acceptBtn->setIconSize(QSize(32,32));
+        acceptBtn->setFixedSize(40,40);
+        acceptBtn->setStyleSheet(
+            "QPushButton{"
+            "border:none;"
+            "background:transparent;"
+            "}"
+            );
+
+        QPushButton *rejectBtn = new QPushButton();
+        rejectBtn->setIcon(QIcon(":/assets/mainmenu/friend/reject.png"));
+        rejectBtn->setIconSize(QSize(32,32));
+        rejectBtn->setFixedSize(40,40);
+        rejectBtn->setStyleSheet(
+            "QPushButton{"
+            "border:none;"
+            "background:transparent;"
+            "}"
+            );
 
         layout->addWidget(nameLabel);
         layout->addWidget(acceptBtn);
@@ -126,4 +179,15 @@ void friendspage::populate_pending_requests()
             populate_pending_requests();
         });
     }
+}
+
+void friendspage::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+
+    QPixmap background(":/assets/authpage/background.png");
+
+    painter.drawPixmap(rect(), background);
+
+    QDialog::paintEvent(event);
 }

@@ -13,19 +13,31 @@ AuthPage::AuthPage(QWidget *parent)
     //ui->lineEdit_forgot_code->hide();
     //ui->label_8->hide();
 
+    auto *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setBlurRadius(12);
+    shadow->setOffset(2, 2);
+    shadow->setColor(QColor(0, 0, 0, 220));
+
+    ui->label_23->setGraphicsEffect(shadow);
+
     QGraphicsDropShadowEffect *glow = new QGraphicsDropShadowEffect(this);
-    glow->setBlurRadius(5);
+    glow->setBlurRadius(2);
     glow->setOffset(2,2);
     glow->setColor(QColor(0,0,0,200));
     ui->btnForgotPassword->setGraphicsEffect(glow);
 
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setBlurRadius(3);
+    /*QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setBlurRadius(2);
     shadow->setOffset(1,1);
-    shadow->setColor(Qt::black);
+    shadow->setColor(QColor(0,0,0,255));*/
 
-    ui->label_7->setGraphicsEffect(shadow);
-    ui->label_8->setGraphicsEffect(shadow);
+    auto effect = new QGraphicsDropShadowEffect(this);
+    effect->setBlurRadius(6);
+    effect->setOffset(1,1);
+    effect->setColor(QColor(0,0,0,255));
+
+    ui->label_7->setGraphicsEffect(effect);
+
 
     connect(ui->btnConfirm, &QPushButton::clicked, this, [this](){
         QWidget *currentPage = ui->stackedWidget->currentWidget();
@@ -215,8 +227,8 @@ void AuthPage::handle_send_reset_code()
     if (success) {
         ui->label_forgotError->setText("Code sent! Check your email.");
 
-        ui->lineEdit_forgot_username->hide();
-        ui->btnSendResetCode->hide();
+        //ui->lineEdit_forgot_username->hide();
+        //ui->btnSendResetCode->hide();
 
         ui->lineEdit_forgot_code->show();
     } else {

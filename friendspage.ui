@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">border-image: url(:/assets/authpage/background.png);</string>
+   <string notr="true"/>
   </property>
   <widget class="QLineEdit" name="lineEditSearchUsername">
    <property name="geometry">
@@ -89,7 +89,7 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
      <x>140</x>
      <y>280</y>
      <width>291</width>
-     <height>261</height>
+     <height>241</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -102,11 +102,15 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
      <x>470</x>
      <y>280</y>
      <width>291</width>
-     <height>261</height>
+     <height>241</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">border-image: url(:/assets/mainmenu/friend/draggablepanel.png);</string>
+    <string notr="true">QListWidget{
+	border-image: url(:/assets/mainmenu/friend/draggablepanel.png);
+    background-color: transparent;
+    border: none;
+}</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -136,6 +140,38 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
    </property>
    <property name="text">
     <string>request:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnBack">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>540</y>
+     <width>180</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton#btnBack {
+    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+   </property>
+   <property name="text">
+    <string>back</string>
    </property>
   </widget>
  </widget>

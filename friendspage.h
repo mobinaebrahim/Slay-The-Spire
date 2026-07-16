@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QListWidgetItem>
+#include <QPainter>
 #include "friendmanager.h"
 #include "usermanager.h"
 
@@ -29,6 +30,8 @@ private:
     void populate_pending_requests();
     void populate_friends_list();
     void showAddFriendError(const QString &message, bool isError = true);
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // FRIENDSPAGE_H

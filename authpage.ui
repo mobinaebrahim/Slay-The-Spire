@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>AuthPage</class>
  <widget class="QDialog" name="AuthPage">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>502</width>
-    <height>389</height>
+    <width>700</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,151 +20,261 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
-     <width>501</width>
-     <height>381</height>
+     <y>20</y>
+     <width>701</width>
+     <height>561</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page_register">
     <widget class="QLineEdit" name="lineEdit_reg_username">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>100</y>
-       <width>131</width>
-       <height>31</height>
+       <x>410</x>
+       <y>140</y>
+       <width>161</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_reg_password">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>140</y>
-       <width>131</width>
-       <height>31</height>
+       <x>410</x>
+       <y>200</y>
+       <width>161</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_confirmPassword">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>180</y>
-       <width>131</width>
-       <height>31</height>
+       <x>410</x>
+       <y>260</y>
+       <width>161</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_email">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>220</y>
-       <width>201</width>
-       <height>31</height>
+       <x>310</x>
+       <y>320</y>
+       <width>261</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>110</y>
+       <x>190</x>
+       <y>150</y>
        <width>91</width>
-       <height>20</height>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>username:</string>
+      <string>username</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>150</y>
-       <width>91</width>
-       <height>20</height>
+       <x>190</x>
+       <y>210</y>
+       <width>111</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>password:</string>
+      <string>password</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>190</y>
-       <width>121</width>
-       <height>20</height>
+       <x>190</x>
+       <y>270</y>
+       <width>171</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>confrim password:</string>
+      <string>confrim password</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>230</y>
-       <width>63</width>
-       <height>20</height>
+       <x>190</x>
+       <y>320</y>
+       <width>101</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>email:</string>
+      <string>email</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_registerError">
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>260</y>
+       <y>360</y>
        <width>251</width>
-       <height>20</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: red; 
-font-weight: bold;</string>
+      <string notr="true">color: gold; 
+font-weight: bold;
+</string>
      </property>
      <property name="text">
       <string/>
@@ -170,10 +283,10 @@ font-weight: bold;</string>
     <widget class="QLabel" name="label_14">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>140</y>
-       <width>31</width>
-       <height>31</height>
+       <x>130</x>
+       <y>200</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -189,10 +302,10 @@ font-weight: bold;</string>
     <widget class="QLabel" name="label_15">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>180</y>
-       <width>31</width>
-       <height>31</height>
+       <x>130</x>
+       <y>260</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -208,9 +321,9 @@ font-weight: bold;</string>
     <widget class="QLabel" name="label_16">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>220</y>
-       <width>31</width>
+       <x>130</x>
+       <y>320</y>
+       <width>51</width>
        <height>31</height>
       </rect>
      </property>
@@ -227,10 +340,10 @@ font-weight: bold;</string>
     <widget class="QLabel" name="label_17">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>100</y>
-       <width>31</width>
-       <height>31</height>
+       <x>130</x>
+       <y>140</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -243,13 +356,38 @@ font-weight: bold;</string>
       <string/>
      </property>
     </widget>
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>50</y>
+       <width>261</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Cinzel Black&quot;;
+    font-size: 38px;
+
+    color: rgb(214, 174, 78);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>REGISTER</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_verify">
     <widget class="QLabel" name="label_verifyError">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>240</y>
+       <x>210</x>
+       <y>310</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -265,41 +403,66 @@ font-weight: bold;</string>
     <widget class="QLineEdit" name="lineEdit_verifyCode">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>180</y>
-       <width>151</width>
-       <height>31</height>
+       <x>230</x>
+       <y>240</y>
+       <width>221</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    /*font-family: &quot;IM FELL English&quot;;*/
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
      </property>
     </widget>
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>140</y>
-       <width>101</width>
-       <height>20</height>
+       <x>300</x>
+       <y>180</y>
+       <width>111</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>enter code:</string>
+      <string>enter code</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_22">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>140</y>
-       <width>31</width>
-       <height>31</height>
+       <x>230</x>
+       <y>170</y>
+       <width>51</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -317,77 +480,137 @@ font-weight: bold;</string>
     <widget class="QLineEdit" name="lineEdit_lgn_username">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>130</y>
-       <width>151</width>
-       <height>31</height>
+       <x>330</x>
+       <y>160</y>
+       <width>181</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_lgn_password">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>190</y>
-       <width>151</width>
-       <height>31</height>
+       <x>330</x>
+       <y>240</y>
+       <width>181</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
+}
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
+QLineEdit {
     border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
     font-size: 14px;
   
 }
 </string>
      </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>140</y>
-       <width>91</width>
-       <height>20</height>
+       <x>200</x>
+       <y>170</y>
+       <width>111</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>username:</string>
+      <string>username</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>200</y>
-       <width>91</width>
-       <height>20</height>
+       <x>190</x>
+       <y>250</y>
+       <width>131</width>
+       <height>21</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}
+</string>
+     </property>
      <property name="text">
-      <string>password:</string>
+      <string>password</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_loginError">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>220</y>
+       <x>210</x>
+       <y>290</y>
        <width>251</width>
        <height>20</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: red; 
-font-weight: bold;</string>
+      <string notr="true">color: gold; 
+font-weight: bold;
+</string>
      </property>
      <property name="text">
       <string/>
@@ -396,10 +619,10 @@ font-weight: bold;</string>
     <widget class="QPushButton" name="btnForgotPassword">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>250</y>
-       <width>141</width>
-       <height>29</height>
+       <x>250</x>
+       <y>330</y>
+       <width>171</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -409,7 +632,7 @@ font-weight: bold;</string>
 
     color: #7FD7F0;
 
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -428,10 +651,10 @@ QPushButton:pressed{
     <widget class="QLabel" name="label_12">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>130</y>
-       <width>31</width>
-       <height>31</height>
+       <x>140</x>
+       <y>160</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -447,10 +670,10 @@ QPushButton:pressed{
     <widget class="QLabel" name="label_13">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>190</y>
-       <width>31</width>
-       <height>31</height>
+       <x>140</x>
+       <y>240</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -463,13 +686,38 @@ QPushButton:pressed{
       <string/>
      </property>
     </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>70</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Cinzel Black&quot;;
+    font-size: 38px;
+
+    color: rgb(214, 174, 78);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>LOGIN</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_new_password">
     <widget class="QLabel" name="label_newPasswordError">
      <property name="geometry">
       <rect>
-       <x>12</x>
-       <y>260</y>
+       <x>130</x>
+       <y>300</y>
        <width>421</width>
        <height>20</height>
       </rect>
@@ -485,47 +733,90 @@ QPushButton:pressed{
     <widget class="QLineEdit" name="lineEdit_newPassword">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>130</y>
-       <width>131</width>
-       <height>31</height>
+       <x>360</x>
+       <y>160</y>
+       <width>181</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_confirmNewPassword">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>180</y>
-       <width>131</width>
-       <height>31</height>
+       <x>360</x>
+       <y>240</y>
+       <width>181</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;
-    font-size: 14px;
-  
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
 }
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
 </string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>140</y>
-       <width>81</width>
-       <height>20</height>
+       <x>170</x>
+       <y>170</y>
+       <width>121</width>
+       <height>31</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
      </property>
      <property name="text">
       <string>password</string>
@@ -534,23 +825,36 @@ QPushButton:pressed{
     <widget class="QLabel" name="label_10">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>190</y>
-       <width>121</width>
-       <height>20</height>
+       <x>170</x>
+       <y>250</y>
+       <width>171</width>
+       <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
-      <string>confirm password:</string>
+      <string>confirm password</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>130</y>
-       <width>31</width>
-       <height>31</height>
+       <x>120</x>
+       <y>160</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -566,10 +870,10 @@ QPushButton:pressed{
     <widget class="QLabel" name="label_20">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>180</y>
-       <width>31</width>
-       <height>31</height>
+       <x>120</x>
+       <y>240</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -587,8 +891,8 @@ QPushButton:pressed{
     <widget class="QLabel" name="label_forgotError">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>220</y>
+       <x>220</x>
+       <y>290</y>
        <width>231</width>
        <height>21</height>
       </rect>
@@ -605,10 +909,10 @@ font-weight: bold;
     <widget class="QLineEdit" name="lineEdit_forgot_username">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>130</y>
-       <width>151</width>
-       <height>31</height>
+       <x>330</x>
+       <y>160</y>
+       <width>171</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -635,10 +939,10 @@ QLineEdit
     <widget class="QLineEdit" name="lineEdit_forgot_code">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>180</y>
-       <width>151</width>
-       <height>31</height>
+       <x>330</x>
+       <y>240</y>
+       <width>171</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -665,8 +969,8 @@ QLineEdit
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>130</y>
+       <x>190</x>
+       <y>170</y>
        <width>151</width>
        <height>31</height>
       </rect>
@@ -674,47 +978,54 @@ QLineEdit
      <property name="styleSheet">
       <string notr="true">QLabel
 {
-    font-family: &quot;IM FELL English&quot;;
+    font-family: &quot;Marcellus&quot;;
     font-size: 20px;
-    color: #DDD3B2;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
     background: transparent;
+    border: none;
 }</string>
      </property>
      <property name="text">
-      <string>usernam:</string>
+      <string> username</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>180</y>
-       <width>101</width>
-       <height>31</height>
+       <x>200</x>
+       <y>250</y>
+       <width>121</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QLabel
 {
-    font-family: &quot;Cinzel&quot;;
-    font-size: 16px;
-    font-weight: 600;
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
 
-    color: #D9C9A3;
+    color: rgb(232,224,205);
+
     background: transparent;
-}</string>
+    border: none;
+}
+</string>
      </property>
      <property name="text">
-      <string>verify-code:</string>
+      <string> verify code</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btnSendResetCode">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>240</y>
-       <width>131</width>
-       <height>41</height>
+       <x>250</x>
+       <y>330</y>
+       <width>180</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -722,6 +1033,17 @@ QLineEdit
     border-image: url(:/assets/authpage/sendcode.png) 0 0 0 0 stretch stretch;
     border: none;
     background: transparent;
+}
+QPushButton
+{
+    /*font-family: &quot;Marcellus&quot;;*/
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
 }</string>
      </property>
      <property name="text">
@@ -731,10 +1053,10 @@ QLineEdit
     <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
-       <x>80</x>
-       <y>130</y>
-       <width>31</width>
-       <height>31</height>
+       <x>150</x>
+       <y>160</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -750,10 +1072,10 @@ QLineEdit
     <widget class="QLabel" name="label_21">
      <property name="geometry">
       <rect>
-       <x>80</x>
-       <y>180</y>
-       <width>31</width>
-       <height>31</height>
+       <x>150</x>
+       <y>240</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -771,10 +1093,10 @@ QLineEdit
   <widget class="QPushButton" name="btnBack">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>290</y>
-     <width>121</width>
-     <height>41</height>
+     <x>120</x>
+     <y>410</y>
+     <width>180</width>
+     <height>60</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -782,6 +1104,18 @@ QLineEdit
     border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
     border: none;
     background: transparent;
+}
+
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
 }</string>
    </property>
    <property name="text">
@@ -791,10 +1125,10 @@ QLineEdit
   <widget class="QPushButton" name="btnConfirm">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>290</y>
-     <width>121</width>
-     <height>41</height>
+     <x>390</x>
+     <y>410</y>
+     <width>180</width>
+     <height>60</height>
     </rect>
    </property>
    <property name="whatsThis">
@@ -805,6 +1139,17 @@ QLineEdit
     border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
     border: none;
     background: transparent;
+}
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
 }</string>
    </property>
    <property name="text">

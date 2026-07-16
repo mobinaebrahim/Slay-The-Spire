@@ -58,5 +58,10 @@
         <file>assets/font/IMFellEnglish-Regular.ttf</file>
         <file>assets/font/Marcellus-Regular.ttf</file>
         <file>assets/font/RINGM___.TTF</file>
+        <file>assets/mainmenu/friend/accept.png</file>
+        <file>assets/mainmenu/friend/add.png</file>
+        <file>assets/mainmenu/friend/draggablepanel.png</file>
+        <file>assets/mainmenu/friend/reject.png</file>
+        <file>assets/mainmenu/friend/remove.png</file>
     </qresource>
 </RCC>

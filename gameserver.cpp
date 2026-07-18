@@ -1,27 +1,58 @@
-#ifndef GAMESERVER_H
-#define GAMESERVER_H
+#include "gameserver.h"
+#include <QDebug>
 
-#include <QObject>
-#include <QTcpServer>
-#include <QTcpSocket>
-#include <QList>
-
-class GameServer : public QObject
+GameServer::GameServer(QObject *parent)
+    : QObject(parent)
 {
-    Q_OBJECT
+    server = new QTcpServer(this);
+    connect(server, &QTcpServer::newConnection, this, &GameServer::on_new_connection);
+}
 
-public:
-    explicit GameServer(QObject *parent = nullptr);
-    bool start_listening(quint16 port);
+bool GameServer::start_listening(quint16 port)
+{
+    if (!server->listen(QHostAddress::Any, port)) {
+        qDebug() << "Server failed to start:" << server->errorString();
+        return false;
+    }
 
-private slots:
-    void on_new_connection();
-    void on_client_data_ready();
-    void on_client_disconnected();
+    qDebug() << "Server is listening on port" << port;
+    return true;
+}
 
-private:
-    QTcpServer *server;
-    QList<QTcpSocket*> clients;
-};
+void GameServer::on_new_connection()
+{
+    QTcpSocket *newClient = server->nextPendingConnection();
+    clients.append(newClient);
 
-#endif // GAMESERVER_H
+    qDebug() << "New client connected. Total clients:" << clients.size();
+
+    connect(newClient, &QTcpSocket::readyRead, this, &GameServer::on_client_data_ready);
+    connect(newClient, &QTcpSocket::disconnected, this, &GameServer::on_client_disconnected);
+}
+
+void GameServer::on_client_data_ready()
+{
+    QTcpSocket *senderSocket = qobject_cast<QTcpSocket*>(sender());
+    if (!senderSocket) return;
+
+    QByteArray data = senderSocket->readAll();
+    qDebug() << "Received data:" << data;
+
+    for (QTcpSocket *client : clients) {
+        if (client != senderSocket) {
+            client->write(data);
+        }
+    }
+}
+
+void GameServer::on_client_disconnected()
+{
+    QTcpSocket *disconnectedSocket = qobject_cast<QTcpSocket*>(sender());
+    if (!disconnectedSocket) return;
+
+    clients.removeAll(disconnectedSocket);
+    qDebug() << "Client disconnected. Total clients:" << clients.size();
+
+    disconnectedSocket->deleteLater();
+}
+

@@ -8,7 +8,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     ui->setupUi(this);
 
     // ---start background music---
-    AudioManager::instance().playMusic(":/assets/music/background.mp3");
+    //AudioManager::instance().playMusic(":/assets/music/background.mp3");
 
     // ---play click sound for every button in this window---
     const QList<QPushButton*> allButtons = this->findChildren<QPushButton*>();

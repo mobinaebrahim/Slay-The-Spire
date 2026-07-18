@@ -27,6 +27,7 @@ MapPage::MapPage(QWidget *parent)
         QTimer::singleShot(0, this, [this, node](){
             bool ok = m_gameMap->selectRoom(node);
             if (ok) {
+                AudioManager::instance().playEffect(":/assets/music/map_room.mp3");
                 m_mapView->buildScene(m_gameMap);
                 handleRoomEntered(node);
             }

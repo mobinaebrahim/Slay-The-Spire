@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QFontDatabase>
 
-#include "mainwindow.h"
+#include "mainmenuwindow.h"
 #include "usermanager.h"
 #include "scoremanager.h"
 #include "friendmanager.h"
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 
 
-    MainWindow w;
+    MainMenuWindow w;
     w.showFullScreen();
     return a.exec();
 }

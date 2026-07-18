@@ -179,7 +179,7 @@ void AuthPage::handle_login_sub()
     ui->label_loginError->clear();
     user_manager::instance().set_current_user(username, password);
 
-    MainWindow *mainWin = qobject_cast<MainWindow*>(this->parentWidget());
+    MainMenuWindow *mainWin = qobject_cast<MainMenuWindow*>(this->parentWidget());
     if (mainWin) {
         mainWin->go_to_menu();
     }
@@ -203,7 +203,7 @@ void AuthPage::handle_verify_code()
         QString password = ui->lineEdit_reg_password->text();
         user_manager::instance().set_current_user(username, password);
 
-        MainWindow *mainWin = qobject_cast<MainWindow*>(this->parentWidget());
+        MainMenuWindow *mainWin = qobject_cast<MainMenuWindow*>(this->parentWidget());
         if (mainWin) {
             mainWin->go_to_menu();
         }

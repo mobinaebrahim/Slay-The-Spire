@@ -16,9 +16,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        mainmenuwindow.cpp
+        mainmenuwindow.h
+        mainmenuwindow.ui
         usermanager.h
         usermanager.cpp
         savemanager.h

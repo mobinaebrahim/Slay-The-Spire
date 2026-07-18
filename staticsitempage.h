@@ -3,6 +3,10 @@
 
 #include <QDialog>
 #include <QButtonGroup>
+#include <QPainter>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QListWidgetItem>
 
 namespace Ui {
 class StaticsItemPage;
@@ -25,6 +29,10 @@ private:
     QString format_duration(int totalSeconds);
     void refresh_history();
     void refresh_character_stats();
+    void paintEvent(QPaintEvent *event);
+    QSize main_size;
+    QSize sub_page_size;
+    void resize_and_center(QSize newSize);
 
 };
 

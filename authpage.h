@@ -6,7 +6,7 @@
 #include <QPixmap>
 #include <QGraphicsDropShadowEffect>
 #include"usermanager.h"
-#include"mainwindow.h"
+#include"mainmenuwindow.h"
 #include <QRegularExpression>
 
 namespace Ui {

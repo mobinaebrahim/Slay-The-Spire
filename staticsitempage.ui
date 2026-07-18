@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
-    <height>1080</height>
+    <width>1500</width>
+    <height>1300</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@ Qwidget#overlaywidget{
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>-30</x>
      <y>0</y>
      <width>1821</width>
      <height>821</height>
@@ -169,129 +169,23 @@ Qwidget#overlaywidget{
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_6">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>240</y>
-       <width>63</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>370</y>
-       <width>63</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnRetun1">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>570</y>
-       <width>181</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border-image:url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
-</string>
-     </property>
-     <property name="text">
-      <string>return</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnfriends">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>290</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/friends.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnglobal">
-     <property name="geometry">
-      <rect>
-       <x>230</x>
-       <y>290</y>
-       <width>101</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    border-image: url(:/assets/mainmenu/leaderboards/global.png) 0 0 0 0 stretch stretch;
-    border: none;
-}
-QPushButton:checked {
-    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QWidget" name="widget" native="true">
      <property name="geometry">
       <rect>
        <x>-10</x>
-       <y>-20</y>
+       <y>-90</y>
        <width>1920</width>
        <height>1080</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0, 150);</string>
+      <string notr="true">/*background-color: rgba(0, 0, 0, 150);*/</string>
      </property>
-     <widget class="QTableWidget" name="table_scores">
-      <property name="geometry">
-       <rect>
-        <x>810</x>
-        <y>130</y>
-        <width>391</width>
-        <height>401</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btnTotalScore">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>500</y>
+        <x>220</x>
+        <y>420</y>
         <width>90</width>
         <height>29</height>
        </rect>
@@ -306,8 +200,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnHighestFloor">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>500</y>
+        <x>220</x>
+        <y>480</y>
         <width>90</width>
         <height>29</height>
        </rect>
@@ -322,8 +216,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnTotalWins">
       <property name="geometry">
        <rect>
-        <x>370</x>
-        <y>500</y>
+        <x>360</x>
+        <y>490</y>
         <width>90</width>
         <height>29</height>
        </rect>
@@ -338,8 +232,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnTotalTime">
       <property name="geometry">
        <rect>
-        <x>500</x>
-        <y>500</y>
+        <x>360</x>
+        <y>420</y>
         <width>90</width>
         <height>29</height>
        </rect>
@@ -351,37 +245,175 @@ QPushButton:checked {
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="btnglobal">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>260</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/global.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnfriends">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>260</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/leaderboards/friends.png) 0 0 0 0 stretch stretch;
+    border: none;
+}
+QPushButton:checked {
+    border-image: url(:/assets/mainmenu/leaderboards/glow.png) 0 0 0 0 stretch stretch;
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRetun1">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>580</y>
+        <width>181</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-image:url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
+</string>
+      </property>
+      <property name="text">
+       <string>return</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="table_scores">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>280</y>
+        <width>261</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListWidget{
+    background-color: transparent;
+    border: none;
+}</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>250</y>
+        <width>321</width>
+        <height>411</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">	border-image: url(:/assets/mainmenu/friend/draggablepanel.png);
+</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>240</y>
+        <width>63</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>360</y>
+        <width>63</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <zorder>btnTotalScore</zorder>
+     <zorder>btnHighestFloor</zorder>
+     <zorder>btnTotalWins</zorder>
+     <zorder>btnTotalTime</zorder>
+     <zorder>btnglobal</zorder>
+     <zorder>btnfriends</zorder>
+     <zorder>btnRetun1</zorder>
+     <zorder>label_2</zorder>
+     <zorder>table_scores</zorder>
+     <zorder>label_6</zorder>
+     <zorder>label_7</zorder>
     </widget>
     <zorder>widget</zorder>
     <zorder>label_4</zorder>
-    <zorder>label_6</zorder>
-    <zorder>label_7</zorder>
-    <zorder>btnRetun1</zorder>
-    <zorder>btnfriends</zorder>
-    <zorder>btnglobal</zorder>
    </widget>
    <widget class="QWidget" name="history">
-    <widget class="QTableWidget" name="table_history">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>270</y>
-       <width>651</width>
-       <height>351</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QPushButton" name="btnReturnHistory">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>630</y>
+       <x>190</x>
+       <y>540</y>
        <width>90</width>
        <height>29</height>
       </rect>
      </property>
      <property name="text">
       <string>return</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="table_history">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>200</y>
+       <width>641</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QListWidget{
+    background-color: transparent;
+    border: none;
+}</string>
      </property>
     </widget>
    </widget>

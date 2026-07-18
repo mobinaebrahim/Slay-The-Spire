@@ -45,7 +45,7 @@ void AudioManager::loadSettings()
 
 void AudioManager::playMusic(const QString &path)
 {
-    m_musicPlayer->setSource(QUrl(path));
+    m_musicPlayer->setSource(QUrl("qrc" + path));
     m_musicPlayer->play();
 }
 
@@ -57,7 +57,7 @@ void AudioManager::stopMusic()
 void AudioManager::playEffect(const QString &path)
 {
     QMediaPlayer *player = m_effectPlayers[m_nextEffectPlayer];
-    player->setSource(QUrl(path));
+    player->setSource(QUrl("qrc" + path));
     player->play();
 
     m_nextEffectPlayer = (m_nextEffectPlayer + 1) % EffectPoolSize;
@@ -85,4 +85,3 @@ void AudioManager::setEffectsVolume(int volume)
 
 int AudioManager::musicVolume() const { return m_musicVolume; }
 int AudioManager::effectsVolume() const { return m_effectsVolume; }
-

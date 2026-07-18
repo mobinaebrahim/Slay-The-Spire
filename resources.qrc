@@ -54,5 +54,10 @@
         <file>assets/mainmenu/friend/draggablepanel.png</file>
         <file>assets/mainmenu/friend/reject.png</file>
         <file>assets/mainmenu/friend/remove.png</file>
+        <file>assets/music/background.mp3</file>
+        <file>assets/music/confrim.mp3</file>
+        <file>assets/music/error.mp3</file>
+        <file>assets/music/map_room.mp3</file>
+        <file>assets/music/menu_button.mp3</file>
     </qresource>
 </RCC>

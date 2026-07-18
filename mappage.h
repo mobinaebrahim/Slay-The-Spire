@@ -6,8 +6,11 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QPushButton>
+
 #include "mapview.h"
 #include "gamemap.h"
+#include "audiomanager.h"
+
 
 class MapPage : public QWidget
 {

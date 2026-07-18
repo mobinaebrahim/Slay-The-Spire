@@ -7,6 +7,9 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // ---start background music---
+    AudioManager::instance().playMusic(":/assets/music/background.mp3");
+
     // ---set video on background---
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, ui->centralwidget);

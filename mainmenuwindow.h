@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINMENUWINDOW_H
+#define MAINMENUWINDOW_H
 
 #include <QMainWindow>
 #include <QMediaPlayer>
@@ -29,13 +29,13 @@ class MainMenuWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class MainMenuWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override;
+    explicit MainMenuWindow(QWidget *parent = nullptr);
+    ~MainMenuWindow() override;
     void go_to_menu();
 
 protected:
@@ -56,4 +56,4 @@ private:
     void handle_play_button();
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINMENUWINDOW_H

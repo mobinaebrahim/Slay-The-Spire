@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include "./ui_mainwindow.h"
+#include "mainmenuwindow.h"
+#include "./ui_mainmenuwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainMenuWindow::MainMenuWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainMenuWindow)
 {
@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
         friendsDlg->exec();
     });
 
-    connect(ui->btnPlay, &QPushButton::clicked, this, &MainWindow::handle_play_button);
+    connect(ui->btnPlay, &QPushButton::clicked, this, &MainMenuWindow::handle_play_button);
 
     connect(ui->btnContinue, &QPushButton::clicked, this, [this](){
         QMessageBox::information(this, "Continue", "Continuing your saved game!");
@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+void MainMenuWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
     view->setGeometry(0, 0, ui->centralwidget->width(), ui->centralwidget->height());
@@ -179,7 +179,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     scene->setSceneRect(0, 0, ui->centralwidget->width(), ui->centralwidget->height());
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
+void MainMenuWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
         return;
@@ -187,20 +187,20 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
-MainWindow::~MainWindow()
+MainMenuWindow::~MainMenuWindow()
 {
     delete ui;
 }
-void MainWindow::on_exit_button_clicked()
+void MainMenuWindow::on_exit_button_clicked()
 {
     close();
 }
-void MainWindow::go_to_menu()
+void MainMenuWindow::go_to_menu()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_menu);
 }
 
-void MainWindow::handle_play_button()
+void MainMenuWindow::handle_play_button()
 {
     QString currentUser = user_manager::instance().get_current_username();
     QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);

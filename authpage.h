@@ -26,6 +26,8 @@ public:
 private:
     Ui::AuthPage *ui;
 
+    void showError(QLabel *label, const QString &text);
+
     void handle_register_sub();
     void handle_verify_code();
     void handle_login_sub();

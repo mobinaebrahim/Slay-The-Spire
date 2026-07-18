@@ -20,6 +20,7 @@
 #include "gamemap.h"
 #include "mapview.h"
 #include "mappage.h"
+#include "audiomanager.h"
 
 
 

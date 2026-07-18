@@ -1,5 +1,6 @@
 #include "authpage.h"
 #include "ui_authpage.h"
+#include "audiomanager.h"
 
 AuthPage::AuthPage(QWidget *parent)
     : QDialog(parent)
@@ -40,6 +41,8 @@ AuthPage::AuthPage(QWidget *parent)
 
 
     connect(ui->btnConfirm, &QPushButton::clicked, this, [this](){
+        AudioManager::instance().playEffect(":/assets/music/confrim.mp3");
+
         QWidget *currentPage = ui->stackedWidget->currentWidget();
 
         qDebug() << "Current page object name:" << currentPage->objectName();
@@ -65,6 +68,8 @@ AuthPage::AuthPage(QWidget *parent)
     });
 
     connect(ui->btnBack, &QPushButton::clicked, this, [this](){
+        AudioManager::instance().playEffect(":/assets/music/menu_button.mp3");
+
         QWidget *currentPage = ui->stackedWidget->currentWidget();
 
         if (currentPage == ui->page_register) {
@@ -85,6 +90,8 @@ AuthPage::AuthPage(QWidget *parent)
     });
 
     connect(ui->btnForgotPassword, &QPushButton::clicked, this, [this](){
+        AudioManager::instance().playEffect(":/assets/music/menu_button.mp3");
+
         ui->label_loginError->clear();
         ui->stackedWidget->setCurrentWidget(ui->page_forgot_code);
     });
@@ -116,6 +123,12 @@ void AuthPage::show_register_page()
     ui->stackedWidget->setCurrentWidget(ui->page_register);
 }
 
+void AuthPage::showError(QLabel *label, const QString &text)
+{
+    label->setText(text);
+    AudioManager::instance().playEffect(":/assets/music/error.mp3");
+}
+
 void AuthPage::handle_register_sub()
 {
     QString username = ui->lineEdit_reg_username->text();
@@ -124,23 +137,23 @@ void AuthPage::handle_register_sub()
     QString email = ui->lineEdit_email->text();
 
     if (username.isEmpty() || password.isEmpty()) {
-        ui->label_registerError->setText("Username and password cannot be empty!");
+        showError(ui->label_registerError, "Username and password cannot be empty!");
         return;
     }
 
     if (password.length() < 8) {
-        ui->label_registerError->setText("Password must be at least 8 characters!");
+        showError(ui->label_registerError, "Password must be at least 8 characters!");
         return;
     }
 
     if (password != confirmPassword) {
-        ui->label_registerError->setText("Confirm password doesn't match!");
+        showError(ui->label_registerError, "Confirm password doesn't match!");
         return;
     }
 
     QRegularExpression emailRegex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     if (!emailRegex.match(email).hasMatch()) {
-        ui->label_registerError->setText("Incorrect email format!");
+        showError(ui->label_registerError, "Incorrect email format!");
         return;
     }
 
@@ -150,7 +163,7 @@ void AuthPage::handle_register_sub()
         ui->label_registerError->clear();
         ui->stackedWidget->setCurrentWidget(ui->page_verify);
     } else {
-        ui->label_registerError->setText("Username already exists!");
+        showError(ui->label_registerError, "Username already exists!");
     }
 }
 
@@ -160,19 +173,19 @@ void AuthPage::handle_login_sub()
     QString password = ui->lineEdit_lgn_password->text();
 
     if (username.isEmpty() || password.isEmpty()) {
-        ui->label_loginError->setText("Username and password cannot be empty!");
+        showError(ui->label_loginError, "Username and password cannot be empty!");
         return;
     }
 
     if (!user_manager::instance().usernmae_exist(username)) {
-        ui->label_loginError->setText("Username not exist!");
+        showError(ui->label_loginError, "Username not exist!");
         return;
     }
 
     bool success = user_manager::instance().login_user(username, password);
 
     if (!success) {
-        ui->label_loginError->setText("Incorrect password!");
+        showError(ui->label_loginError, "Incorrect password!");
         return;
     }
 
@@ -192,7 +205,7 @@ void AuthPage::handle_verify_code()
     QString code = ui->lineEdit_verifyCode->text();
 
     if (code.isEmpty()) {
-        ui->label_verifyError->setText("Please enter the verification code!");
+        showError(ui->label_verifyError, "Please enter the verification code!");
         return;
     }
 
@@ -209,7 +222,7 @@ void AuthPage::handle_verify_code()
         }
         this->close();
     } else {
-        ui->label_verifyError->setText("Verify code not match!");
+        showError(ui->label_verifyError, "Verify code not match!");
     }
 }
 
@@ -218,7 +231,7 @@ void AuthPage::handle_send_reset_code()
     QString username = ui->lineEdit_forgot_username->text();
 
     if (username.isEmpty()) {
-        ui->label_forgotError->setText("Please enter your username!");
+        showError(ui->label_forgotError, "Please enter your username!");
         return;
     }
 
@@ -232,7 +245,7 @@ void AuthPage::handle_send_reset_code()
 
         ui->lineEdit_forgot_code->show();
     } else {
-        ui->label_forgotError->setText("Username not exist!");
+        showError(ui->label_forgotError, "Username not exist!");
     }
 }
 
@@ -242,7 +255,7 @@ void AuthPage::handle_forgot_code_sub()
     QString code = ui->lineEdit_forgot_code->text();
 
     if (code.isEmpty()) {
-        ui->label_forgotError->setText("Please enter the verification code!");
+        showError(ui->label_forgotError, "Please enter the verification code!");
         return;
     }
 
@@ -252,7 +265,7 @@ void AuthPage::handle_forgot_code_sub()
         ui->label_forgotError->clear();
         ui->stackedWidget->setCurrentWidget(ui->page_new_password);
     } else {
-        ui->label_forgotError->setText("Verify code not match!");
+        showError(ui->label_forgotError, "Verify code not match!");
     }
 }
 
@@ -263,17 +276,17 @@ void AuthPage::handle_new_password_sub()
     QString username = ui->lineEdit_forgot_username->text();
 
     if (newPassword.isEmpty()) {
-        ui->label_newPasswordError->setText("Password cannot be empty!");
+        showError(ui->label_newPasswordError, "Password cannot be empty!");
         return;
     }
 
     if (newPassword.length() < 8) {
-        ui->label_newPasswordError->setText("Password must be at least 8 characters!");
+        showError(ui->label_newPasswordError, "Password must be at least 8 characters!");
         return;
     }
 
     if (newPassword != confirmNewPassword) {
-        ui->label_newPasswordError->setText("Passwords don't match!");
+        showError(ui->label_newPasswordError, "Passwords don't match!");
         return;
     }
 
@@ -283,7 +296,7 @@ void AuthPage::handle_new_password_sub()
         ui->label_newPasswordError->clear();
         ui->stackedWidget->setCurrentWidget(ui->page_login);
     } else {
-        ui->label_newPasswordError->setText("Something went wrong. Try again!");
+        showError(ui->label_newPasswordError, "Something went wrong. Try again!");
     }
 }
 

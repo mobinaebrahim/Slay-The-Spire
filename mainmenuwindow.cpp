@@ -10,6 +10,14 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     // ---start background music---
     AudioManager::instance().playMusic(":/assets/music/background.mp3");
 
+    // ---play click sound for every button in this window---
+    const QList<QPushButton*> allButtons = this->findChildren<QPushButton*>();
+    for (QPushButton *btn : allButtons) {
+        connect(btn, &QPushButton::clicked, this, [](){
+            AudioManager::instance().playEffect(":/assets/music/menu_button.mp3");
+        });
+    }
+
     // ---set video on background---
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, ui->centralwidget);

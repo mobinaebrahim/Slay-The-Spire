@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>701</width>
+    <width>707</width>
     <height>503</height>
    </rect>
   </property>
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>10</y>
-     <width>661</width>
-     <height>471</height>
+     <y>200</y>
+     <width>581</width>
+     <height>281</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -65,19 +65,6 @@
       <string>PushButton</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnBack">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>410</y>
-       <width>90</width>
-       <height>29</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>PushButton</string>
-     </property>
-    </widget>
     <widget class="QSlider" name="sliderMusic">
      <property name="geometry">
       <rect>
@@ -115,6 +102,72 @@
      </property>
      <property name="text">
       <string>PushButton</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnConfirm_2">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>320</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QPushButton#btnConfirm {&lt;/p&gt;&lt;p&gt;    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;&lt;/p&gt;&lt;p&gt;    border: none;&lt;/p&gt;&lt;p&gt;    background: transparent;&lt;/p&gt;&lt;p&gt;}&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnConfirm {
+    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>confrim</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnback2_2">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>310</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnBack {
+    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>back</string>
      </property>
     </widget>
    </widget>
@@ -322,6 +375,19 @@ font-weight: bold;
     <rect>
      <x>320</x>
      <y>190</y>
+     <width>90</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnReturn">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>130</y>
      <width>90</width>
      <height>29</height>
     </rect>

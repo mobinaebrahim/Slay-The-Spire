@@ -2,6 +2,8 @@
 #define SETTINGPAGE_H
 
 #include <QWidget>
+#include <QPainter>
+
 #include "audiomanager.h"
 #include "cursormanager.h"
 #include "usermanager.h"
@@ -22,6 +24,8 @@ private:
     Ui::SettingPage *ui;
 
     void handleChangePassword();
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // SETTINGPAGE_H

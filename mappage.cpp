@@ -20,6 +20,10 @@ MapPage::MapPage(QWidget *parent, bool isLeader)
         m_gameMap->startRun();
         m_mapView->buildScene(m_gameMap);
 
+        QTimer::singleShot(0, this, [this](){
+            m_mapView->buildScene(m_gameMap);
+        });
+
         QTimer::singleShot(300, this, [this](){
             sendMapData();
         });
@@ -73,6 +77,10 @@ void MapPage::handleIncomingMapData(const QJsonObject &mapJson)
     m_gameMap->fromJson(mapJson);
     m_gameMap->startRun();
     m_mapView->buildScene(m_gameMap);
+
+    QTimer::singleShot(0, this, [this](){
+        m_mapView->buildScene(m_gameMap);
+    });
 }
 
 void MapPage::handleIncomingRoomSelected(int floor, int index)

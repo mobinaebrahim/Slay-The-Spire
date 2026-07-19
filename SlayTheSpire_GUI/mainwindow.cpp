@@ -394,14 +394,18 @@ void MainWindow::updateHandUI() {
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
             if (!allEnemies.empty() && !isAttackAnimating) {
                 bool isAttackCard = (card->getType() == CardType::Attack);
+                int handSizeBefore = playerObject->getHandSize();
 
                 battleManager->playCardAction(card, allEnemies[0]);
                 battleManager->cleanupDeadEnemies();
+
+                 bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
+
                 updateHandUI();
                 updateCharacterUI();
                 checkGameOver();
 
-                if (isAttackCard && !isGameOver) {
+                if (isAttackCard && cardWasActuallyPlayed && !isGameOver) {
                     hitSoundPlayer->setPosition(0);
                     hitSoundPlayer->play();
                     playHitEffect(enemyHitOverlay, enemyHitOpacity);

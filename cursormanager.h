@@ -2,6 +2,11 @@
 #define CURSORMANAGER_H
 
 #include <QString>
+#include <QApplication>
+#include <QCursor>
+#include <QPixmap>
+#include <QSettings>
+
 
 class CursorManager
 {

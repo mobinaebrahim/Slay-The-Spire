@@ -1,8 +1,4 @@
 #include "cursormanager.h"
-#include <QApplication>
-#include <QCursor>
-#include <QPixmap>
-#include <QSettings>
 
 QString CursorManager::pathForIndex(int index)
 {
@@ -14,5 +10,19 @@ QString CursorManager::pathForIndex(int index)
     }
 }
 
+void CursorManager::applyCursor(int cursorIndex)
+{
+    QPixmap pix(pathForIndex(cursorIndex));
+    if (pix.isNull())
+        return;
+
+    QPixmap scaled = pix.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QCursor customCursor(scaled, 0, 0);
+    qApp->restoreOverrideCursor();
+    qApp->setOverrideCursor(customCursor);
+
+    QSettings settings;
+    settings.setValue("appearance/cursorIndex", cursorIndex);
+}
 
 #endif

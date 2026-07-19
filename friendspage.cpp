@@ -126,23 +126,19 @@ void friendspage::populate_friends_list()
     }
 }
 
-void friendspage::populate_pending_requests()
+void friendspage::populate_friends_list()
 {
-    ui->listPendingRequests->clear();
+    ui->listFriends->clear();
 
     QListWidgetItem *spacerItem = new QListWidgetItem();
     spacerItem->setSizeHint(QSize(0, 10));
     spacerItem->setFlags(Qt::NoItemFlags);
-    ui->listPendingRequests->addItem(spacerItem);
+    ui->listFriends->addItem(spacerItem);
 
     QString currentUser = user_manager::instance().get_current_username();
-    QStringList requests = FriendManager::instance().getPendingRequests(currentUser);
+    QStringList friendsList = FriendManager::instance().getFriendsList(currentUser);
 
-    qDebug() << "Current user:" << currentUser;
-    qDebug() << "Pending requests count:" << requests.size();
-    qDebug() << "Requests:" << requests;
-
-    for (const QString &requester : requests) {
+    for (const QString &friendName : friendsList) {
         QWidget *itemWidget = new QWidget();
         itemWidget->setFixedHeight(50);
 
@@ -150,7 +146,7 @@ void friendspage::populate_pending_requests()
         layout->setContentsMargins(15, 5, 25, 5);
         layout->setSpacing(10);
 
-        QLabel *nameLabel = new QLabel(requester);
+        QLabel *nameLabel = new QLabel(friendName);
         nameLabel->setContentsMargins(20, 0, 0, 0);
         nameLabel->setStyleSheet(
             "color: #E8D2A0;"
@@ -160,22 +156,22 @@ void friendspage::populate_pending_requests()
             );
         nameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-        QPushButton *acceptBtn = new QPushButton();
-        acceptBtn->setIcon(QIcon(":/assets/mainmenu/friend/accept.png"));
-        acceptBtn->setIconSize(QSize(40, 40));
-        acceptBtn->setFixedSize(48, 48);
-        acceptBtn->setStyleSheet(
+        QPushButton *inviteBtn = new QPushButton();
+        inviteBtn->setIcon(QIcon(":/assets/mainmenu/friend/remove.png"));
+        inviteBtn->setIconSize(QSize(40, 40));
+        inviteBtn->setFixedSize(48, 48);
+        inviteBtn->setStyleSheet(
             "QPushButton{"
             "border:none;"
             "background:transparent;"
             "}"
             );
 
-        QPushButton *rejectBtn = new QPushButton();
-        rejectBtn->setIcon(QIcon(":/assets/mainmenu/friend/reject.png"));
-        rejectBtn->setIconSize(QSize(40, 40));
-        rejectBtn->setFixedSize(48, 48);
-        rejectBtn->setStyleSheet(
+        QPushButton *removeBtn = new QPushButton();
+        removeBtn->setIcon(QIcon(":/assets/mainmenu/friend/remove.png"));
+        removeBtn->setIconSize(QSize(40, 40));
+        removeBtn->setFixedSize(48, 48);
+        removeBtn->setStyleSheet(
             "QPushButton{"
             "border:none;"
             "background:transparent;"
@@ -183,27 +179,33 @@ void friendspage::populate_pending_requests()
             );
 
         layout->addWidget(nameLabel);
-        layout->addWidget(acceptBtn);
-        layout->addWidget(rejectBtn);
+        layout->addWidget(inviteBtn);
+        layout->addWidget(removeBtn);
         layout->setAlignment(nameLabel, Qt::AlignVCenter);
-        layout->setAlignment(acceptBtn, Qt::AlignVCenter);
-        layout->setAlignment(rejectBtn, Qt::AlignVCenter);
+        layout->setAlignment(inviteBtn, Qt::AlignVCenter);
+        layout->setAlignment(removeBtn, Qt::AlignVCenter);
 
         QListWidgetItem *listItem = new QListWidgetItem();
         listItem->setSizeHint(itemWidget->sizeHint());
 
-        ui->listPendingRequests->addItem(listItem);
-        ui->listPendingRequests->setItemWidget(listItem, itemWidget);
+        ui->listFriends->addItem(listItem);
+        ui->listFriends->setItemWidget(listItem, itemWidget);
 
-        connect(acceptBtn, &QPushButton::clicked, this, [this, requester](){
-            FriendManager::instance().acceptFriendRequest(user_manager::instance().get_current_username(), requester);
-            populate_pending_requests();
-            populate_friends_list();
+        connect(inviteBtn, &QPushButton::clicked, this, [this, friendName](){
+            QString currentUser = user_manager::instance().get_current_username();
+
+            connect(&NetworkManager::instance(), &NetworkManager::room_created, this,
+                    [this, currentUser, friendName](const QString &roomCode){
+                        FriendManager::instance().sendGameInvite(currentUser, friendName, roomCode);
+                        QMessageBox::information(this, "Invite Sent", "Game invite sent to " + friendName);
+                    });
+
+            NetworkManager::instance().create_room();
         });
 
-        connect(rejectBtn, &QPushButton::clicked, this, [this, requester](){
-            FriendManager::instance().rejectFriendRequest(user_manager::instance().get_current_username(), requester);
-            populate_pending_requests();
+        connect(removeBtn, &QPushButton::clicked, this, [this, friendName](){
+            FriendManager::instance().removeFriend(user_manager::instance().get_current_username(), friendName);
+            populate_friends_list();
         });
     }
 }

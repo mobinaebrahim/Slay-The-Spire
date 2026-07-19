@@ -42,8 +42,8 @@ BrutalityCard::BrutalityCard() : PowerCard(CardType::Power, "Brutality",
     "At the start of your turn lose 1 HP and draw 1 card", 0) {}
 
 void BrutalityCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
-    if (caster) 
-        caster->TurnStartEffect("Brutality");   
+    if (caster)
+        caster->applyStatus(new BrutalityEffect());
 }
 
 //____________________________________FeelNoPainCard___________________________________

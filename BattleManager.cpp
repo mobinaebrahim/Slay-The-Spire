@@ -42,18 +42,22 @@ int BattleManager::GetTotalDamageToAllEnemies(int damage) {
 void BattleManager::playerTurn() {
     isPlayerTurn = true;
     player->resetEnergy();
-    player->drawCards(5); 
+    player->applyTurnStartEffects();
+    player->drawCards(5);
 }
 
 void BattleManager::enemyTurn() {
     isPlayerTurn = false;
-    player->endTurnCleanUp(); 
+    player->applyTurnEndEffects();
+    player->endTurnCleanUp();
 
     for (Enemy* enemy : enemies) {
-        if (enemy->getHp() > 0) 
-            enemy->executeAction(player); 
+        if (enemy->getHp() > 0) {
+            enemy->executeAction(player);
+            enemy->applyTurnEndEffects();
+        }
     }
-    playerTurn(); 
+    playerTurn();
 }
 
 void BattleManager::playCardAction(Card* card, Enemy* target) {

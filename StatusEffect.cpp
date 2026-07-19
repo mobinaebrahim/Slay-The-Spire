@@ -1,5 +1,6 @@
 #include "StatusEffect.h"
 #include "character.h"
+#include "Player.h"
 
 //_______________________________________StatusEffect_______________________________________
 StatusEffect:: StatusEffect(string name, int amount) : name(name), amount(amount) {}
@@ -85,4 +86,14 @@ DemonFormEffect::DemonFormEffect(int amount) : StatusEffect("DemonForm", amount)
 
 void DemonFormEffect::onTurnStart(Character* owner) {
     owner->applyStatus(new StrengthEffect(amount));
+}
+
+//______________________________________BrutalityEffect_____________________________________
+BrutalityEffect::BrutalityEffect() : StatusEffect("Brutality", 1) {}
+
+void BrutalityEffect::onTurnStart(Character* owner) {
+    owner->decreaseHp(1);
+    Player* player = dynamic_cast<Player*>(owner);
+    if (player)
+        player->drawCards(1);
 }

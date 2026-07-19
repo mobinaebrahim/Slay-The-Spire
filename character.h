@@ -38,6 +38,9 @@ public:
     int calculateOutgoingDamage(int baseDamage);
     int calculateIncomingDamage(int baseDamage);
 
+    void applyTurnStartEffects();
+    void applyTurnEndEffects();
+
     int getHp() const { return hp; }
     int getBlock() const { return block; }
     string getName() const { return name; }

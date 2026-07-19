@@ -185,3 +185,22 @@ bool Player::isHandAllAttacks() {
     }
     return true; 
 }
+
+void Character::applyTurnStartEffects() {
+    for (auto* effect : effects)
+        effect->onTurnStart(this);
+}
+
+void Character::applyTurnEndEffects() {
+    for (auto* effect : effects)
+        effect->onTurnEnd(this);
+
+    for (auto it = effects.begin(); it != effects.end(); ) {
+        if ((*it)->isExpired()) {
+            delete *it;
+            it = effects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}

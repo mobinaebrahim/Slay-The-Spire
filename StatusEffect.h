@@ -22,6 +22,7 @@ public:
     virtual int modifyBlock(int baseBlock);
     virtual void onTurnEnd(Character* owner) {}
     virtual void onTurnStart(Character* owner) {}
+    virtual bool isExpired() const { return false; }
 };
 
 class StrengthEffect : public StatusEffect {
@@ -41,6 +42,7 @@ public:
     VulnerableEffect(int turns);
     int modifyIncomingDamage(int baseDamage) override;
     void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
 };
 
 class WeakEffect : public StatusEffect {
@@ -48,6 +50,7 @@ public:
     WeakEffect(int turns);
     int modifyOutgoingDamage(int baseDamage) override;
     void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
 };
 
 class FrailEffect : public StatusEffect {
@@ -55,6 +58,7 @@ public:
     FrailEffect(int turns);
     int modifyBlock(int baseBlock) override;
     void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
 };
 
 class MetallicizeEffect : public StatusEffect {
@@ -67,11 +71,18 @@ class EntangledEffect : public StatusEffect {
 public:
     EntangledEffect(int turns);
     void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
 };
 
 class DemonFormEffect : public StatusEffect {
 public:
     DemonFormEffect(int amount);
+    void onTurnStart(Character* owner) override;
+};
+
+class BrutalityEffect : public StatusEffect {
+public:
+    BrutalityEffect();
     void onTurnStart(Character* owner) override;
 };
 

@@ -2,6 +2,7 @@
 #define SETTINGPAGE_H
 
 #include <QWidget>
+#include "audiomanager.h"
 
 namespace Ui {
 class SettingPage;

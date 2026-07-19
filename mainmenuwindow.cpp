@@ -100,6 +100,12 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
         friendsDlg->exec();
     });
 
+    connect(ui->btnSetting, &QPushButton::clicked, this, [this](){
+        SettingPage *settingDlg = new SettingPage(this);
+        settingDlg->setAttribute(Qt::WA_DeleteOnClose);
+        settingDlg->show();
+    });
+
     connect(ui->btnPlay, &QPushButton::clicked, this, &MainMenuWindow::handle_play_button);
 
     connect(ui->btnContinue, &QPushButton::clicked, this, [this](){

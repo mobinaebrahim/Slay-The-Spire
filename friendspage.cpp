@@ -214,21 +214,22 @@ void friendspage::populate_friends_list()
         ui->listFriends->addItem(listItem);
         ui->listFriends->setItemWidget(listItem, itemWidget);
 
+        connect(removeBtn, &QPushButton::clicked, this, [this, friendName](){
+            FriendManager::instance().removeFriend(user_manager::instance().get_current_username(), friendName);
+            populate_friends_list();
+        });
+
         connect(inviteBtn, &QPushButton::clicked, this, [this, friendName](){
             QString currentUser = user_manager::instance().get_current_username();
 
             connect(&NetworkManager::instance(), &NetworkManager::room_created, this,
                     [this, currentUser, friendName](const QString &roomCode){
+                        NetworkManager::instance().setIsLeader(true);
                         FriendManager::instance().sendGameInvite(currentUser, friendName, roomCode);
                         QMessageBox::information(this, "Invite Sent", "Game invite sent to " + friendName);
                     });
 
             NetworkManager::instance().create_room();
-        });
-
-        connect(removeBtn, &QPushButton::clicked, this, [this, friendName](){
-            FriendManager::instance().removeFriend(user_manager::instance().get_current_username(), friendName);
-            populate_friends_list();
         });
     }
 }
@@ -284,6 +285,7 @@ void friendspage::populate_game_invites()
             QString roomCode;
 
             if (FriendManager::instance().acceptGameInvite(currentUser, inviter, roomCode)) {
+                NetworkManager::instance().setIsLeader(false);
                 NetworkManager::instance().join_room(roomCode);
                 QMessageBox::information(this, "Joining Game", "Joining " + inviter + "'s game...");
                 populate_game_invites();

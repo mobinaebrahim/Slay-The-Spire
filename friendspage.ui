@@ -104,9 +104,9 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
    <property name="geometry">
     <rect>
      <x>470</x>
-     <y>330</y>
+     <y>350</y>
      <width>291</width>
-     <height>191</height>
+     <height>171</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -182,9 +182,9 @@ QPushButton
    <property name="geometry">
     <rect>
      <x>470</x>
-     <y>130</y>
+     <y>170</y>
      <width>291</width>
-     <height>191</height>
+     <height>171</height>
     </rect>
    </property>
    <property name="styleSheet">

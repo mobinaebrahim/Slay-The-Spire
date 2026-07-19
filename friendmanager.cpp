@@ -204,3 +204,18 @@ bool FriendManager::rejectGameInvite(const QString &username, const QString &fro
     }
     return true;
 }
+
+QStringList FriendManager::getPendingGameInvites(const QString &username)
+{
+    QStringList inviters;
+
+    QSqlQuery query;
+    query.prepare("SELECT from_user FROM game_invites WHERE to_user = :username AND status = 'pending'");
+    query.bindValue(":username", username);
+    query.exec();
+
+    while (query.next()) {
+        inviters.append(query.value("from_user").toString());
+    }
+    return inviters;
+}

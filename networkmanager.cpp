@@ -39,6 +39,14 @@ void NetworkManager::create_room()
     send_json(msg);
 }
 
+void NetworkManager::join_room(const QString &room_code)
+{
+    QJsonObject msg;
+    msg["type"] = "join_room";
+    msg["room_code"] = room_code;
+    send_json(msg);
+}
+
 bool NetworkManager::is_connected() const
 {
     return socket->state() == QAbstractSocket::ConnectedState;

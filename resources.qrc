@@ -59,5 +59,8 @@
         <file>assets/music/error.mp3</file>
         <file>assets/music/map_room.mp3</file>
         <file>assets/music/menu_button.mp3</file>
+        <file>assets/mainmenu/cursor2.png</file>
+        <file>assets/mainmenu/cursor3.png</file>
+        <file>assets/mainmenu/cursor1.png</file>
     </qresource>
 </RCC>

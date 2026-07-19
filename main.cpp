@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
     //---server test ---
 
-    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+    /*NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
         qDebug() << "TEST: Successfully connected to server!";
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::message_received, [](const QString &msg){
         qDebug() << "TEST: Received message:" << msg;
-    });
+    });*/
 
     w.showFullScreen();
     return a.exec();

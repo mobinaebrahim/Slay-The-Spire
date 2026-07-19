@@ -29,6 +29,7 @@ public:
     int getGold() const { return gold; }
     int getDrawPileSize() const { return drawPile.size(); }
     int getDiscardPileSize() const { return discardPile.size(); }
+    int getExhaustPileSize() const { return exhaustPile.size(); }
     int getEnergy() const {return currentEnergy;}
     int getMaxEnergy() const { return maxEnergy; }
     int getHandSize(){ return hand.size(); }

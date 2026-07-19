@@ -78,6 +78,7 @@ private:
     QLabel* drawPileCountLabel;
     QLabel* discardPileIconLabel;
     QLabel* discardPileCountLabel;
+    QLabel* exhaustPileBadge;
 
     QLabel* gameOverLabel;
     QGraphicsOpacityEffect* gameOverOpacityEffect;

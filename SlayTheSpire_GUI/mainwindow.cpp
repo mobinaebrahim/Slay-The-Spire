@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     goldCountLabel->setAlignment(Qt::AlignCenter);
     goldCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
 
+    // ---- Draw Pile ----
     drawPileIconLabel = new QLabel(this);
     drawPileIconLabel->setFixedSize(84, 84);
     drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -83,9 +84,13 @@ MainWindow::MainWindow(QWidget *parent)
         "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
         "font-size: 11px; border-radius: 4px;");
 
-    discardPileIconLabel = new QLabel(this);
-    discardPileIconLabel->setFixedSize(84, 84);
-    discardPileIconLabel->setPixmap(QPixmap(":/images/icons/discard_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    // ---- Discard Pile + Exhaust Badge (توی یه wrapper) ----
+    QWidget* discardWrapper = new QWidget(this);
+    discardWrapper->setFixedSize(90, 90);
+
+    discardPileIconLabel = new QLabel(discardWrapper);
+    discardPileIconLabel->setGeometry(16, 16, 74, 74);
+    discardPileIconLabel->setPixmap(QPixmap(":/images/icons/discard_pile.png").scaled(74, 74, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     discardPileCountLabel = new QLabel(discardPileIconLabel);
     discardPileCountLabel->setGeometry(12, 28, 28, 16);
@@ -93,6 +98,15 @@ MainWindow::MainWindow(QWidget *parent)
     discardPileCountLabel->setStyleSheet(
         "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
         "font-size: 11px; border-radius: 4px;");
+
+    exhaustPileBadge = new QLabel(discardWrapper);
+    exhaustPileBadge->setFixedSize(26, 26);
+    exhaustPileBadge->move(0, 0);
+    exhaustPileBadge->setAlignment(Qt::AlignCenter);
+    exhaustPileBadge->setStyleSheet(
+        "background-color: #6a3fa0; color: white; border: 2px solid #9b6fd6; "
+        "border-radius: 13px; font-weight: bold; font-size: 11px;");
+    exhaustPileBadge->hide();
 
     ui->EndTurnButton->setText("");
     ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
@@ -185,7 +199,7 @@ MainWindow::MainWindow(QWidget *parent)
     bottomBarLayout->addWidget(playerEnergyOrb, 0, Qt::AlignBottom);
     bottomBarLayout->addWidget(ui->CardsContainer, 1);
     bottomBarLayout->addWidget(drawPileIconLabel, 0, Qt::AlignBottom);
-    bottomBarLayout->addWidget(discardPileIconLabel, 0, Qt::AlignBottom);
+    bottomBarLayout->addWidget(discardWrapper, 0, Qt::AlignBottom);
     bottomBarLayout->addSpacing(12);
     mainLayout->addLayout(bottomBarLayout);
 
@@ -514,6 +528,13 @@ void MainWindow::updateCharacterUI() {
     playerHpTopLabel->setText(QString("%1/%2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
     drawPileCountLabel->setText(QString::number(playerObject->getDrawPileSize()));
     discardPileCountLabel->setText(QString::number(playerObject->getDiscardPileSize()));
+
+    int exhaustCount = playerObject->getExhaustPileSize();
+    exhaustPileBadge->setVisible(exhaustCount > 0);
+    if (exhaustCount > 0) {
+        exhaustPileBadge->setText(QString::number(exhaustCount));
+        exhaustPileBadge->raise();
+    }
 
     const auto& enemies = battleManager->getEnemies();
     bool hasEnemy = !enemies.empty();

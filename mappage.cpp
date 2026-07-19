@@ -1,35 +1,56 @@
 #include "mappage.h"
 
-MapPage::MapPage(QWidget *parent)
+MapPage::MapPage(QWidget *parent, bool isLeader)
     : QWidget(parent)
+    , m_isLeader(isLeader)
 {
     setWindowFlags(Qt::Window);
     setWindowTitle("Map");
 
     m_gameMap = new GameMap();
-    m_gameMap->generate();
-    m_gameMap->startRun();
-
     m_mapView = new MapView(this);
-    m_mapView->buildScene(m_gameMap);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_mapView);
     setLayout(layout);
 
-    QTimer::singleShot(0, this, [this](){
+    if (m_isLeader) {
+        m_gameMap->generate();
+        m_gameMap->startRun();
         m_mapView->buildScene(m_gameMap);
-    });
+
+        QTimer::singleShot(300, this, [this](){
+            sendMapData();
+        });
+    }
+
+    connect(&NetworkManager::instance(), &NetworkManager::game_action_received, this,
+            [this](const QJsonObject &obj){
+                QString type = obj["type"].toString();
+                if (type == "map_data" && !m_isLeader) {
+                    handleIncomingMapData(obj["map"].toObject());
+                }
+                else if (type == "room_selected" && !m_isLeader) {
+                    handleIncomingRoomSelected(obj["floor"].toInt(), obj["index"].toInt());
+                }
+            });
 
     connect(m_mapView, &MapView::roomClicked, this, [this](MapNode *node){
+        if (!m_isLeader) return;
+
         QTimer::singleShot(0, this, [this, node](){
             bool ok = m_gameMap->selectRoom(node);
             if (ok) {
                 AudioManager::instance().playEffect(":/assets/music/map_room.mp3");
                 m_mapView->buildScene(m_gameMap);
                 handleRoomEntered(node);
+
+                QJsonObject msg;
+                msg["type"] = "room_selected";
+                msg["floor"] = node->floor();
+                msg["index"] = node->index();
+                NetworkManager::instance().send_game_action(msg);
             }
         });
     });
@@ -37,6 +58,34 @@ MapPage::MapPage(QWidget *parent)
     connect(m_mapView, &MapView::returnClicked, this, [this](){
         this->close();
     });
+}
+
+void MapPage::sendMapData()
+{
+    QJsonObject msg;
+    msg["type"] = "map_data";
+    msg["map"] = m_gameMap->toJson();
+    NetworkManager::instance().send_game_action(msg);
+}
+
+void MapPage::handleIncomingMapData(const QJsonObject &mapJson)
+{
+    m_gameMap->fromJson(mapJson);
+    m_gameMap->startRun();
+    m_mapView->buildScene(m_gameMap);
+}
+
+void MapPage::handleIncomingRoomSelected(int floor, int index)
+{
+    MapNode *node = m_gameMap->nodeAt(floor, index);
+    if (!node) return;
+
+    bool ok = m_gameMap->selectRoom(node);
+    if (ok) {
+        AudioManager::instance().playEffect(":/assets/music/map_room.mp3");
+        m_mapView->buildScene(m_gameMap);
+        handleRoomEntered(node);
+    }
 }
 
 void MapPage::handleRoomEntered(MapNode *node)

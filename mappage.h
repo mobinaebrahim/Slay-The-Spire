@@ -6,22 +6,25 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QJsonObject>
 
 #include "mapview.h"
 #include "gamemap.h"
 #include "audiomanager.h"
+#include "networkmanager.h"
 
 
 class MapPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MapPage(QWidget *parent = nullptr);
+    explicit MapPage(QWidget *parent = nullptr, bool isLeader = true);
     ~MapPage();
 
 private:
     MapView *m_mapView;
     GameMap *m_gameMap;
+    bool m_isLeader = true;
 
     void handleRoomEntered(MapNode *node);
 
@@ -32,6 +35,10 @@ private:
     void openCampfire(MapNode *node);
     void openTreasure(MapNode *node);
     void openBossFight(MapNode *node);
+
+    void sendMapData();
+    void handleIncomingMapData(const QJsonObject &mapJson);
+    void handleIncomingRoomSelected(int floor, int index);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

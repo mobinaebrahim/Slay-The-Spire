@@ -8,6 +8,7 @@
 #include "savemanager.h"
 #include "gamemap.h"
 #include "networkmanager.h"
+#include "cursormanager.h"
 
 
 //---SMTP library---
@@ -87,6 +88,8 @@ int main(int argc, char *argv[])
 
     QFontDatabase::addApplicationFont(":/assets/font/RINGM___.TTF");
 
+    //---cursor---
+    CursorManager::applySavedCursor();
 
 
     MainMenuWindow w;

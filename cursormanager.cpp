@@ -24,5 +24,3 @@ void CursorManager::applyCursor(int cursorIndex)
     QSettings settings;
     settings.setValue("appearance/cursorIndex", cursorIndex);
 }
-
-#endif

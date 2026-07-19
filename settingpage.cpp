@@ -21,6 +21,16 @@ SettingPage::SettingPage(QWidget *parent)
         this->close();
     });
 
+    connect(ui->btnCusor1, &QPushButton::clicked, this, [](){
+        CursorManager::applyCursor(0);
+    });
+    connect(ui->btnCusor2, &QPushButton::clicked, this, [](){
+        CursorManager::applyCursor(1);
+    });
+    connect(ui->btnCusor3, &QPushButton::clicked, this, [](){
+        CursorManager::applyCursor(2);
+    });
+
 }
 
 SettingPage::~SettingPage()

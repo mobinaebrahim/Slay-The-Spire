@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "audiomanager.h"
+#include "cursormanager.h"
 
 namespace Ui {
 class SettingPage;

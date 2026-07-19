@@ -12,6 +12,8 @@ FriendManager& FriendManager::instance()
 FriendManager::FriendManager()
 {
     createTable();
+    createGameInvitesTable();
+
 }
 
 FriendManager::~FriendManager()
@@ -184,6 +186,20 @@ bool FriendManager::sendGameInvite(const QString &fromUsername, const QString &t
 
     if (!query.exec()) {
         qDebug() << "Error sending game invite:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool FriendManager::rejectGameInvite(const QString &username, const QString &fromUsername)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM game_invites WHERE from_user = :fromUser AND to_user = :username");
+    query.bindValue(":fromUser", fromUsername);
+    query.bindValue(":username", username);
+
+    if (!query.exec()) {
+        qDebug() << "Error rejecting game invite:" << query.lastError().text();
         return false;
     }
     return true;

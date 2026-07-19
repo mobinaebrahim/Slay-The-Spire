@@ -7,8 +7,11 @@
 #include <QPushButton>
 #include <QListWidgetItem>
 #include <QPainter>
+#include <QMessageBox>
 #include "friendmanager.h"
 #include "usermanager.h"
+#include "networkmanager.h"
+
 
 namespace Ui {
 class friendspage;
@@ -30,6 +33,8 @@ private:
     void populate_pending_requests();
     void populate_friends_list();
     void showAddFriendError(const QString &message, bool isError = true);
+    void populate_game_invites();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 };

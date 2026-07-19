@@ -12,7 +12,7 @@ public:
     static NetworkManager& instance();
 
     void connect_to_server(const QString &host, quint16 port);
-    void send_message(const QString &message);
+    void send_json(const QString &message);
     bool is_connected() const;
 
 signals:
@@ -24,6 +24,8 @@ private slots:
     void on_ready_read();
     void on_connected();
     void on_disconnected();
+    void create_room();
+
 
 private:
     explicit NetworkManager(QObject *parent = nullptr);

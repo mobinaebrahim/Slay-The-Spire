@@ -22,13 +22,21 @@ void NetworkManager::connect_to_server(const QString &host, quint16 port)
     socket->connectToHost(host, port);
 }
 
-void NetworkManager::send_message(const QString &message)
+void NetworkManager::send_json(const QJsonObject &obj)
 {
-    if (socket->state() == QAbstractSocket::ConnectedState) {
-        socket->write(message.toUtf8());
-    } else {
-        qDebug() << "Cannot send message: not connected to server!";
+    if (socket->state() != QAbstractSocket::ConnectedState) {
+        qDebug() << "Cannot send: not connected to server!";
+        return;
     }
+    QJsonDocument doc(obj);
+    socket->write(doc.toJson(QJsonDocument::Compact) + "\n");
+}
+
+void NetworkManager::create_room()
+{
+    QJsonObject msg;
+    msg["type"] = "create_room";
+    send_json(msg);
 }
 
 bool NetworkManager::is_connected() const

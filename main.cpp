@@ -7,6 +7,7 @@
 #include "friendmanager.h"
 #include "savemanager.h"
 #include "gamemap.h"
+#include "networkmanager.h"
 
 
 //---SMTP library---
@@ -15,8 +16,6 @@
 #include "smtp/emailaddress.h"
 #include "smtp/mimetext.h"
 
-
-///connect (jcowjfk= ijkppwo
 
 //---add for test send email---
 /*bool send_verification_email(const QString &to_email, const QString &code)
@@ -91,6 +90,20 @@ int main(int argc, char *argv[])
 
 
     MainMenuWindow w;
+
+    //---server test ---
+
+    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
+        qDebug() << "TEST: Successfully connected to server!";
+        NetworkManager::instance().send_message("Hello from client!");
+    });
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::message_received, [](const QString &msg){
+        qDebug() << "TEST: Received message:" << msg;
+    });
+
     w.showFullScreen();
     return a.exec();
 }

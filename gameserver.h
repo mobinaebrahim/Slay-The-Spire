@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QMap>
 #include <QList>
 
 class GameServer : public QObject
@@ -21,7 +22,11 @@ private slots:
 
 private:
     QTcpServer *server;
-    QList<QTcpSocket*> clients;
+    QMap<QString, QList<QTcpSocket*>> rooms;
+    QMap<QTcpSocket*, QString> client_room;
+
+    QString generate_room_code();
+    void handle_message(QTcpSocket *sender, const QJsonObject &message);
 };
 
 #endif // GAMESERVER_H

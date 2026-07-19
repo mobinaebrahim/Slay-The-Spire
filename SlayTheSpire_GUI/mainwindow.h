@@ -21,6 +21,7 @@
 #include <QEasingCurve>
 #include <QPainter>
 #include <QPen>
+#include <QPushButton>
 #include "../Player.h"
 
 class Card;
@@ -79,6 +80,17 @@ private:
     QLabel* discardPileIconLabel;
     QLabel* discardPileCountLabel;
     QLabel* exhaustPileBadge;
+
+    QWidget* exhaustPileOverlay;
+    QLabel* exhaustOverlayBackground;
+    QWidget* exhaustCardsContainer;
+    QPushButton* closeExhaustOverlayButton;
+    QWidget* discardWrapper;
+
+    void showExhaustPileOverlay();
+    void hideExhaustPileOverlay();
+
+protected:
 
     QLabel* gameOverLabel;
     QGraphicsOpacityEffect* gameOverOpacityEffect;

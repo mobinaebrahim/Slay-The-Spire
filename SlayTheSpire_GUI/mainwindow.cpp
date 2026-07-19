@@ -84,8 +84,8 @@ MainWindow::MainWindow(QWidget *parent)
         "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
         "font-size: 11px; border-radius: 4px;");
 
-    // ---- Discard Pile + Exhaust Badge (توی یه wrapper) ----
-    QWidget* discardWrapper = new QWidget(this);
+
+    discardWrapper = new QWidget(this);
     discardWrapper->setFixedSize(90, 90);
 
     discardPileIconLabel = new QLabel(discardWrapper);
@@ -107,6 +107,33 @@ MainWindow::MainWindow(QWidget *parent)
         "background-color: #6a3fa0; color: white; border: 2px solid #9b6fd6; "
         "border-radius: 13px; font-weight: bold; font-size: 11px;");
     exhaustPileBadge->hide();
+
+    exhaustPileOverlay = new QWidget(this);
+    exhaustPileOverlay->setStyleSheet("background-color: rgba(0,0,0,190);");
+    exhaustPileOverlay->hide();
+
+    QVBoxLayout* overlayLayout = new QVBoxLayout(exhaustPileOverlay);
+    overlayLayout->setAlignment(Qt::AlignCenter);
+
+    QLabel* overlayTitle = new QLabel("Exhaust Pile", exhaustPileOverlay);
+    overlayTitle->setAlignment(Qt::AlignCenter);
+    overlayTitle->setStyleSheet("color: #c07af0; font-size: 24px; font-weight: bold; background: transparent;");
+    overlayLayout->addWidget(overlayTitle);
+
+    exhaustCardsContainer = new QWidget(exhaustPileOverlay);
+    QHBoxLayout* cardsRowLayout = new QHBoxLayout(exhaustCardsContainer);
+    cardsRowLayout->setAlignment(Qt::AlignCenter);
+    overlayLayout->addWidget(exhaustCardsContainer);
+
+    closeExhaustOverlayButton = new QPushButton("Close", exhaustPileOverlay);
+    closeExhaustOverlayButton->setFixedSize(120, 40);
+    closeExhaustOverlayButton->setStyleSheet(
+        "QPushButton { background-color: #6a3fa0; color: white; border-radius: 6px; font-weight: bold; }"
+        "QPushButton:hover { background-color: #7d4bb5; }");
+    overlayLayout->addWidget(closeExhaustOverlayButton, 0, Qt::AlignCenter);
+
+    connect(closeExhaustOverlayButton, &QPushButton::clicked, this, &MainWindow::hideExhaustPileOverlay);
+    discardWrapper->installEventFilter(this);
 
     ui->EndTurnButton->setText("");
     ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
@@ -355,6 +382,9 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
         this->width() - endTurnW + 30,
         this->height() - endTurnH - 100,
         endTurnW, endTurnH);
+
+    if (exhaustPileOverlay->isVisible())
+        exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
 }
 
 void MainWindow::on_EndTurnButton_clicked()
@@ -697,6 +727,11 @@ void MainWindow::showEnemyTooltip(Enemy* enemy) {
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == discardWrapper && event->type() == QEvent::MouseButtonRelease) {
+        showExhaustPileOverlay();
+        return true;
+    }
+
     if (obj == enemySpriteLabel || obj == enemyHpBar || obj == enemyIntentLabel) {
         if (event->type() == QEvent::Enter) {
             const auto& enemies = battleManager->getEnemies();
@@ -793,4 +828,37 @@ void MainWindow::playEnemyNonAttackTurn() {
         updateHandUI();
         updateCharacterUI();
     });
+}
+
+void MainWindow::showExhaustPileOverlay() {
+    QLayoutItem* child;
+    while ((child = exhaustCardsContainer->layout()->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();
+            delete child->widget();
+        }
+        delete child;
+    }
+
+    // ---- نکته: برای این کار باید یه getter به exhaustPile اضافه کنی (پایین توضیح میدم) ----
+    const vector<Card*>& exhaustedCards = playerObject->getExhaustPile();
+
+    for (Card* card : exhaustedCards) {
+        if (!card) continue;
+
+        QLabel* cardImgLabel = new QLabel(exhaustCardsContainer);
+        cardImgLabel->setFixedSize(120, 160);
+        QString cardName = QString::fromStdString(card->getName());
+        cardImgLabel->setPixmap(QPixmap(":/images/cards/" + cardName + ".png")
+                                    .scaled(120, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        exhaustCardsContainer->layout()->addWidget(cardImgLabel);
+    }
+
+    exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
+    exhaustPileOverlay->show();
+    exhaustPileOverlay->raise();
+}
+
+void MainWindow::hideExhaustPileOverlay() {
+    exhaustPileOverlay->hide();
 }

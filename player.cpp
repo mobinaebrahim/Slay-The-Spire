@@ -76,7 +76,11 @@ Card* Player::chooseCardFromHand() {
     if (hand.empty())
         return nullptr;
 
-    // incomplete
+    for (Card* c : hand) {
+        if (c->getType() == CardType::Attack || c->getType() == CardType::Power)
+            return c;
+    }
+    return nullptr;
 
 }
 

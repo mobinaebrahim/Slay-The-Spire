@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QFontDatabase>
+#include <QInputDialog>
 
 #include "mainmenuwindow.h"
 #include "usermanager.h"
@@ -96,7 +97,7 @@ int main(int argc, char *argv[])
 
     //---server test ---
 
-    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+    /*NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
         qDebug() << "TEST: Connected! Creating room...";
@@ -109,7 +110,34 @@ int main(int argc, char *argv[])
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::room_joined, [](const QString &code){
         qDebug() << "TEST: Joined room:" << code;
+    });*/
+
+    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
+        bool createNew = QMessageBox::question(nullptr, "Test Mode",
+                                               "Create a new room? (No = Join existing room)",
+                                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+
+        if (createNew) {
+            NetworkManager::instance().create_room();
+        } else {
+            bool ok;
+            QString code = QInputDialog::getText(nullptr, "Join Room", "Enter room code:", QLineEdit::Normal, "", &ok);
+            if (ok && !code.isEmpty()) {
+                NetworkManager::instance().join_room(code);
+            }
+        }
     });
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::room_created, [](const QString &code){
+        qDebug() << "TEST: Room created with code:" << code;
+    });
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::room_joined, [](const QString &code){
+        qDebug() << "TEST: Joined room:" << code;
+    });
+
 
     w.showFullScreen();
     return a.exec();

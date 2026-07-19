@@ -33,6 +33,46 @@ SettingPage::SettingPage(QWidget *parent)
 
 }
 
+void SettingPage::handleChangePassword()
+{
+    QString currentInput = ui->lineEdit_currentPassword->text();
+    QString newPassword = ui->lineEdit_currentPassword->text();
+    QString confirmNewPassword = ui->lineEdit_confirmNewPassword->text();
+
+    QString realCurrentPassword = user_manager::instance().get_current_password();
+    QString username = user_manager::instance().get_current_username();
+
+    if (currentInput != realCurrentPassword) {
+        ui->label_passwordChangeError->setText("Current password is incorrect!");
+        AudioManager::instance().playEffect(":/assets/music/error.mp3");
+        return;
+    }
+
+    if (newPassword.length() < 8) {
+        ui->label_passwordChangeError->setText("New password must be at least 8 characters!");
+        AudioManager::instance().playEffect(":/assets/music/error.mp3");
+        return;
+    }
+
+    if (newPassword != confirmNewPassword) {
+        ui->label_passwordChangeError->setText("Passwords don't match!");
+        AudioManager::instance().playEffect(":/assets/music/error.mp3");
+        return;
+    }
+
+    bool success = user_manager::instance().reset_password(username, newPassword);
+
+    if (success) {
+        user_manager::instance().set_current_user(username, newPassword);
+
+        ui->label_passwordChangeError->setText("Password changed successfully!");
+        AudioManager::instance().playEffect(":/assets/music/success.mp3");
+    } else {
+        ui->label_passwordChangeError->setText("Something went wrong. Try again!");
+        AudioManager::instance().playEffect(":/assets/music/error.mp3");
+    }
+}
+
 SettingPage::~SettingPage()
 {
     delete ui;

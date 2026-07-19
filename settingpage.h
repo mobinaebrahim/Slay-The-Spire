@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "audiomanager.h"
 #include "cursormanager.h"
+#include "usermanager.h"
 
 namespace Ui {
 class SettingPage;
@@ -19,6 +20,8 @@ public:
 
 private:
     Ui::SettingPage *ui;
+
+    void handleChangePassword();
 };
 
 #endif // SETTINGPAGE_H

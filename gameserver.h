@@ -6,6 +6,11 @@
 #include <QTcpSocket>
 #include <QMap>
 #include <QList>
+#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QRandomGenerator>
+
 
 class GameServer : public QObject
 {

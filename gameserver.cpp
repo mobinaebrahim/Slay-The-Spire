@@ -1,5 +1,5 @@
 #include "gameserver.h"
-#include <QDebug>
+
 
 GameServer::GameServer(QObject *parent)
     : QObject(parent)
@@ -14,7 +14,6 @@ bool GameServer::start_listening(quint16 port)
         qDebug() << "Server failed to start:" << server->errorString();
         return false;
     }
-
     qDebug() << "Server is listening on port" << port;
     return true;
 }
@@ -28,9 +27,7 @@ QString GameServer::generate_room_code()
 void GameServer::on_new_connection()
 {
     QTcpSocket *newClient = server->nextPendingConnection();
-    clients.append(newClient);
-
-    qDebug() << "New client connected. Total clients:" << clients.size();
+    qDebug() << "New client connected.";
 
     connect(newClient, &QTcpSocket::readyRead, this, &GameServer::on_client_data_ready);
     connect(newClient, &QTcpSocket::disconnected, this, &GameServer::on_client_disconnected);
@@ -41,12 +38,75 @@ void GameServer::on_client_data_ready()
     QTcpSocket *senderSocket = qobject_cast<QTcpSocket*>(sender());
     if (!senderSocket) return;
 
-    QByteArray data = senderSocket->readAll();
-    qDebug() << "Received data:" << data;
+    while (senderSocket->canReadLine()) {
+        QByteArray line = senderSocket->readLine().trimmed();
+        if (line.isEmpty()) continue;
 
-    for (QTcpSocket *client : clients) {
-        if (client != senderSocket) {
-            client->write(data);
+        QJsonDocument doc = QJsonDocument::fromJson(line);
+        if (!doc.isObject()) {
+            qDebug() << "Received invalid JSON:" << line;
+            continue;
+        }
+
+        handle_message(senderSocket, doc.object());
+    }
+}
+
+void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString type = message["type"].toString();
+
+    if (type == "create_room") {
+        QString roomCode = generate_room_code();
+        rooms[roomCode].append(senderSocket);
+        client_room[senderSocket] = roomCode;
+
+        QJsonObject response;
+        response["type"] = "room_created";
+        response["room_code"] = roomCode;
+        QJsonDocument responseDoc(response);
+        senderSocket->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
+
+        qDebug() << "Room created:" << roomCode;
+    }
+    else if (type == "join_room") {
+        QString roomCode = message["room_code"].toString();
+
+        if (!rooms.contains(roomCode) || rooms[roomCode].size() >= 2) {
+            QJsonObject response;
+            response["type"] = "error";
+            response["message"] = "Room not found or full";
+            QJsonDocument responseDoc(response);
+            senderSocket->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
+            return;
+        }
+
+        rooms[roomCode].append(senderSocket);
+        client_room[senderSocket] = roomCode;
+
+        QJsonObject response;
+        response["type"] = "room_joined";
+        response["room_code"] = roomCode;
+        QJsonDocument responseDoc(response);
+
+        for (QTcpSocket *client : rooms[roomCode]) {
+            client->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
+        }
+
+        qDebug() << "Client joined room:" << roomCode << "- Room size:" << rooms[roomCode].size();
+    }
+    else {
+        QString roomCode = client_room.value(senderSocket);
+        if (roomCode.isEmpty()) {
+            qDebug() << "Client not in a room, ignoring message.";
+            return;
+        }
+
+        QJsonDocument forwardDoc(message);
+        for (QTcpSocket *client : rooms[roomCode]) {
+            if (client != senderSocket) {
+                client->write(forwardDoc.toJson(QJsonDocument::Compact) + "\n");
+            }
         }
     }
 }
@@ -56,9 +116,15 @@ void GameServer::on_client_disconnected()
     QTcpSocket *disconnectedSocket = qobject_cast<QTcpSocket*>(sender());
     if (!disconnectedSocket) return;
 
-    clients.removeAll(disconnectedSocket);
-    qDebug() << "Client disconnected. Total clients:" << clients.size();
+    QString roomCode = client_room.value(disconnectedSocket);
+    if (!roomCode.isEmpty()) {
+        rooms[roomCode].removeAll(disconnectedSocket);
+        if (rooms[roomCode].isEmpty()) {
+            rooms.remove(roomCode);
+        }
+        client_room.remove(disconnectedSocket);
+    }
 
+    qDebug() << "Client disconnected.";
     disconnectedSocket->deleteLater();
 }
-

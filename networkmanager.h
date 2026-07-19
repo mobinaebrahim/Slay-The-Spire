@@ -18,6 +18,9 @@ public:
     void send_game_action(const QJsonObject &action);
     bool is_connected() const;
 
+    void setIsLeader(bool leader) { m_isLeader = leader; }
+    bool isLeader() const { return m_isLeader; }
+
 signals:
     void connected_to_server();
     void disconnected_from_server();
@@ -39,6 +42,7 @@ private:
     void send_json(const QJsonObject &obj);
 
     QTcpSocket *socket;
+    bool m_isLeader = false;
 };
 
 #endif // NETWORKMANAGER_H

@@ -23,6 +23,16 @@ private:
     FriendManager(const FriendManager&) = delete;
     FriendManager& operator=(const FriendManager&) = delete;
     bool createTable();
+
+//---join game func---
+public:
+    bool sendGameInvite(const QString &fromUsername, const QString &toUsername, const QString &roomCode);
+    bool acceptGameInvite(const QString &username, const QString &fromUsername, QString &outRoomCode);
+    bool rejectGameInvite(const QString &username, const QString &fromUsername);
+    QStringList getPendingGameInvites(const QString &username);
+
+private:
+    bool createGameInvitesTable();
 };
 
 #endif // FRIENDMANAGER_H

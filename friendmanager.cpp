@@ -153,3 +153,22 @@ QStringList FriendManager::getPendingRequests(const QString &username)
 
     return requesters;
 }
+
+bool FriendManager::createGameInvitesTable()
+{
+    QSqlQuery query;
+    bool success = query.exec(
+        "CREATE TABLE IF NOT EXISTS game_invites ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "from_user TEXT NOT NULL, "
+        "to_user TEXT NOT NULL, "
+        "room_code TEXT NOT NULL, "
+        "status TEXT NOT NULL)"
+        );
+
+    if (!success) {
+        qDebug() << "Error creating game_invites table:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}

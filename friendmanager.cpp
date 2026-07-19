@@ -172,3 +172,19 @@ bool FriendManager::createGameInvitesTable()
     }
     return true;
 }
+
+bool FriendManager::sendGameInvite(const QString &fromUsername, const QString &toUsername, const QString &roomCode)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO game_invites (from_user, to_user, room_code, status) "
+                  "VALUES (:fromUser, :toUser, :roomCode, 'pending')");
+    query.bindValue(":fromUser", fromUsername);
+    query.bindValue(":toUser", toUsername);
+    query.bindValue(":roomCode", roomCode);
+
+    if (!query.exec()) {
+        qDebug() << "Error sending game invite:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}

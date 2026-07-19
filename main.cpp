@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         qDebug() << "TEST: Joined room:" << code;
     });*/
 
-    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+    /*NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
         bool createNew = QMessageBox::question(nullptr, "Test Mode",
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::room_joined, [](const QString &code){
         qDebug() << "TEST: Joined room:" << code;
-    });
+    });*/
 
 
     w.showFullScreen();

@@ -219,3 +219,27 @@ QStringList FriendManager::getPendingGameInvites(const QString &username)
     }
     return inviters;
 }
+
+bool FriendManager::acceptGameInvite(const QString &username, const QString &fromUsername, QString &outRoomCode)
+{
+    QSqlQuery query;
+    query.prepare("SELECT room_code FROM game_invites "
+                  "WHERE from_user = :fromUser AND to_user = :username AND status = 'pending'");
+    query.bindValue(":fromUser", fromUsername);
+    query.bindValue(":username", username);
+    query.exec();
+
+    if (!query.next()) {
+        return false;
+    }
+
+    outRoomCode = query.value("room_code").toString();
+
+    QSqlQuery deleteQuery;
+    deleteQuery.prepare("DELETE FROM game_invites WHERE from_user = :fromUser AND to_user = :username");
+    deleteQuery.bindValue(":fromUser", fromUsername);
+    deleteQuery.bindValue(":username", username);
+    deleteQuery.exec();
+
+    return true;
+}

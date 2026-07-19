@@ -15,6 +15,7 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QEasingCurve>
+#include <QTimer>
 
 #include "../card.h"
 #include "../AttackCard.h"
@@ -705,38 +706,41 @@ void MainWindow::playEnemyAttack() {
     QRect lungeRect(startRect.x() - lungeDistance, startRect.y(), startRect.width(), startRect.height());
 
     QPropertyAnimation* forward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
-    forward->setDuration(180);
+    forward->setDuration(300);
     forward->setStartValue(startRect);
     forward->setEndValue(lungeRect);
     forward->setEasingCurve(QEasingCurve::OutQuad);
 
     connect(forward, &QPropertyAnimation::finished, this, [=]() {
-        battleManager->enemyTurn();
-        battleManager->cleanupDeadEnemies();
+        QTimer::singleShot(150, this, [=]() {
+            battleManager->enemyTurn();
+            battleManager->cleanupDeadEnemies();
 
-        hitSoundPlayer->setPosition(0);
-        hitSoundPlayer->play();
+            hitSoundPlayer->setPosition(0);
+            hitSoundPlayer->play();
 
-        playHitEffect(playerHitOverlay, playerHitOpacity);
-
-        updateCharacterUI();
-
-        QPropertyAnimation* backward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
-        backward->setDuration(200);
-        backward->setStartValue(lungeRect);
-        backward->setEndValue(startRect);
-        backward->setEasingCurve(QEasingCurve::InQuad);
-
-        connect(backward, &QPropertyAnimation::finished, this, [=]() {
-            isAttackAnimating = false;
-            checkGameOver();
-            if (!isGameOver)
-                ui->EndTurnButton->setEnabled(true);
-            updateHandUI();
+            playHitEffect(playerHitOverlay, playerHitOpacity);
             updateCharacterUI();
-        });
 
-        backward->start(QAbstractAnimation::DeleteWhenStopped);
+            QPropertyAnimation* backward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
+            backward->setDuration(350);
+            backward->setStartValue(lungeRect);
+            backward->setEndValue(startRect);
+            backward->setEasingCurve(QEasingCurve::InQuad);
+
+            connect(backward, &QPropertyAnimation::finished, this, [=]() {
+                QTimer::singleShot(200, this, [=]() {
+                    isAttackAnimating = false;
+                    checkGameOver();
+                    if (!isGameOver)
+                        ui->EndTurnButton->setEnabled(true);
+                    updateHandUI();
+                    updateCharacterUI();
+                });
+            });
+
+            backward->start(QAbstractAnimation::DeleteWhenStopped);
+        });
     });
 
     forward->start(QAbstractAnimation::DeleteWhenStopped);

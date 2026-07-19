@@ -12,7 +12,15 @@ friendspage::friendspage(QWidget *parent)
 
     populate_pending_requests();
     populate_friends_list();
+    populate_game_invites();
+
     connect(ui->btnBack, &QPushButton::clicked, this, &QDialog::close);
+
+    connect(ui->btnRefreshInvites, &QPushButton::clicked, this, [this](){
+        populate_pending_requests();
+        populate_friends_list();
+        populate_game_invites();
+    });
 }
 
 friendspage::~friendspage()
@@ -196,6 +204,70 @@ void friendspage::populate_pending_requests()
         connect(rejectBtn, &QPushButton::clicked, this, [this, requester](){
             FriendManager::instance().rejectFriendRequest(user_manager::instance().get_current_username(), requester);
             populate_pending_requests();
+        });
+    }
+}
+
+void friendspage::populate_game_invites()
+{
+    ui->listGameInvites->clear();
+
+    QString currentUser = user_manager::instance().get_current_username();
+    QStringList inviters = FriendManager::instance().getPendingGameInvites(currentUser);
+
+    for (const QString &inviter : inviters) {
+        QWidget *itemWidget = new QWidget();
+        itemWidget->setFixedHeight(50);
+
+        QHBoxLayout *layout = new QHBoxLayout(itemWidget);
+        layout->setContentsMargins(15, 5, 25, 5);
+        layout->setSpacing(10);
+
+        QLabel *nameLabel = new QLabel(inviter);
+        nameLabel->setStyleSheet(
+            "color: #E8D2A0; font-size: 14px; font-weight: bold; background: transparent;"
+            );
+        nameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+        QPushButton *acceptBtn = new QPushButton();
+        acceptBtn->setIcon(QIcon(":/assets/mainmenu/friend/accept.png"));
+        acceptBtn->setIconSize(QSize(40, 40));
+        acceptBtn->setFixedSize(48, 48);
+        acceptBtn->setStyleSheet("QPushButton{border:none; background:transparent;}");
+
+        QPushButton *rejectBtn = new QPushButton();
+        rejectBtn->setIcon(QIcon(":/assets/mainmenu/friend/reject.png"));
+        rejectBtn->setIconSize(QSize(40, 40));
+        rejectBtn->setFixedSize(48, 48);
+        rejectBtn->setStyleSheet("QPushButton{border:none; background:transparent;}");
+
+        layout->addWidget(nameLabel);
+        layout->addWidget(acceptBtn);
+        layout->addWidget(rejectBtn);
+        layout->setAlignment(nameLabel, Qt::AlignVCenter);
+        layout->setAlignment(acceptBtn, Qt::AlignVCenter);
+        layout->setAlignment(rejectBtn, Qt::AlignVCenter);
+
+        QListWidgetItem *listItem = new QListWidgetItem();
+        listItem->setSizeHint(itemWidget->sizeHint());
+
+        ui->listGameInvites->addItem(listItem);
+        ui->listGameInvites->setItemWidget(listItem, itemWidget);
+
+        connect(acceptBtn, &QPushButton::clicked, this, [this, inviter](){
+            QString currentUser = user_manager::instance().get_current_username();
+            QString roomCode;
+
+            if (FriendManager::instance().acceptGameInvite(currentUser, inviter, roomCode)) {
+                NetworkManager::instance().join_room(roomCode);
+                QMessageBox::information(this, "Joining Game", "Joining " + inviter + "'s game...");
+                populate_game_invites();
+            }
+        });
+
+        connect(rejectBtn, &QPushButton::clicked, this, [this, inviter](){
+            FriendManager::instance().rejectGameInvite(user_manager::instance().get_current_username(), inviter);
+            populate_game_invites();
         });
     }
 }

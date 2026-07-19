@@ -95,6 +95,9 @@ int main(int argc, char *argv[])
 
     MainMenuWindow w;
 
+    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+
+
     //---server test ---
 
     /*NetworkManager::instance().connect_to_server("127.0.0.1", 5000);

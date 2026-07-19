@@ -10,6 +10,7 @@
 #include "gamemap.h"
 #include "networkmanager.h"
 #include "cursormanager.h"
+#include "mappage.h"
 
 
 //---SMTP library---
@@ -96,6 +97,13 @@ int main(int argc, char *argv[])
     MainMenuWindow w;
 
     NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::room_joined, [](const QString &roomCode){
+        bool leader = NetworkManager::instance().isLeader();
+        MapPage *mapDlg = new MapPage(nullptr, leader);
+        mapDlg->setAttribute(Qt::WA_DeleteOnClose);
+        mapDlg->showFullScreen();
+    });
 
 
     //---server test ---

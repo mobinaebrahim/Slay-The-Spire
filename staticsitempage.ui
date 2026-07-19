@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1500</width>
-    <height>1300</height>
+    <height>726</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -427,6 +427,20 @@ QPushButton:checked {
        <height>20</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}
+</string>
+     </property>
      <property name="text">
       <string>TextLabel</string>
      </property>
@@ -439,6 +453,19 @@ QPushButton:checked {
        <width>771</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
      </property>
      <property name="text">
       <string>TextLabel</string>
@@ -453,6 +480,19 @@ QPushButton:checked {
        <height>20</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
      <property name="text">
       <string>TextLabel</string>
      </property>
@@ -465,6 +505,19 @@ QPushButton:checked {
        <width>791</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: rgb(232,224,205);
+
+    background: transparent;
+    border: none;
+}</string>
      </property>
      <property name="text">
       <string>TextLabel</string>

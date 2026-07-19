@@ -16,7 +16,7 @@ void CursorManager::applyCursor(int cursorIndex)
     if (pix.isNull())
         return;
 
-    QPixmap scaled = pix.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled = pix.scaled(45, 45, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QCursor customCursor(scaled, 0, 0);
     qApp->restoreOverrideCursor();
     qApp->setOverrideCursor(customCursor);

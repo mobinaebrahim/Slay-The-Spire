@@ -4,6 +4,8 @@
 #include <QVector>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QJsonObject>
+#include <QJsonArray>
 #include "mapnode.h"
 
 class GameMap
@@ -26,6 +28,10 @@ public:
     bool isAtBoss() const;
 
     void buildScene(GameMap *map);
+
+    // Multiplayer sync
+    QJsonObject toJson() const;
+    void fromJson(const QJsonObject &obj);
 
 private:
     void pickCheckFloors();

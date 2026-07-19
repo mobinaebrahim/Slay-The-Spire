@@ -96,16 +96,20 @@ int main(int argc, char *argv[])
 
     //---server test ---
 
-    /*NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
+    NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
 
     QObject::connect(&NetworkManager::instance(), &NetworkManager::connected_to_server, [](){
-        qDebug() << "TEST: Successfully connected to server!";
-        NetworkManager::instance().send_message("Hello from client!");
+        qDebug() << "TEST: Connected! Creating room...";
+        NetworkManager::instance().create_room();
     });
 
-    QObject::connect(&NetworkManager::instance(), &NetworkManager::message_received, [](const QString &msg){
-        qDebug() << "TEST: Received message:" << msg;
-    });*/
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::room_created, [](const QString &code){
+        qDebug() << "TEST: Room created with code:" << code;
+    });
+
+    QObject::connect(&NetworkManager::instance(), &NetworkManager::room_joined, [](const QString &code){
+        qDebug() << "TEST: Joined room:" << code;
+    });
 
     w.showFullScreen();
     return a.exec();

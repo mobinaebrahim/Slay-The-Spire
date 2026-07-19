@@ -38,10 +38,29 @@ bool NetworkManager::is_connected() const
 
 void NetworkManager::on_ready_read()
 {
-    QByteArray data = socket->readAll();
-    QString message = QString::fromUtf8(data);
-    qDebug() << "Received from server:" << message;
-    emit message_received(message);
+    while (socket->canReadLine()) {
+        QByteArray line = socket->readLine().trimmed();
+        if (line.isEmpty()) continue;
+
+        QJsonDocument doc = QJsonDocument::fromJson(line);
+        if (!doc.isObject()) continue;
+
+        QJsonObject obj = doc.object();
+        QString type = obj["type"].toString();
+
+        if (type == "room_created") {
+            emit room_created(obj["room_code"].toString());
+        }
+        else if (type == "room_joined") {
+            emit room_joined(obj["room_code"].toString());
+        }
+        else if (type == "error") {
+            emit room_error(obj["message"].toString());
+        }
+        else {
+            emit game_action_received(obj);
+        }
+    }
 }
 
 void NetworkManager::on_connected()

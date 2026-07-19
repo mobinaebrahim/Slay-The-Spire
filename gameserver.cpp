@@ -19,6 +19,12 @@ bool GameServer::start_listening(quint16 port)
     return true;
 }
 
+QString GameServer::generate_room_code()
+{
+    int code = QRandomGenerator::global()->bounded(100000, 999999);
+    return QString::number(code);
+}
+
 void GameServer::on_new_connection()
 {
     QTcpSocket *newClient = server->nextPendingConnection();

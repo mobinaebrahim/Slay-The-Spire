@@ -113,6 +113,8 @@ private:
     QPixmap getEnemyPixmap(const QString& enemyName);
     void updateAnimations();
 
+    void playEnemyNonAttackTurn();
+
 protected:
     void resizeEvent(QResizeEvent* event) override;
     bool eventFilter(QObject* obj, QEvent* event) override;

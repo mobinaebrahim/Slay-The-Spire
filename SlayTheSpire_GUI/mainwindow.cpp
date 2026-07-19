@@ -361,7 +361,18 @@ void MainWindow::on_EndTurnButton_clicked()
     }
 
     ui->EndTurnButton->setEnabled(false);
-    playEnemyAttack();
+
+    const auto& enemies = battleManager->getEnemies();
+    bool enemyWillAttack = false;
+    if (!enemies.empty()) {
+        IntentType intent = enemies[0]->getIntentType();
+        enemyWillAttack = (intent == IntentType::Attack || intent == IntentType::Combined);
+    }
+
+    if (enemyWillAttack)
+        playEnemyAttack();
+    else
+        playEnemyNonAttackTurn();
 }
 
 void MainWindow::updateHandUI() {
@@ -744,4 +755,21 @@ void MainWindow::playEnemyAttack() {
     });
 
     forward->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void MainWindow::playEnemyNonAttackTurn() {
+    isAttackAnimating = true;
+
+    battleManager->enemyTurn();
+    battleManager->cleanupDeadEnemies();
+    updateCharacterUI();
+
+    QTimer::singleShot(400, this, [=]() {
+        isAttackAnimating = false;
+        checkGameOver();
+        if (!isGameOver)
+            ui->EndTurnButton->setEnabled(true);
+        updateHandUI();
+        updateCharacterUI();
+    });
 }

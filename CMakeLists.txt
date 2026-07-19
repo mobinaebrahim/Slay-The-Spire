@@ -50,6 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         networkmanager.h networkmanager.cpp
         audiomanager.h audiomanager.cpp
         settingpage.h settingpage.cpp settingpage.ui
+        cursormanager.h cursormanager.cpp
 
 
 

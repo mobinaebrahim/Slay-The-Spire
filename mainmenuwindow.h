@@ -21,7 +21,7 @@
 #include "mapview.h"
 #include "mappage.h"
 #include "audiomanager.h"
-
+#include "settingpage.h"
 
 
 QT_BEGIN_NAMESPACE

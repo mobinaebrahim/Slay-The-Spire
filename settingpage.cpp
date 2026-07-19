@@ -17,6 +17,10 @@ SettingPage::SettingPage(QWidget *parent)
         AudioManager::instance().setEffectsVolume(value);
     });
 
+    connect(ui->btnBack, &QPushButton::clicked, this, [this](){
+        this->close();
+    });
+
 }
 
 SettingPage::~SettingPage()

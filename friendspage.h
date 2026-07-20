@@ -11,6 +11,7 @@
 #include "friendmanager.h"
 #include "usermanager.h"
 #include "networkmanager.h"
+#include"mainmenuwindow.h"
 
 
 namespace Ui {

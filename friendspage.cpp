@@ -221,13 +221,15 @@ void friendspage::populate_friends_list()
 
         connect(inviteBtn, &QPushButton::clicked, this, [this, friendName](){
             QString currentUser = user_manager::instance().get_current_username();
+            NetworkManager::instance().setIsLeader(true);
 
-            connect(&NetworkManager::instance(), &NetworkManager::room_created, this,
-                    [this, currentUser, friendName](const QString &roomCode){
-                        NetworkManager::instance().setIsLeader(true);
-                        FriendManager::instance().sendGameInvite(currentUser, friendName, roomCode);
-                        QMessageBox::information(this, "Invite Sent", "Game invite sent to " + friendName);
-                    });
+            static QMetaObject::Connection conn;
+            QObject::disconnect(conn);
+            conn = connect(&NetworkManager::instance(), &NetworkManager::room_created, this,
+                           [this, currentUser, friendName](const QString &roomCode){
+                               FriendManager::instance().sendGameInvite(currentUser, friendName, roomCode);
+                               QMessageBox::information(this, "Invite Sent", "Game invite sent to " + friendName);
+                           });
 
             NetworkManager::instance().create_room();
         });

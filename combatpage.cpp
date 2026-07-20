@@ -128,6 +128,30 @@ void CombatPage::handleNetworkMessage(const QJsonObject &obj)
     // قدم‌های بعدی: پردازش player_action, enemy_state, end_turn
 }
 
+void CombatPage::updateAllUI()
+{
+    // --- خودم ---
+    if (m_localPlayer) {
+        m_myHpBar->setMaximum(m_localPlayer->getMaxHp());
+        m_myHpBar->setValue(m_localPlayer->getHp());
+        m_myEnergyLabel->setText(QString("Energy: %1/%2")
+                                     .arg(m_localPlayer->getEnergy())
+                                     .arg(m_localPlayer->getMaxEnergy()));
+    }
+
+    // --- دشمن ---
+    const auto& enemies = m_battleManager->getEnemies();
+    if (!enemies.empty()) {
+        Enemy* firstEnemy = enemies[0];
+        m_enemyNameLabel->setText(QString::fromStdString(firstEnemy->getName()));
+        m_enemyHpBar->setMaximum(firstEnemy->getMaxHp());
+        m_enemyHpBar->setValue(firstEnemy->getHp());
+    }
+
+    // --- دست کارت‌ها ---
+    updateMyHandUI();
+}
+
 CombatPage::~CombatPage()
 {
     delete m_battleManager;

@@ -16,6 +16,8 @@ CombatPage::CombatPage(QWidget *parent, bool isLeader)
 
 void CombatPage::setupCombat()
 {
+    qDebug() << "CombatPage::setupCombat called, isLeader=" << m_isLeader;
+
     // دیگه هیچ BattleManager/Player محلی نمی‌سازیم.
     // فقط اگه Leader هستیم، به سرور می‌گیم combat رو شروع کنه.
     if (m_isLeader) {
@@ -125,6 +127,7 @@ void CombatPage::updateAllUI()
 void CombatPage::handleNetworkMessage(const QJsonObject &obj)
 {
     QString type = obj["type"].toString();
+    qDebug() << "CombatPage received:" << obj["type"].toString();
 
     if (type == "combat_started") {
         // فعلاً کاری لازم نیست، منتظر state_update اول می‌مونیم

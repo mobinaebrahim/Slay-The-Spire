@@ -12,7 +12,7 @@
 #include "gamemap.h"
 #include "audiomanager.h"
 #include "networkmanager.h"
-
+#include "combatpage.h"
 
 class MapPage : public QWidget
 {

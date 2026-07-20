@@ -132,7 +132,9 @@ void MapPage::resizeEvent(QResizeEvent *event)
 
 void MapPage::openCombat(MapNode *node)
 {
-    QMessageBox::information(this, "Combat", "Entered a normal enemy room.");
+    CombatPage *combat = new CombatPage(nullptr, m_isLeader);
+    combat->setAttribute(Qt::WA_DeleteOnClose);
+    combat->show();
 }
 
 void MapPage::openElite(MapNode *node)

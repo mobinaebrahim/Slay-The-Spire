@@ -51,6 +51,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         audiomanager.h audiomanager.cpp
         settingpage.h settingpage.cpp settingpage.ui
         cursormanager.h cursormanager.cpp
+        player.cpp player.h
+        enemy.cpp
+        enemy.cpp enemy.h
 
 
 

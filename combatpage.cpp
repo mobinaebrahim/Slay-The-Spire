@@ -124,26 +124,38 @@ void CombatPage::buildUI()
     setLayout(mainLayout);
 }
 
-void CombatPage::updateAllUI()
+void CombatPage::updateMyHandUI()
 {
-    if (!m_localPlayer) return;
-
-    m_myHpBar->setMaximum(m_localPlayer->getMaxHp());
-    m_myHpBar->setValue(m_localPlayer->getHp());
-    m_myHpBar->setFormat(QString("%1/%2").arg(m_localPlayer->getHp()).arg(m_localPlayer->getMaxHp()));
-
-    m_myEnergyLabel->setText(QString("Energy: %1/%2").arg(m_localPlayer->getEnergy()).arg(m_localPlayer->getMaxEnergy()));
-
-    const auto& enemies = m_battleManager->getEnemies();
-    if (!enemies.empty()) {
-        Enemy *enemy = enemies[0];
-        m_enemyNameLabel->setText(QString::fromStdString(enemy->getName()));
-        m_enemyHpBar->setMaximum(enemy->getMaxHp());
-        m_enemyHpBar->setValue(enemy->getHp());
-        m_enemyHpBar->setFormat(QString("%1/%2").arg(enemy->getHp()).arg(enemy->getMaxHp()));
+    QLayout *layout = m_myCardsContainer->layout();
+    QLayoutItem *child;
+    while ((child = layout->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();
+            delete child->widget();
+        }
+        delete child;
     }
 
-    updateMyHandUI();
+    const std::vector<Card*>& hand = m_localPlayer->getHand();
+    for (Card *card : hand) {
+        if (!card) continue;
+
+        QPushButton *cardBtn = new QPushButton(QString::fromStdString(card->getName()));
+        cardBtn->setFixedSize(100, 140);
+        cardBtn->setEnabled(card->isPlayable());
+
+        connect(cardBtn, &QPushButton::clicked, this, [this, card]() {
+            const auto& enemies = m_battleManager->getEnemies();
+            if (enemies.empty()) return;
+
+            m_battleManager->playCardAction(m_localPlayer, card, enemies[0]);
+            m_battleManager->cleanupDeadEnemies();
+
+            updateAllUI();
+        });
+
+        layout->addWidget(cardBtn);
+    }
 }
 
 void CombatPage::updateMyHandUI()

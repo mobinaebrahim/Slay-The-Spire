@@ -69,6 +69,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         BossStruggles.cpp BossStruggles.h
         NormalEnemies.cpp NormalEnemies.h
         EliteEnemies.cpp EliteEnemies.h
+        cardfactory.h cardfactory.cpp
 
 
 

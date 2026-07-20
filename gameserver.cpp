@@ -68,6 +68,8 @@ void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &mes
         senderSocket->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
 
         qDebug() << "Room created:" << roomCode;
+
+
     }
     else if (type == "join_room") {
         QString roomCode = message["room_code"].toString();

@@ -1,7 +1,8 @@
 #include "BattleManager.h"
 #include <algorithm>
+#include <cstdlib>
 
-void BattleManager:: spawnEnemy(Enemy* newEnemy) {
+void BattleManager::spawnEnemy(Enemy* newEnemy) {
     enemies.push_back(newEnemy);
 }
 
@@ -34,37 +35,54 @@ void BattleManager::dealDamageToAllEnemies(int damage) {
 int BattleManager::GetTotalDamageToAllEnemies(int damage) {
     int totalDealt = 0;
     for (Enemy* enemy : enemies) {
-        totalDealt += enemy ->takeDamage(damage);
+        totalDealt += enemy->takeDamage(damage);
     }
     return totalDealt;
 }
 
 void BattleManager::playerTurn() {
     isPlayerTurn = true;
-    player->resetEnergy();
-    player->applyTurnStartEffects();
-    player->drawCards(5);
+    for (Player* p : players) {
+        if (!p || p->getHp() <= 0) continue;
+        p->resetEnergy();
+        p->applyTurnStartEffects();
+        p->drawCards(5);
+    }
 }
 
 void BattleManager::enemyTurn() {
     isPlayerTurn = false;
-    player->applyTurnEndEffects();
-    player->endTurnCleanUp();
+
+    for (Player* p : players) {
+        if (!p || p->getHp() <= 0) continue;
+        p->applyTurnEndEffects();
+        p->endTurnCleanUp();
+    }
 
     for (Enemy* enemy : enemies) {
-        if (enemy->getHp() > 0) {
-            enemy->executeAction(player);
-            enemy->applyTurnEndEffects();
+        if (enemy->getHp() <= 0) continue;
+
+        vector<Player*> alive;
+        for (Player* p : players) {
+            if (p && p->getHp() > 0) alive.push_back(p);
         }
+        if (alive.empty()) break;
+
+        Player* target = alive[std::rand() % alive.size()];
+        enemy->executeAction(target);
+        enemy->applyTurnEndEffects();
     }
+
     playerTurn();
 }
 
-void BattleManager::playCardAction(Card* card, Enemy* target) {
-    if (!isPlayerTurn) 
+void BattleManager::playCardAction(Player* actingPlayer, Card* card, Enemy* target) {
+    if (!isPlayerTurn || !actingPlayer)
         return;
-    player->playCard(card, target);
-    if (target && target->getHp() <= 0) 
+
+    actingPlayer->playCard(card, target);
+
+    if (target && target->getHp() <= 0)
         removeEnemy(target);
 }
 
@@ -73,11 +91,15 @@ void BattleManager::startCombat() {
 }
 
 bool BattleManager::isCombatOver() {
-    if (player->getHp() <= 0) 
+    if (enemies.empty())
         return true;
+    return areAllPlayersDeadOrGone();
+}
 
-    if (enemies.empty()) 
-        return true;
-
-    return false;
+bool BattleManager::areAllPlayersDeadOrGone() const {
+    for (Player* p : players) {
+        if (p && p->getHp() > 0)
+            return false;
+    }
+    return true;
 }

@@ -54,6 +54,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         player.cpp player.h
         enemy.cpp
         enemy.cpp enemy.h
+        character.cpp character.h
+        character.cpp character.h
+        BattleManager.cpp BattleManager.h
 
 
 

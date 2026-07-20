@@ -57,6 +57,18 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         character.cpp character.h
         character.cpp character.h
         BattleManager.cpp BattleManager.h
+        combatpage.h combatpage.cpp
+
+        card.cpp card.h
+        AttackCard.cpp AttackCard.h
+        CurseCard.cpp CurseCard.h
+        SkillCard.cpp SkillCard.h
+        PowerCard.cpp PowerCard.h
+        StatusCard.cpp StatusCard.h
+        StatusEffect.cpp StatusEffect.h
+        BossStruggles.cpp BossStruggles.h
+        NormalEnemies.cpp NormalEnemies.h
+        EliteEnemies.cpp EliteEnemies.h
 
 
 

@@ -90,6 +90,11 @@ private:
     void showExhaustPileOverlay();
     void hideExhaustPileOverlay();
 
+    QWidget* playerStatusRow;
+    QWidget* enemyStatusRow;
+    void updateStatusEffectRow(QWidget* rowWidget, Character* character);
+    void showStatusEffectTooltip(QLabel* badge);
+
 protected:
 
     QLabel* gameOverLabel;

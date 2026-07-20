@@ -310,6 +310,16 @@ MainWindow::MainWindow(QWidget *parent)
     hitSoundPlayer->setSource(QUrl("qrc:/audio/hit.mp3"));
     hitSoundOutput->setVolume(0.8);
 
+    playerStatusRow = new QWidget(this);
+    QHBoxLayout* playerStatusLayout = new QHBoxLayout(playerStatusRow);
+    playerStatusLayout->setContentsMargins(0, 0, 0, 0);
+    playerStatusLayout->setSpacing(4);
+
+    enemyStatusRow = new QWidget(this);
+    QHBoxLayout* enemyStatusLayout = new QHBoxLayout(enemyStatusRow);
+    enemyStatusLayout->setContentsMargins(0, 0, 0, 0);
+    enemyStatusLayout->setSpacing(4);
+
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
@@ -385,6 +395,9 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     if (exhaustPileOverlay->isVisible())
         exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
+
+    playerStatusRow->setGeometry(currentStartX, basePlayerY + spriteSize + 36, spriteSize, 30);
+    enemyStatusRow->setGeometry(enemyX2, baseEnemyY - 5, spriteSize, 30);
 }
 
 void MainWindow::on_EndTurnButton_clicked()
@@ -455,7 +468,7 @@ void MainWindow::updateHandUI() {
                 battleManager->playCardAction(card, allEnemies[0]);
                 battleManager->cleanupDeadEnemies();
 
-                 bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
+                bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
 
                 updateHandUI();
                 updateCharacterUI();
@@ -546,6 +559,7 @@ void MainWindow::updateCharacterUI() {
     playerHpBar->setMaximum(playerObject->getMaxHp());
     playerHpBar->setValue(playerObject->getHp());
     playerHpBar->setFormat(QString("%1 / %2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
+    updateStatusEffectRow(playerStatusRow, playerObject);
 
     int pBlock = playerObject->getBlock();
     playerBlockBadge->setVisible(pBlock > 0);
@@ -575,8 +589,10 @@ void MainWindow::updateCharacterUI() {
     enemyNameLabel->setVisible(hasEnemy);
     enemyBlockBadge->setVisible(false);
 
-    if (!hasEnemy)
+    if (!hasEnemy){
         customTooltipBox->hide();
+        updateStatusEffectRow(enemyStatusRow, nullptr);
+    }
 
     if (hasEnemy) {
         Enemy* enemy = enemies[0];
@@ -589,6 +605,7 @@ void MainWindow::updateCharacterUI() {
         enemyHpBar->setMaximum(enemy->getMaxHp());
         enemyHpBar->setValue(enemy->getHp());
         enemyHpBar->setFormat(QString("%1 / %2").arg(enemy->getHp()).arg(enemy->getMaxHp()));
+        updateStatusEffectRow(enemyStatusRow, enemy);
 
         int eBlock = enemy->getBlock();
         enemyBlockBadge->setVisible(eBlock > 0);
@@ -727,6 +744,16 @@ void MainWindow::showEnemyTooltip(Enemy* enemy) {
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    QLabel* badge = qobject_cast<QLabel*>(obj);
+    if (badge && badge->property("effectName").isValid()) {
+        if (event->type() == QEvent::Enter) {
+            showStatusEffectTooltip(badge);
+        } else if (event->type() == QEvent::Leave) {
+            customTooltipBox->hide();
+        }
+        return QMainWindow::eventFilter(obj, event);
+    }
+
     if (obj == discardWrapper && event->type() == QEvent::MouseButtonRelease) {
         showExhaustPileOverlay();
         return true;
@@ -840,7 +867,6 @@ void MainWindow::showExhaustPileOverlay() {
         delete child;
     }
 
-    // ---- نکته: برای این کار باید یه getter به exhaustPile اضافه کنی (پایین توضیح میدم) ----
     const vector<Card*>& exhaustedCards = playerObject->getExhaustPile();
 
     for (Card* card : exhaustedCards) {
@@ -850,7 +876,7 @@ void MainWindow::showExhaustPileOverlay() {
         cardImgLabel->setFixedSize(120, 160);
         QString cardName = QString::fromStdString(card->getName());
         cardImgLabel->setPixmap(QPixmap(":/images/cards/" + cardName + ".png")
-                                    .scaled(120, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        .scaled(120, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         exhaustCardsContainer->layout()->addWidget(cardImgLabel);
     }
 
@@ -861,4 +887,80 @@ void MainWindow::showExhaustPileOverlay() {
 
 void MainWindow::hideExhaustPileOverlay() {
     exhaustPileOverlay->hide();
+}
+
+static QString effectColor(const QString& name) {
+    if (name == "Strength")    return "#e07b39";
+    if (name == "Dexterity")   return "#4ea8de";
+    if (name == "Vulnerable")  return "#e35d5d";
+    if (name == "Weak")        return "#b98fda";
+    if (name == "Frail")       return "#c9a24a";
+    if (name == "Metallicize") return "#7d8fa3";
+    if (name == "Entangled")   return "#6fae6f";
+    if (name == "DemonForm")   return "#c0392b";
+    if (name == "Brutality")   return "#8b0000";
+    return "#666666";
+}
+
+void MainWindow::updateStatusEffectRow(QWidget* rowWidget, Character* character) {
+    QLayout* layout = rowWidget->layout();
+
+    QLayoutItem* child;
+    while ((child = layout->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();
+            delete child->widget();
+        }
+        delete child;
+    }
+
+    if (!character) return;
+
+    for (auto* effect : character->getEffects()) {
+        QString name = QString::fromStdString(effect->getName());
+        int amount = effect->getAmount();
+
+        QLabel* badge = new QLabel(rowWidget);
+        badge->setFixedSize(90, 26);
+        badge->setAlignment(Qt::AlignCenter);
+        badge->setText(QString("%1 %2").arg(name).arg(amount));
+        badge->setStyleSheet(QString("background-color: %1; color: white; border-radius: 6px; "
+        "font-weight: bold; font-size: 10px;").arg(effectColor(name)));
+
+        badge->setProperty("effectName", name);
+        badge->setProperty("effectAmount", amount);
+        badge->installEventFilter(this);
+
+        layout->addWidget(badge);
+    }
+}
+
+static QString effectDescription(const QString& name, int amount) {
+    if (name == "Strength")    return QString("Increases damage dealt by Attack cards by %1.").arg(amount);
+    if (name == "Dexterity")   return QString("Increases Block gained by %1.").arg(amount);
+    if (name == "Vulnerable")  return "Take 50% more damage from attacks while this is active.";
+    if (name == "Weak")        return "Deal 50% less damage while this is active.";
+    if (name == "Frail")       return "Gain 25% less Block from cards while this is active.";
+    if (name == "Metallicize") return QString("Gain %1 Block at the end of your turn.").arg(amount);
+    if (name == "Entangled")   return "Cannot play Attack cards this turn.";
+    if (name == "DemonForm")   return QString("Gain %1 Strength at the start of each turn.").arg(amount);
+    if (name == "Brutality")   return "Lose 1 HP and draw 1 card at the start of each turn.";
+    return "";
+}
+
+void MainWindow::showStatusEffectTooltip(QLabel* badge) {
+    QString name = badge->property("effectName").toString();
+    int amount = badge->property("effectAmount").toInt();
+    QString desc = effectDescription(name, amount);
+
+    customTooltipBox->setText(QString(
+    "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1 (%2)</div>"
+    "<div>%3</div>").arg(name).arg(amount).arg(desc));
+
+    customTooltipBox->adjustSize();
+
+    QPoint globalPos = badge->mapTo(this, QPoint(0, 0));
+    customTooltipBox->move(globalPos.x(), globalPos.y() + badge->height() + 6);
+    customTooltipBox->show();
+    customTooltipBox->raise();
 }

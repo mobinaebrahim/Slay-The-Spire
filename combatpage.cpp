@@ -1,23 +1,14 @@
 #include "combatpage.h"
-#include "AttackCard.h"
-#include "CurseCard.h"
-#include "SkillCard.h"
-#include "PowerCard.h"
-#include "StatusCard.h"
-
 
 CombatPage::CombatPage(QWidget *parent, bool isLeader)
     : QWidget(parent)
     , m_isLeader(isLeader)
-    , m_battleManager(nullptr)
-    , m_localPlayer(nullptr)
 {
     setWindowFlags(Qt::Window);
     setWindowTitle("Combat");
 
-    setupCombat();
     buildUI();
-    updateAllUI();
+    setupCombat();
 
     connect(&NetworkManager::instance(), &NetworkManager::game_action_received, this,
             &CombatPage::handleNetworkMessage);
@@ -25,24 +16,21 @@ CombatPage::CombatPage(QWidget *parent, bool isLeader)
 
 void CombatPage::setupCombat()
 {
-    m_battleManager = new BattleManager();
-
-    // بازیکن خودم رو می‌سازم (هر کلاینت این کارو برای خودش می‌کنه)
-    m_localPlayer = new Player("Player", 80, 80, 3, 99, m_battleManager);
-    m_battleManager->addPlayer(m_localPlayer);
-
-    // فقط Leader دشمن رو spawn می‌کنه
+    // دیگه هیچ BattleManager/Player محلی نمی‌سازیم.
+    // فقط اگه Leader هستیم، به سرور می‌گیم combat رو شروع کنه.
     if (m_isLeader) {
-        m_battleManager->spawnEnemy(new JawWorm());
-        m_battleManager->startCombat();
+        QJsonObject msg;
+        msg["type"] = "start_combat";
+        msg["enemy_name"] = "JawWorm"; // فعلاً ثابت، بعداً بر اساس نوع اتاق عوض میشه
+        NetworkManager::instance().send_game_action(msg);
     }
+    // اگه Leader نیستیم، فقط منتظر پیام "combat_started" / "state_update" می‌مونیم
 }
 
 void CombatPage::buildUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    // --- بالا: وضعیت هم‌تیمی ---
     QHBoxLayout *teammateRow = new QHBoxLayout();
     m_teammateNameLabel = new QLabel("Teammate");
     m_teammateHpBar = new QProgressBar();
@@ -52,7 +40,6 @@ void CombatPage::buildUI()
     teammateRow->addStretch();
     mainLayout->addLayout(teammateRow);
 
-    // --- وسط: دشمن ---
     QVBoxLayout *enemyBox = new QVBoxLayout();
     m_enemyNameLabel = new QLabel("Enemy");
     m_enemyNameLabel->setAlignment(Qt::AlignCenter);
@@ -64,7 +51,6 @@ void CombatPage::buildUI()
 
     mainLayout->addStretch();
 
-    // --- پایین: خودم ---
     QHBoxLayout *bottomRow = new QHBoxLayout();
 
     QVBoxLayout *myStatusBox = new QVBoxLayout();
@@ -87,6 +73,14 @@ void CombatPage::buildUI()
     setLayout(mainLayout);
 }
 
+void CombatPage::sendPlayCard(const QString &cardName)
+{
+    QJsonObject msg;
+    msg["type"] = "play_card";
+    msg["card_name"] = cardName;
+    NetworkManager::instance().send_game_action(msg);
+}
+
 void CombatPage::updateMyHandUI()
 {
     QLayout *layout = m_myCardsContainer->layout();
@@ -99,60 +93,81 @@ void CombatPage::updateMyHandUI()
         delete child;
     }
 
-    const std::vector<Card*>& hand = m_localPlayer->getHand();
-    for (Card *card : hand) {
-        if (!card) continue;
-
-        QPushButton *cardBtn = new QPushButton(QString::fromStdString(card->getName()));
+    for (const QString &cardName : m_myHand) {
+        QPushButton *cardBtn = new QPushButton(cardName);
         cardBtn->setFixedSize(100, 140);
-        cardBtn->setEnabled(card->isPlayable());
 
-        connect(cardBtn, &QPushButton::clicked, this, [this, card]() {
-            const auto& enemies = m_battleManager->getEnemies();
-            if (enemies.empty()) return;
-
-            m_battleManager->playCardAction(m_localPlayer, card, enemies[0]);
-            m_battleManager->cleanupDeadEnemies();
-
-            updateAllUI();
+        connect(cardBtn, &QPushButton::clicked, this, [this, cardName]() {
+            sendPlayCard(cardName);
+            // منتظر state_update از سرور می‌مونیم، خودمون UI رو دستی آپدیت نمی‌کنیم
         });
 
         layout->addWidget(cardBtn);
     }
 }
 
+void CombatPage::updateAllUI()
+{
+    m_myHpBar->setMaximum(m_myMaxHp);
+    m_myHpBar->setValue(m_myHp);
+    m_myEnergyLabel->setText(QString("Energy: %1/%2").arg(m_myEnergy).arg(m_myMaxEnergy));
+
+    m_teammateHpBar->setMaximum(m_teammateMaxHp);
+    m_teammateHpBar->setValue(m_teammateHp);
+
+    m_enemyNameLabel->setText(m_enemyName);
+    m_enemyHpBar->setMaximum(m_enemyMaxHp);
+    m_enemyHpBar->setValue(m_enemyHp);
+
+    updateMyHandUI();
+}
 
 void CombatPage::handleNetworkMessage(const QJsonObject &obj)
 {
     QString type = obj["type"].toString();
-    // قدم‌های بعدی: پردازش player_action, enemy_state, end_turn
-}
 
-void CombatPage::updateAllUI()
-{
-    // --- خودم ---
-    if (m_localPlayer) {
-        m_myHpBar->setMaximum(m_localPlayer->getMaxHp());
-        m_myHpBar->setValue(m_localPlayer->getHp());
-        m_myEnergyLabel->setText(QString("Energy: %1/%2")
-                                     .arg(m_localPlayer->getEnergy())
-                                     .arg(m_localPlayer->getMaxEnergy()));
+    if (type == "combat_started") {
+        // فعلاً کاری لازم نیست، منتظر state_update اول می‌مونیم
+        return;
     }
 
-    // --- دشمن ---
-    const auto& enemies = m_battleManager->getEnemies();
-    if (!enemies.empty()) {
-        Enemy* firstEnemy = enemies[0];
-        m_enemyNameLabel->setText(QString::fromStdString(firstEnemy->getName()));
-        m_enemyHpBar->setMaximum(firstEnemy->getMaxHp());
-        m_enemyHpBar->setValue(firstEnemy->getHp());
-    }
+    if (type == "state_update") {
+        QJsonArray players = obj["players"].toArray();
 
-    // --- دست کارت‌ها ---
-    updateMyHandUI();
+        int myIndex = m_isLeader ? 0 : 1;
+        int teammateIndex = m_isLeader ? 1 : 0;
+
+        if (myIndex < players.size()) {
+            QJsonObject me = players[myIndex].toObject();
+            m_myHp = me["hp"].toInt();
+            m_myMaxHp = me["max_hp"].toInt();
+            m_myEnergy = me["energy"].toInt();
+            m_myMaxEnergy = me["max_energy"].toInt();
+
+            m_myHand.clear();
+            for (const QJsonValue &v : me["hand"].toArray())
+                m_myHand.append(v.toString());
+        }
+
+        if (teammateIndex < players.size()) {
+            QJsonObject teammate = players[teammateIndex].toObject();
+            m_teammateHp = teammate["hp"].toInt();
+            m_teammateMaxHp = teammate["max_hp"].toInt();
+        }
+
+        QJsonArray enemies = obj["enemies"].toArray();
+        if (!enemies.isEmpty()) {
+            QJsonObject enemy = enemies[0].toObject();
+            m_enemyName = enemy["name"].toString();
+            m_enemyHp = enemy["hp"].toInt();
+            m_enemyMaxHp = enemy["max_hp"].toInt();
+        }
+
+        updateAllUI();
+        return;
+    }
 }
 
 CombatPage::~CombatPage()
 {
-    delete m_battleManager;
 }

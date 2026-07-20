@@ -9,11 +9,8 @@
 #include <QVBoxLayout>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QStringList>
 #include "networkmanager.h"
-#include "BattleManager.h"
-#include "player.h"
-#include "enemy.h"
-#include "NormalEnemies.h"
 
 class CombatPage : public QWidget
 {
@@ -24,19 +21,33 @@ public:
 
 private:
     bool m_isLeader;
-    BattleManager *m_battleManager;
-    Player *m_localPlayer;   // بازیکن خودم (این کلاینت)
+
+    // --- وضعیت خودم (از سرور میاد) ---
+    int m_myHp = 0;
+    int m_myMaxHp = 0;
+    int m_myEnergy = 0;
+    int m_myMaxEnergy = 0;
+    QStringList m_myHand;
+
+    // --- وضعیت هم‌تیمی (از سرور میاد) ---
+    int m_teammateHp = 0;
+    int m_teammateMaxHp = 0;
+
+    // --- وضعیت دشمن (از سرور میاد) ---
+    QString m_enemyName;
+    int m_enemyHp = 0;
+    int m_enemyMaxHp = 0;
 
     // UI - خودم
     QProgressBar *m_myHpBar;
     QLabel *m_myEnergyLabel;
     QWidget *m_myCardsContainer;
 
-    // UI - هم‌تیمی (فقط نمایشی)
+    // UI - هم‌تیمی
     QProgressBar *m_teammateHpBar;
     QLabel *m_teammateNameLabel;
 
-    // UI - دشمن (مشترک)
+    // UI - دشمن
     QProgressBar *m_enemyHpBar;
     QLabel *m_enemyNameLabel;
 
@@ -46,6 +57,8 @@ private:
     void buildUI();
     void updateAllUI();
     void updateMyHandUI();
+
+    void sendPlayCard(const QString &cardName);
 
     void handleNetworkMessage(const QJsonObject &obj);
 

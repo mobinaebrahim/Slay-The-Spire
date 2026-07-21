@@ -14,9 +14,12 @@ void AttackCard::upgrade() {
 }
 
 void AttackCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
-	if (target) 
-		target->takeDamage(isUpgraded ? upgradedDamage : baseDamage);
-} 
+    if (caster && target) {
+        int baseDmg = isUpgraded ? upgradedDamage : baseDamage;
+        int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+        target->takeDamage(damageToDeal);
+    }
+}
 
 //___________________________________ReaperCard______________________________________
 ReaperCard::ReaperCard(): AttackCard(CardType::Attack, "Reaper", 

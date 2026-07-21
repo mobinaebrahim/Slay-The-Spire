@@ -564,6 +564,17 @@ Card* createCardByName(const std::string& name) {
 }
 
 void MainWindow::initializePlayerDeck(int totalCards) {
+    for (int i = 0; i < 3; ++i) {
+        Card* strikeCard = createCardByName("Strike");
+        if (strikeCard)
+            playerObject->addCardToDrawPile(strikeCard);
+    }
+    for (int i = 0; i < 2; ++i) {
+        Card* defendCard = createCardByName("Defend");
+        if (defendCard)
+            playerObject->addCardToDrawPile(defendCard);
+    }
+
     std::vector<std::string> allCardNames = {
     "Bash", "Blood for Blood", "Clash", "Feed", "Immolate", "PerfectedStrike", "Reaper",
     "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
@@ -571,7 +582,9 @@ void MainWindow::initializePlayerDeck(int totalCards) {
     "Exhume", "FeelNoPain", "Impervious", "Inflame", "LimitBreak", "Metallicize",
     "Offering", "ShrugItOff", "Daze", "Slime", "Wound", "Burn", "JAX", "CurseOfBell"};
 
-    for (int i = 0; i < totalCards; ++i) {
+    int remainingCards = totalCards - 5;
+
+    for (int i = 0; i < remainingCards; ++i) {
         int randomIndex = std::rand() % allCardNames.size();
         std::string randomName = allCardNames[randomIndex];
 

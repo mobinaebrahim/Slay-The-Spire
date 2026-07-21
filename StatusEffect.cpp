@@ -97,3 +97,11 @@ void BrutalityEffect::onTurnStart(Character* owner) {
     if (player)
         player->drawCards(1);
 }
+
+//______________________________________FeelNoPainEffect____________________________________
+FeelNoPainEffect::FeelNoPainEffect(int blockAmount) : StatusEffect("FeelNoPain", blockAmount) {}
+
+void FeelNoPainEffect::onCardExhausted(Character* owner) {
+    int finalBlock = owner->calculate_total_block(amount);
+    owner->addBlock(finalBlock);
+}

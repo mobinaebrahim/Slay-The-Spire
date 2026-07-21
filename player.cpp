@@ -62,7 +62,11 @@ void Player::exhaustCard(Card* card) {
         if (*it == card) {
             exhaustPile.push_back(card);
             hand.erase(it);
-            add_block_when_exhausted(); 
+            add_block_when_exhausted();
+
+            for (auto* effect : effects)
+                effect->onCardExhausted(this);
+
             break;
         }
     }

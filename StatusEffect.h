@@ -22,6 +22,7 @@ public:
     virtual int modifyBlock(int baseBlock);
     virtual void onTurnEnd(Character* owner) {}
     virtual void onTurnStart(Character* owner) {}
+    virtual void onCardExhausted(Character* owner) {}
     virtual bool isExpired() const { return false; }
 };
 
@@ -84,6 +85,12 @@ class BrutalityEffect : public StatusEffect {
 public:
     BrutalityEffect();
     void onTurnStart(Character* owner) override;
+};
+
+class FeelNoPainEffect : public StatusEffect {
+public:
+    FeelNoPainEffect(int blockAmount);
+    void onCardExhausted(Character* owner) override;
 };
 
 #endif

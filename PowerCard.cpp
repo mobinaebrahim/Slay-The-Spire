@@ -51,8 +51,8 @@ FeelNoPainCard::FeelNoPainCard():PowerCard(CardType::Power, "FeelNoPain",
     "Every time a card is Exhausted, gain 3 block", 1) {}
 
 void FeelNoPainCard::applyEffect(Character* caster, Character* target, BattleManager* bm) {
-    //if(caster)
-        //caster->applyStatus(new FeelNoPainEffect(isUpgraded ? 4 : 3));
+    if(caster)
+        caster->applyStatus(new FeelNoPainEffect(isUpgraded ? 4 : 3));
 }
 
 //____________________________________BarricadeCard____________________________________

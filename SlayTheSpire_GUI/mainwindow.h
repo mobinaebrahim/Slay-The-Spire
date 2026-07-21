@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include <QGraphicsOpacityEffect>
+#include <QGraphicsDropShadowEffect>
 #include <QSoundEffect>
 #include <QMediaPlayer>
 #include <QAudioOutput>
@@ -67,8 +68,8 @@ private:
     QLabel* playerHpTopLabel;
 
     QProgressBar* enemyHpBar;
-    QLabel*       enemyBlockBadge;
-    QLabel*       enemyIntentLabel;
+    QLabel* enemyBlockBadge;
+    QLabel* enemyIntentLabel;
     QLabel* enemyNameLabel;
 
     QLabel* playerEnergyOrb;
@@ -97,6 +98,14 @@ private:
     QWidget* enemyStatusRow;
     void updateStatusEffectRow(QWidget* rowWidget, Character* character);
     void showStatusEffectTooltip(QLabel* badge);
+
+    QPropertyAnimation* hoverGeomAnim = nullptr;
+    QRect hoverOriginalRect;
+    QLabel* hoverCardLabel = nullptr;
+    QPixmap hoverCardPixmap;
+    QPropertyAnimation* hoverAnim = nullptr;
+    void showHoverCard(QPushButton* originalBtn);
+    void hideHoverCard();
 
 protected:
 

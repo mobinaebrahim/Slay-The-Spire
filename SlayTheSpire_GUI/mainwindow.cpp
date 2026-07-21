@@ -84,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
         "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
         "font-size: 11px; border-radius: 4px;");
 
-
     discardWrapper = new QWidget(this);
     discardWrapper->setFixedSize(90, 90);
 
@@ -332,6 +331,17 @@ MainWindow::MainWindow(QWidget *parent)
     enemyStatusLayout->setContentsMargins(0, 0, 0, 0);
     enemyStatusLayout->setSpacing(4);
 
+    hoverCardLabel = new QLabel(this);
+    hoverCardLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+    hoverCardLabel->setStyleSheet("background: transparent; border: none;");
+    hoverCardLabel->hide();
+
+    QGraphicsDropShadowEffect* hoverShadow = new QGraphicsDropShadowEffect(hoverCardLabel);
+    hoverShadow->setBlurRadius(45);
+    hoverShadow->setOffset(0, 14);
+    hoverShadow->setColor(QColor(0, 0, 0, 210));
+    hoverCardLabel->setGraphicsEffect(hoverShadow);
+
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
@@ -467,9 +477,15 @@ void MainWindow::updateHandUI() {
         cardBtn->setFixedSize(140, 180);
 
         QString cardName = QString::fromStdString(card->getName());
-        cardBtn->setIcon(QIcon(":/images/cards/" + cardName + ".png"));
+
+        QString cardImagePath = ":/images/cards/" + cardName + ".png";
+
+        cardBtn->setIcon(QIcon(cardImagePath));
         cardBtn->setIconSize(cardBtn->size());
         cardBtn->setEnabled(card->isPlayable());
+        cardBtn->setProperty("cardImagePath", cardImagePath);
+        cardBtn->setProperty("cardName", cardName);
+        cardBtn->installEventFilter(this);
 
         connect(cardBtn, &QPushButton::clicked, [=]() {
             if (isGameOver) return;
@@ -759,6 +775,17 @@ void MainWindow::showEnemyTooltip(Enemy* enemy) {
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    QPushButton* cardBtn = qobject_cast<QPushButton*>(obj);
+    if (cardBtn && cardBtn->property("cardImagePath").isValid()) {
+        if (event->type() == QEvent::Enter) {
+            showHoverCard(cardBtn);
+            return true;
+        } else if (event->type() == QEvent::Leave) {
+            hideHoverCard();
+            return true;
+        }
+    }
+
     QLabel* badge = qobject_cast<QLabel*>(obj);
     if (badge && badge->property("effectName").isValid()) {
         if (event->type() == QEvent::Enter) {
@@ -1012,4 +1039,64 @@ void MainWindow::disableAllCards() {
         if (w)
             w->setEnabled(false);
     }
+}
+
+void MainWindow::showHoverCard(QPushButton* originalBtn) {
+    if (!originalBtn) return;
+
+    QString imagePath = originalBtn->property("cardImagePath").toString();
+    QPixmap fullResPixmap(imagePath);
+    if (fullResPixmap.isNull()) return;
+
+    QPoint globalPos = originalBtn->mapTo(this, QPoint(0, 0));
+    QRect smallRect(globalPos.x(), globalPos.y(), originalBtn->width(), originalBtn->height());
+    hoverOriginalRect = smallRect;
+
+    double scale = 1.55;
+    int bigW = int(originalBtn->width() * scale);
+    int bigH = int(originalBtn->height() * scale);
+    int bigX = globalPos.x() - (bigW - originalBtn->width()) / 2;
+    int bigY = globalPos.y() - (bigH - originalBtn->height()) / 2 - 50;
+    QRect bigRect(bigX, bigY, bigW, bigH);
+
+    hoverCardLabel->setPixmap(fullResPixmap.scaled(bigW, bigH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    if (!hoverCardLabel->isVisible()) {
+        hoverCardLabel->setGeometry(smallRect);
+        hoverCardLabel->show();
+    }
+    hoverCardLabel->raise();
+
+    if (hoverGeomAnim) {
+        hoverGeomAnim->stop();
+        delete hoverGeomAnim;
+        hoverGeomAnim = nullptr;
+    }
+
+    hoverGeomAnim = new QPropertyAnimation(hoverCardLabel, "geometry", this);
+    hoverGeomAnim->setDuration(180);
+    hoverGeomAnim->setStartValue(hoverCardLabel->geometry());
+    hoverGeomAnim->setEndValue(bigRect);
+    hoverGeomAnim->setEasingCurve(QEasingCurve::OutCubic);   // به‌جای OutBack، تا دیگه over-shoot و لرزش نداشته باشیم
+    hoverGeomAnim->start();
+}
+
+void MainWindow::hideHoverCard() {
+    if (!hoverCardLabel || !hoverCardLabel->isVisible()) return;
+
+    if (hoverGeomAnim) {
+        hoverGeomAnim->stop();
+        delete hoverGeomAnim;
+        hoverGeomAnim = nullptr;
+    }
+
+    hoverGeomAnim = new QPropertyAnimation(hoverCardLabel, "geometry", this);
+    hoverGeomAnim->setDuration(130);
+    hoverGeomAnim->setStartValue(hoverCardLabel->geometry());
+    hoverGeomAnim->setEndValue(hoverOriginalRect);
+    hoverGeomAnim->setEasingCurve(QEasingCurve::InCubic);
+
+    QLabel* labelPtr = hoverCardLabel;
+    connect(hoverGeomAnim, &QPropertyAnimation::finished, labelPtr, &QLabel::hide);
+    hoverGeomAnim->start();
 }

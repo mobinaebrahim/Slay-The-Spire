@@ -182,8 +182,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     enemyBlockBadge = new QLabel(this);
     enemyBlockBadge->setAlignment(Qt::AlignCenter);
-    enemyBlockBadge->setFixedSize(30, 30);
-    enemyBlockBadge->setStyleSheet(playerBlockBadge->styleSheet());
+    enemyBlockBadge->setFixedSize(36, 36);
+    enemyBlockBadge->setStyleSheet(
+        "background-color: #2b3a55; color: #9fd8ff; border: 2px solid #5c85b0; "
+        "border-radius: 18px; font-weight: bold; font-size: 13px;"
+        );
     enemyBlockBadge->hide();
 
     enemyIntentLabel = new QLabel(this);
@@ -387,7 +390,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
         baseEnemyY - 32,
         barWidth, barHeight);
 
-    enemyBlockBadge->setGeometry( enemyX2 + spriteSize - 30, baseEnemyY - 8, 30, 30);
+    enemyBlockBadge->setGeometry(enemyX2 - 5, baseEnemyY + spriteSize - 35, 36, 36);
 
     enemyIntentLabel->setGeometry(enemyX2 - 20, baseEnemyY - 65, spriteSize + 40, 28);
 

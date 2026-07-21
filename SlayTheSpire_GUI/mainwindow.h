@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QGridLayout>
+#include <QParallelAnimationGroup>
 #include "../Player.h"
 
 class Card;
@@ -106,6 +107,8 @@ private:
     QPropertyAnimation* hoverAnim = nullptr;
     void showHoverCard(QPushButton* originalBtn);
     void hideHoverCard();
+
+    void showFloatingDamage(QRect targetRect, int amount, const QColor& color);
 
 protected:
 

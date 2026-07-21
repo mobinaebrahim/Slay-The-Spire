@@ -494,7 +494,19 @@ void MainWindow::updateHandUI() {
                 bool isAttackCard = (card->getType() == CardType::Attack);
                 int handSizeBefore = playerObject->getHandSize();
 
-                battleManager->playCardAction(card, allEnemies[0]);
+                Enemy* targetEnemy = allEnemies[0];
+                int enemyHpBefore = targetEnemy->getHp();
+
+                battleManager->playCardAction(card, targetEnemy);
+
+                bool enemyStillAlive = false;
+                for (Enemy* e : battleManager->getEnemies())
+                    if (e == targetEnemy) { enemyStillAlive = true; break; }
+
+                int damageDealt = enemyStillAlive ? (enemyHpBefore - targetEnemy->getHp()) : enemyHpBefore;
+                if (damageDealt > 0)
+                    showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
+
                 battleManager->cleanupDeadEnemies();
 
                 bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
@@ -859,8 +871,14 @@ void MainWindow::playEnemyAttack() {
 
     connect(forward, &QPropertyAnimation::finished, this, [=]() {
         QTimer::singleShot(150, this, [=]() {
+            int playerHpBefore = playerObject->getHp();
+
             battleManager->enemyTurn();
             battleManager->cleanupDeadEnemies();
+
+            int damageDealt = playerHpBefore - playerObject->getHp();
+            if (damageDealt > 0)
+                showFloatingDamage(playerSpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
 
             hitSoundPlayer->setPosition(0);
             hitSoundPlayer->play();
@@ -1099,4 +1117,41 @@ void MainWindow::hideHoverCard() {
     QLabel* labelPtr = hoverCardLabel;
     connect(hoverGeomAnim, &QPropertyAnimation::finished, labelPtr, &QLabel::hide);
     hoverGeomAnim->start();
+}
+
+void MainWindow::showFloatingDamage(QRect targetRect, int amount, const QColor& color) {
+    if (amount <= 0) return;
+
+    QLabel* dmgLabel = new QLabel(this);
+    dmgLabel->setText(QString("-%1").arg(amount));
+    dmgLabel->setStyleSheet(QString(
+    "color: %1; font-size: 30px; font-weight: 900; background: transparent;").arg(color.name()));
+    dmgLabel->adjustSize();
+
+    int startX = targetRect.x() + targetRect.width() / 2 - dmgLabel->width() / 2;
+    int startY = targetRect.y() + 20;
+    dmgLabel->move(startX, startY);
+    dmgLabel->show();
+    dmgLabel->raise();
+
+    QGraphicsOpacityEffect* opacity = new QGraphicsOpacityEffect(dmgLabel);
+    dmgLabel->setGraphicsEffect(opacity);
+    opacity->setOpacity(1.0);
+
+    QPropertyAnimation* moveAnim = new QPropertyAnimation(dmgLabel, "geometry", this);
+    moveAnim->setDuration(750);
+    moveAnim->setStartValue(dmgLabel->geometry());
+    moveAnim->setEndValue(QRect(startX, startY - 60, dmgLabel->width(), dmgLabel->height()));
+    moveAnim->setEasingCurve(QEasingCurve::OutCubic);
+
+    QPropertyAnimation* fadeAnim = new QPropertyAnimation(opacity, "opacity", this);
+    fadeAnim->setDuration(750);
+    fadeAnim->setStartValue(1.0);
+    fadeAnim->setEndValue(0.0);
+
+    QParallelAnimationGroup* group = new QParallelAnimationGroup(this);
+    group->addAnimation(moveAnim);
+    group->addAnimation(fadeAnim);
+    connect(group, &QParallelAnimationGroup::finished, dmgLabel, &QLabel::deleteLater);
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 }

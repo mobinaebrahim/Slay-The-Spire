@@ -76,12 +76,10 @@ Card* Player::chooseCardFromHand() {
     if (hand.empty())
         return nullptr;
 
-    for (Card* c : hand) {
-        if (c->getType() == CardType::Attack || c->getType() == CardType::Power)
-            return c;
-    }
-    return nullptr;
+    int handSize = hand.size();
+    int randomCard = rand() % (handSize + 1);
 
+    return hand[randomCard];
 }
 
 void Player::addCopiesToHand(Card* chosenCard, int count) {

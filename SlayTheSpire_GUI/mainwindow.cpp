@@ -460,6 +460,7 @@ void MainWindow::updateHandUI() {
         cardBtn->setEnabled(card->isPlayable());
 
         connect(cardBtn, &QPushButton::clicked, [=]() {
+            if (isGameOver) return;
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
             if (!allEnemies.empty() && !isAttackAnimating) {
                 bool isAttackCard = (card->getType() == CardType::Attack);
@@ -654,6 +655,7 @@ void MainWindow::checkGameOver() {
     if (playerObject->getHp() <= 0) {
         isGameOver = true;
         ui->EndTurnButton->setEnabled(false);
+        disableAllCards();
         showGameOverText("DEFEAT", QColor("#c0392b"));
         return;
     }
@@ -661,6 +663,7 @@ void MainWindow::checkGameOver() {
     if (battleManager->getEnemies().empty()) {
         isGameOver = true;
         ui->EndTurnButton->setEnabled(false);
+        disableAllCards();
         showGameOverText("VICTORY", QColor("#f5c518"));
         return;
     }
@@ -963,4 +966,15 @@ void MainWindow::showStatusEffectTooltip(QLabel* badge) {
     customTooltipBox->move(globalPos.x(), globalPos.y() + badge->height() + 6);
     customTooltipBox->show();
     customTooltipBox->raise();
+}
+
+void MainWindow::disableAllCards() {
+    QLayout* layout = ui->CardsContainer->layout();
+    if (!layout) return;
+
+    for (int i = 0; i < layout->count(); ++i) {
+        QWidget* w = layout->itemAt(i)->widget();
+        if (w)
+            w->setEnabled(false);
+    }
 }

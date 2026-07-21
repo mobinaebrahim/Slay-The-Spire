@@ -72,10 +72,10 @@ MainWindow::MainWindow(QWidget *parent)
     goldCountLabel->setAlignment(Qt::AlignCenter);
     goldCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
 
-    // ---- Draw Pile ----
     drawPileIconLabel = new QLabel(this);
     drawPileIconLabel->setFixedSize(84, 84);
     drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    drawPileIconLabel->installEventFilter(this);
 
     drawPileCountLabel = new QLabel(drawPileIconLabel);
     drawPileCountLabel->setGeometry(12, 28, 28, 16);
@@ -115,15 +115,23 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout* overlayLayout = new QVBoxLayout(exhaustPileOverlay);
     overlayLayout->setAlignment(Qt::AlignCenter);
 
-    QLabel* overlayTitle = new QLabel("Exhaust Pile", exhaustPileOverlay);
-    overlayTitle->setAlignment(Qt::AlignCenter);
-    overlayTitle->setStyleSheet("color: #c07af0; font-size: 24px; font-weight: bold; background: transparent;");
-    overlayLayout->addWidget(overlayTitle);
+    pileOverlayTitle = new QLabel("", exhaustPileOverlay);
+    pileOverlayTitle->setAlignment(Qt::AlignCenter);
+    pileOverlayTitle->setStyleSheet("font-size: 24px; font-weight: bold; background: transparent;");
+    overlayLayout->addWidget(pileOverlayTitle);
 
-    exhaustCardsContainer = new QWidget(exhaustPileOverlay);
-    QHBoxLayout* cardsRowLayout = new QHBoxLayout(exhaustCardsContainer);
-    cardsRowLayout->setAlignment(Qt::AlignCenter);
-    overlayLayout->addWidget(exhaustCardsContainer);
+    exhaustCardsContainer = new QWidget();
+    QGridLayout* cardsGridLayout = new QGridLayout(exhaustCardsContainer);
+    cardsGridLayout->setSpacing(12);
+    cardsGridLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+
+    pileScrollArea = new QScrollArea(exhaustPileOverlay);
+    pileScrollArea->setWidget(exhaustCardsContainer);
+    pileScrollArea->setWidgetResizable(true);
+    pileScrollArea->setStyleSheet("background: transparent; border: none;");
+    pileScrollArea->setFixedHeight(500);
+    pileScrollArea->setMinimumWidth(700);
+    overlayLayout->addWidget(pileScrollArea, 0, Qt::AlignCenter);
 
     closeExhaustOverlayButton = new QPushButton("Close", exhaustPileOverlay);
     closeExhaustOverlayButton->setFixedSize(120, 40);
@@ -132,8 +140,9 @@ MainWindow::MainWindow(QWidget *parent)
         "QPushButton:hover { background-color: #7d4bb5; }");
     overlayLayout->addWidget(closeExhaustOverlayButton, 0, Qt::AlignCenter);
 
-    connect(closeExhaustOverlayButton, &QPushButton::clicked, this, &MainWindow::hideExhaustPileOverlay);
+    connect(closeExhaustOverlayButton, &QPushButton::clicked, this, &MainWindow::hidePileOverlay);
     discardWrapper->installEventFilter(this);
+    exhaustPileBadge->installEventFilter(this);
 
     ui->EndTurnButton->setText("");
     ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
@@ -757,8 +766,18 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
         return QMainWindow::eventFilter(obj, event);
     }
 
+    if (obj == exhaustPileBadge && event->type() == QEvent::MouseButtonRelease) {
+        showCardPileOverlay("Exhaust Pile", playerObject->getExhaustPile(), "#c07af0");
+        return true;
+    }
+
     if (obj == discardWrapper && event->type() == QEvent::MouseButtonRelease) {
-        showExhaustPileOverlay();
+        showCardPileOverlay("Discard Pile", playerObject->getDiscardPile(), "#e0c060");
+        return true;
+    }
+
+    if (obj == drawPileIconLabel && event->type() == QEvent::MouseButtonRelease) {
+        showCardPileOverlay("Draw Pile", playerObject->getDrawPile(), "#7fd0ff");
         return true;
     }
 
@@ -860,9 +879,11 @@ void MainWindow::playEnemyNonAttackTurn() {
     });
 }
 
-void MainWindow::showExhaustPileOverlay() {
+void MainWindow::showCardPileOverlay(const QString& title, const vector<Card*>& cards, const QString& titleColor) {
+    QGridLayout* gridLayout = qobject_cast<QGridLayout*>(exhaustCardsContainer->layout());
+
     QLayoutItem* child;
-    while ((child = exhaustCardsContainer->layout()->takeAt(0)) != nullptr) {
+    while ((child = gridLayout->takeAt(0)) != nullptr) {
         if (child->widget()) {
             child->widget()->hide();
             delete child->widget();
@@ -870,17 +891,28 @@ void MainWindow::showExhaustPileOverlay() {
         delete child;
     }
 
-    const vector<Card*>& exhaustedCards = playerObject->getExhaustPile();
+    pileOverlayTitle->setText(title);
+    pileOverlayTitle->setStyleSheet(QString(
+    "color: %1; font-size: 24px; font-weight: bold; background: transparent;").arg(titleColor));
 
-    for (Card* card : exhaustedCards) {
+    const int columns = 5;
+    int row = 0, col = 0;
+
+    for (Card* card : cards) {
         if (!card) continue;
 
-        QLabel* cardImgLabel = new QLabel(exhaustCardsContainer);
+        QLabel* cardImgLabel = new QLabel();
         cardImgLabel->setFixedSize(120, 160);
         QString cardName = QString::fromStdString(card->getName());
         cardImgLabel->setPixmap(QPixmap(":/images/cards/" + cardName + ".png")
         .scaled(120, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        exhaustCardsContainer->layout()->addWidget(cardImgLabel);
+        gridLayout->addWidget(cardImgLabel, row, col);
+
+        col++;
+        if (col >= columns) {
+            col = 0;
+            row++;
+        }
     }
 
     exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
@@ -888,7 +920,7 @@ void MainWindow::showExhaustPileOverlay() {
     exhaustPileOverlay->raise();
 }
 
-void MainWindow::hideExhaustPileOverlay() {
+void MainWindow::hidePileOverlay() {
     exhaustPileOverlay->hide();
 }
 

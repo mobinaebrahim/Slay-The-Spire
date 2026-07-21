@@ -22,6 +22,8 @@
 #include <QPainter>
 #include <QPen>
 #include <QPushButton>
+#include <QScrollArea>
+#include <QGridLayout>
 #include "../Player.h"
 
 class Card;
@@ -81,14 +83,15 @@ private:
     QLabel* discardPileCountLabel;
     QLabel* exhaustPileBadge;
 
-    QWidget* exhaustPileOverlay;
-    QLabel* exhaustOverlayBackground;
+    QScrollArea* pileScrollArea;
     QWidget* exhaustCardsContainer;
+    QLabel* pileOverlayTitle;
+    QWidget* exhaustPileOverlay;
     QPushButton* closeExhaustOverlayButton;
     QWidget* discardWrapper;
 
-    void showExhaustPileOverlay();
-    void hideExhaustPileOverlay();
+    void showCardPileOverlay(const QString& title, const vector<Card*>& cards, const QString& titleColor);
+    void hidePileOverlay();
 
     QWidget* playerStatusRow;
     QWidget* enemyStatusRow;

@@ -35,13 +35,16 @@ void Player::drawCards(int count) {
 
             unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
             std::default_random_engine motor(seed);
-
             std::shuffle(drawPile.begin(), drawPile.end(), motor);
         }
 
         Card* topCard = drawPile.back();
         drawPile.pop_back();
-        hand.push_back(topCard);
+
+        if ((int)hand.size() >= MAX_HAND_SIZE)
+            discardPile.push_back(topCard);
+        else
+            hand.push_back(topCard);
     }
 }
 
@@ -91,7 +94,12 @@ void Player::addCopiesToHand(Card* chosenCard, int count) {
         return;
     for (int i = 0; i < count; i++){
         Card* newCopy = createCardByName(chosenCard->getName());
-        if (newCopy)
+        if (!newCopy)
+            continue;
+
+        if ((int)hand.size() >= MAX_HAND_SIZE)
+            discardPile.push_back(newCopy);
+        else
             hand.push_back(newCopy);
     }
 }

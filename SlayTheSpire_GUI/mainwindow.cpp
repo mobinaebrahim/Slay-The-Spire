@@ -462,6 +462,8 @@ void MainWindow::on_EndTurnButton_clicked()
 }
 
 void MainWindow::updateHandUI() {
+    hideHoverCard();
+
     QLayout* layout = ui->CardsContainer->layout();
     if (!layout) return;
 
@@ -523,8 +525,6 @@ void MainWindow::updateHandUI() {
 
                 bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
 
-                updateHandUI();
-                updateCharacterUI();
                 checkGameOver();
 
                 if (isAttackCard && cardWasActuallyPlayed && !isGameOver) {
@@ -532,6 +532,11 @@ void MainWindow::updateHandUI() {
                     hitSoundPlayer->play();
                     playHitEffect(enemyHitOverlay, enemyHitOpacity);
                 }
+
+                QTimer::singleShot(0, this, [=]() {
+                    updateHandUI();
+                    updateCharacterUI();
+                });
             }
         });
         layout->addWidget(cardBtn);

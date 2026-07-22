@@ -11,6 +11,8 @@
 using namespace std;
 class BattleManager;
 
+static const int MAX_HAND_SIZE = 10;
+
 class Player : public Character {
 private:
     int currentEnergy;

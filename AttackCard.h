@@ -67,6 +67,7 @@ class ClashCard : public AttackCard {
 public:
 	ClashCard();
 	void applyEffect(class Character* caster, class Character* target, BattleManager* bm) override;
+    string getUnplayableReason(Character* caster) const override;
 };
 
 #endif

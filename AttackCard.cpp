@@ -161,3 +161,10 @@ void ClashCard::applyEffect(Character* caster, Character* target, BattleManager*
 	else
 		cout << "Cannot play Clash!" << endl;
 }
+
+string ClashCard::getUnplayableReason(Character* caster) const {
+    Player* player = dynamic_cast<Player*>(caster);
+    if (player && !player->isHandAllAttacks())
+        return "You have non-attack cards in your hand!";
+    return "";
+}

@@ -342,6 +342,13 @@ MainWindow::MainWindow(QWidget *parent)
     hoverShadow->setColor(QColor(0, 0, 0, 210));
     hoverCardLabel->setGraphicsEffect(hoverShadow);
 
+    toastLabel = new QLabel(this);
+    toastLabel->setAlignment(Qt::AlignCenter);
+    toastLabel->setStyleSheet(
+        "background-color: rgba(180,30,30,220); color: white; font-weight: bold; "
+        "font-size: 16px; border-radius: 8px; padding: 10px;");
+    toastLabel->hide();
+
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
@@ -491,6 +498,12 @@ void MainWindow::updateHandUI() {
             if (isGameOver) return;
             const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
             if (!allEnemies.empty() && !isAttackAnimating) {
+
+                string reason = card->getUnplayableReason(playerObject);
+                if (!reason.empty()) {
+                    showToastMessage(QString::fromStdString(reason));
+                    return;
+                }
                 bool isAttackCard = (card->getType() == CardType::Attack);
                 int handSizeBefore = playerObject->getHandSize();
 
@@ -498,7 +511,6 @@ void MainWindow::updateHandUI() {
                 int enemyHpBefore = targetEnemy->getHp();
 
                 battleManager->playCardAction(card, targetEnemy);
-
                 bool enemyStillAlive = false;
                 for (Enemy* e : battleManager->getEnemies())
                     if (e == targetEnemy) { enemyStillAlive = true; break; }
@@ -1167,4 +1179,13 @@ void MainWindow::showFloatingDamage(QRect targetRect, int amount, const QColor& 
     group->addAnimation(fadeAnim);
     connect(group, &QParallelAnimationGroup::finished, dmgLabel, &QLabel::deleteLater);
     group->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void MainWindow::showToastMessage(const QString& text) {
+    toastLabel->setText(text);
+    toastLabel->adjustSize();
+    toastLabel->move(this->width()/2 - toastLabel->width()/2, 120);
+    toastLabel->show();
+    toastLabel->raise();
+    QTimer::singleShot(1500, toastLabel, &QLabel::hide);
 }

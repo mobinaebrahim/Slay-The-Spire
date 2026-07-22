@@ -110,6 +110,9 @@ private:
 
     void showFloatingDamage(QRect targetRect, int amount, const QColor& color);
 
+    void showToastMessage(const QString& text);
+    QLabel* toastLabel;
+
 protected:
 
     QLabel* gameOverLabel;

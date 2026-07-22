@@ -5,6 +5,7 @@
 #include <iostream>
 using namespace std;
 class BattleManager;
+class character;
 
 enum class CardType{ Attack, Skill, Power, Status, Curse};
 
@@ -25,6 +26,7 @@ public:
 	CardType getType() const;
 	virtual bool isPlayable() const; 
 	virtual void upgrade();
+    virtual string getUnplayableReason(Character* caster) const { return ""; }
 };
 
 #endif

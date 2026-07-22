@@ -26,12 +26,16 @@ ReaperCard::ReaperCard(): AttackCard(CardType::Attack, "Reaper",
 	"Deal 4 damage to all enemies - Heal HP equal to unblocked damage - Exhaust", 2, 4, 5) {}
 
 void ReaperCard::applyEffect(class Character* caster, class Character* target, BattleManager* bm) {
-	if (caster && target) {
-		int baseDamage = isUpgraded ? upgradedDamage : baseDamage;
-		int damageToDeal = caster->calculateOutgoingDamage(baseDamage);
-		int totalActualDamage = bm->GetTotalDamageToAllEnemies(damageToDeal);
-		caster->increaseHP(totalActualDamage);
-	}
+    if (caster && target) {
+        int baseDmg = isUpgraded ? upgradedDamage : this->baseDamage;
+        int damageToDeal = caster->calculateOutgoingDamage(baseDmg);
+        int totalActualDamage = bm->GetTotalDamageToAllEnemies(damageToDeal);
+        caster->increaseHP(totalActualDamage);
+
+        Player* player = dynamic_cast<Player*>(caster);
+        if (player)
+            player->exhaustCard(this);
+    }
 }
 
 //____________________________________FeedCard_______________________________________

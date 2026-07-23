@@ -113,6 +113,15 @@ private:
     void showToastMessage(const QString& text);
     QLabel* toastLabel;
 
+    QMediaPlayer* cardPlaySoundPlayer;
+    QAudioOutput* cardPlaySoundOutput;
+
+    QMediaPlayer* endTurnHoverSoundPlayer;
+    QAudioOutput* endTurnHoverSoundOutput;
+
+    QMediaPlayer* pileOpenSoundPlayer;
+    QAudioOutput* pileOpenSoundOutput;
+
 protected:
 
     QLabel* gameOverLabel;

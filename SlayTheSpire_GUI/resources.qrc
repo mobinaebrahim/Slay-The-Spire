@@ -66,5 +66,9 @@
         <file>images/icons/hp.png</file>
         <file>audio/Exordium.mp3</file>
         <file>audio/hit.mp3</file>
+        <file>audio/End Turn.mp3</file>
+        <file>audio/Potion.mp3</file>
+        <file>audio/Card.mp3</file>
+        <file>audio/DrawPile&amp;DiscardPile.mp3</file>
     </qresource>
 </RCC>

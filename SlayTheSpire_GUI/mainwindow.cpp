@@ -142,6 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(closeExhaustOverlayButton, &QPushButton::clicked, this, &MainWindow::hidePileOverlay);
     discardWrapper->installEventFilter(this);
     exhaustPileBadge->installEventFilter(this);
+    ui->EndTurnButton->installEventFilter(this);
 
     ui->EndTurnButton->setText("");
     ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
@@ -320,6 +321,24 @@ MainWindow::MainWindow(QWidget *parent)
     hitSoundPlayer->setAudioOutput(hitSoundOutput);
     hitSoundPlayer->setSource(QUrl("qrc:/audio/hit.mp3"));
     hitSoundOutput->setVolume(0.8);
+
+    cardPlaySoundOutput = new QAudioOutput(this);
+    cardPlaySoundPlayer = new QMediaPlayer(this);
+    cardPlaySoundPlayer->setAudioOutput(cardPlaySoundOutput);
+    cardPlaySoundPlayer->setSource(QUrl("qrc:/audio/Card.mp3"));
+    cardPlaySoundOutput->setVolume(3);
+
+    endTurnHoverSoundOutput = new QAudioOutput(this);
+    endTurnHoverSoundPlayer = new QMediaPlayer(this);
+    endTurnHoverSoundPlayer->setAudioOutput(endTurnHoverSoundOutput);
+    endTurnHoverSoundPlayer->setSource(QUrl("qrc:/audio/End Turn.mp3"));
+    endTurnHoverSoundOutput->setVolume(3);
+
+    pileOpenSoundOutput = new QAudioOutput(this);
+    pileOpenSoundPlayer = new QMediaPlayer(this);
+    pileOpenSoundPlayer->setAudioOutput(pileOpenSoundOutput);
+    pileOpenSoundPlayer->setSource(QUrl("qrc:/audio/DrawPile&DiscardPile.mp3"));
+    pileOpenSoundOutput->setVolume(3);
 
     playerStatusRow = new QWidget(this);
     QHBoxLayout* playerStatusLayout = new QHBoxLayout(playerStatusRow);
@@ -513,6 +532,14 @@ void MainWindow::updateHandUI() {
                 int enemyHpBefore = targetEnemy->getHp();
 
                 battleManager->playCardAction(card, targetEnemy);
+
+                bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
+
+                if (cardWasActuallyPlayed) {
+                    cardPlaySoundPlayer->setPosition(500);
+                    cardPlaySoundPlayer->play();
+                }
+
                 bool enemyStillAlive = false;
                 for (Enemy* e : battleManager->getEnemies())
                     if (e == targetEnemy) { enemyStillAlive = true; break; }
@@ -522,8 +549,6 @@ void MainWindow::updateHandUI() {
                     showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
 
                 battleManager->cleanupDeadEnemies();
-
-                bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
 
                 checkGameOver();
 
@@ -828,6 +853,13 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
         }
     }
 
+    if (obj == ui->EndTurnButton && event->type() == QEvent::Enter) {
+        if (ui->EndTurnButton->isEnabled()) {
+            endTurnHoverSoundPlayer->setPosition(500);
+            endTurnHoverSoundPlayer->play();
+        }
+    }
+
     QLabel* badge = qobject_cast<QLabel*>(obj);
     if (badge && badge->property("effectName").isValid()) {
         if (event->type() == QEvent::Enter) {
@@ -958,6 +990,9 @@ void MainWindow::playEnemyNonAttackTurn() {
 }
 
 void MainWindow::showCardPileOverlay(const QString& title, const vector<Card*>& cards, const QString& titleColor) {
+    pileOpenSoundPlayer->setPosition(500);
+    pileOpenSoundPlayer->play();
+
     QGridLayout* gridLayout = qobject_cast<QGridLayout*>(exhaustCardsContainer->layout());
 
     QLayoutItem* child;

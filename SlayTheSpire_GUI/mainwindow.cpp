@@ -400,6 +400,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager->setPlayer(playerObject);
     battleManager->spawnEnemy(new JawWorm());
     initializePlayerDeck(15);
+    setupShortcuts();
     playerObject->drawCards(5);
 
     updateHandUI();
@@ -527,7 +528,8 @@ void MainWindow::updateHandUI() {
 
     const std::vector<Card*>& playerHand = playerObject->getHand();
 
-    for (Card* card : playerHand) {
+    for (int i = 0; i < (int)playerHand.size(); ++i) {
+        Card* card = playerHand[i];
         if (!card)
             continue;
 
@@ -535,7 +537,6 @@ void MainWindow::updateHandUI() {
         cardBtn->setFixedSize(140, 180);
 
         QString cardName = QString::fromStdString(card->getName());
-
         QString cardImagePath = ":/images/cards/" + cardName + ".png";
 
         cardBtn->setIcon(QIcon(cardImagePath));
@@ -545,54 +546,9 @@ void MainWindow::updateHandUI() {
         cardBtn->setProperty("cardName", cardName);
         cardBtn->installEventFilter(this);
 
+        int cardIndex = i;
         connect(cardBtn, &QPushButton::clicked, [=]() {
-            if (isGameOver) return;
-            const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
-            if (!allEnemies.empty() && !isAttackAnimating) {
-
-                string reason = card->getUnplayableReason(playerObject);
-                if (!reason.empty()) {
-                    showToastMessage(QString::fromStdString(reason));
-                    return;
-                }
-                bool isAttackCard = (card->getType() == CardType::Attack);
-                int handSizeBefore = playerObject->getHandSize();
-
-                Enemy* targetEnemy = allEnemies[0];
-                int enemyHpBefore = targetEnemy->getHp();
-
-                battleManager->playCardAction(card, targetEnemy);
-
-                bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
-
-                if (cardWasActuallyPlayed) {
-                    cardPlaySoundPlayer->setPosition(500);
-                    cardPlaySoundPlayer->play();
-                }
-
-                bool enemyStillAlive = false;
-                for (Enemy* e : battleManager->getEnemies())
-                    if (e == targetEnemy) { enemyStillAlive = true; break; }
-
-                int damageDealt = enemyStillAlive ? (enemyHpBefore - targetEnemy->getHp()) : enemyHpBefore;
-                if (damageDealt > 0)
-                    showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
-
-                battleManager->cleanupDeadEnemies();
-
-                checkGameOver();
-
-                if (isAttackCard && cardWasActuallyPlayed && !isGameOver) {
-                    hitSoundPlayer->setPosition(0);
-                    hitSoundPlayer->play();
-                    playHitEffect(enemyHitOverlay, enemyHitOpacity);
-                }
-
-                QTimer::singleShot(0, this, [=]() {
-                    updateHandUI();
-                    updateCharacterUI();
-                });
-            }
+            playCardAtIndex(cardIndex);
         });
         layout->addWidget(cardBtn);
     }
@@ -879,7 +835,13 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
             showHoverCard(cardBtn);
             return true;
         } else if (event->type() == QEvent::Leave) {
-            hideHoverCard();
+            if (highlightedCardIndex < 0)
+                hideHoverCard();
+            return true;
+        }
+        else if (event->type() == QEvent::Leave) {
+            if (highlightedCardIndex < 0)
+                hideHoverCard();
             return true;
         }
     }
@@ -1196,7 +1158,7 @@ void MainWindow::showHoverCard(QPushButton* originalBtn) {
     hoverGeomAnim->setDuration(180);
     hoverGeomAnim->setStartValue(hoverCardLabel->geometry());
     hoverGeomAnim->setEndValue(bigRect);
-    hoverGeomAnim->setEasingCurve(QEasingCurve::OutCubic);   // به‌جای OutBack، تا دیگه over-shoot و لرزش نداشته باشیم
+    hoverGeomAnim->setEasingCurve(QEasingCurve::OutCubic);
     hoverGeomAnim->start();
 }
 
@@ -1264,4 +1226,166 @@ void MainWindow::showToastMessage(const QString& text) {
     toastLabel->show();
     toastLabel->raise();
     QTimer::singleShot(1500, toastLabel, &QLabel::hide);
+}
+
+void MainWindow::playCardAtIndex(int index) {
+    if (isGameOver || isAttackAnimating) return;
+
+    const std::vector<Card*>& playerHand = playerObject->getHand();
+    if (index < 0 || index >= (int)playerHand.size()) return;
+
+    Card* card = playerHand[index];
+    if (!card) return;
+
+    const std::vector<Enemy*>& allEnemies = battleManager->getEnemies();
+    if (allEnemies.empty()) return;
+
+    string reason = card->getUnplayableReason(playerObject);
+    if (!reason.empty()) {
+        showToastMessage(QString::fromStdString(reason));
+        return;
+    }
+
+    bool isAttackCard = (card->getType() == CardType::Attack);
+    int handSizeBefore = playerObject->getHandSize();
+
+    Enemy* targetEnemy = allEnemies[0];
+    int enemyHpBefore = targetEnemy->getHp();
+
+    battleManager->playCardAction(card, targetEnemy);
+
+    bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
+    if (cardWasActuallyPlayed) {
+        cardPlaySoundPlayer->setPosition(0);
+        cardPlaySoundPlayer->play();
+    }
+
+    bool enemyStillAlive = false;
+    for (Enemy* e : battleManager->getEnemies())
+        if (e == targetEnemy) { enemyStillAlive = true; break; }
+
+    int damageDealt = enemyStillAlive ? (enemyHpBefore - targetEnemy->getHp()) : enemyHpBefore;
+    if (damageDealt > 0)
+        showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
+
+    battleManager->cleanupDeadEnemies();
+    checkGameOver();
+
+    if (isAttackCard && cardWasActuallyPlayed && !isGameOver) {
+        hitSoundPlayer->setPosition(0);
+        hitSoundPlayer->play();
+        playHitEffect(enemyHitOverlay, enemyHitOpacity);
+    }
+
+    highlightedCardIndex = -1;
+
+    QTimer::singleShot(0, this, [=]() {
+        updateHandUI();
+        updateCharacterUI();
+    });
+}
+
+void MainWindow::setupShortcuts() {
+    QShortcut* endTurnKey = new QShortcut(QKeySequence(Qt::Key_E), this);
+    connect(endTurnKey, &QShortcut::activated, this, [=]() {
+        if (ui->EndTurnButton->isEnabled())
+            on_EndTurnButton_clicked();
+    });
+
+    QShortcut* drawPileKey = new QShortcut(QKeySequence(Qt::Key_A), this);
+    connect(drawPileKey, &QShortcut::activated, this, [=]() {
+        showCardPileOverlay("Draw Pile", playerObject->getDrawPile(), "#7fd0ff");
+    });
+
+    QShortcut* discardPileKey = new QShortcut(QKeySequence(Qt::Key_S), this);
+    connect(discardPileKey, &QShortcut::activated, this, [=]() {
+        showCardPileOverlay("Discard Pile", playerObject->getDiscardPile(), "#e0c060");
+    });
+
+    QShortcut* exhaustPileKey = new QShortcut(QKeySequence(Qt::Key_X), this);
+    connect(exhaustPileKey, &QShortcut::activated, this, [=]() {
+        showCardPileOverlay("Exhaust Pile", playerObject->getExhaustPile(), "#c07af0");
+    });
+
+    QShortcut* deckKey = new QShortcut(QKeySequence(Qt::Key_D), this);
+    connect(deckKey, &QShortcut::activated, this, [=]() {
+        showCardPileOverlay("Deck", playerObject->getFullDeck(), "#66ccff");
+    });
+
+    QShortcut* escKey = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+    connect(escKey, &QShortcut::activated, this, [=]() {
+        highlightedCardIndex = -1;
+        updateCardHighlight();
+        hidePileOverlay();
+    });
+
+    for (int i = 1; i <= 9; ++i) {
+        QShortcut* numKey = new QShortcut(QKeySequence(QString::number(i)), this);
+        int handIndex = i - 1;
+        connect(numKey, &QShortcut::activated, this, [=]() {
+            if (handIndex < playerObject->getHandSize()) {
+                highlightedCardIndex = handIndex;
+                updateCardHighlight();
+            }
+        });
+    }
+    QShortcut* zeroKey = new QShortcut(QKeySequence(Qt::Key_0), this);
+    connect(zeroKey, &QShortcut::activated, this, [=]() {
+        if (9 < playerObject->getHandSize()) {
+            highlightedCardIndex = 9;
+            updateCardHighlight();
+        }
+    });
+
+    QShortcut* leftKey = new QShortcut(QKeySequence(Qt::Key_Left), this);
+    connect(leftKey, &QShortcut::activated, this, [=]() {
+        int handSize = playerObject->getHandSize();
+        if (handSize == 0) return;
+        highlightedCardIndex = (highlightedCardIndex <= 0) ? handSize - 1 : highlightedCardIndex - 1;
+        updateCardHighlight();
+    });
+
+    QShortcut* rightKey = new QShortcut(QKeySequence(Qt::Key_Right), this);
+    connect(rightKey, &QShortcut::activated, this, [=]() {
+        int handSize = playerObject->getHandSize();
+        if (handSize == 0) return;
+        highlightedCardIndex = (highlightedCardIndex + 1) % handSize;
+        updateCardHighlight();
+    });
+
+    QShortcut* enterKey = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(enterKey, &QShortcut::activated, this, [=]() {
+        if (highlightedCardIndex >= 0)
+            playCardAtIndex(highlightedCardIndex);
+    });
+
+    QShortcut* peekKey = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    connect(peekKey, &QShortcut::activated, this, [=]() {
+        QLayout* layout = ui->CardsContainer->layout();
+        if (highlightedCardIndex >= 0 && highlightedCardIndex < layout->count()) {
+            QPushButton* btn = qobject_cast<QPushButton*>(layout->itemAt(highlightedCardIndex)->widget());
+            if (btn) showHoverCard(btn);
+        }
+    });
+}
+
+void MainWindow::updateCardHighlight() {
+    QLayout* layout = ui->CardsContainer->layout();
+    QPushButton* highlightedBtn = nullptr;
+
+    for (int i = 0; i < layout->count(); ++i) {
+        QPushButton* btn = qobject_cast<QPushButton*>(layout->itemAt(i)->widget());
+        if (!btn) continue;
+        if (i == highlightedCardIndex) {
+            btn->setStyleSheet("border: 3px solid #f5c518; border-radius: 6px;");
+            highlightedBtn = btn;
+        } else
+            btn->setStyleSheet("border: none;");
+    }
+
+    if (highlightedBtn)
+        showHoverCard(highlightedBtn);
+    else
+        hideHoverCard();
+
 }

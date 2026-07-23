@@ -26,6 +26,7 @@
 #include <QScrollArea>
 #include <QGridLayout>
 #include <QParallelAnimationGroup>
+#include <QShortcut>
 #include "../Player.h"
 
 class Card;
@@ -126,6 +127,11 @@ private:
     QLabel* deckCountLabel;
     QLabel* settingLabel;
     QLabel* mapLabel;
+
+    int highlightedCardIndex = -1;
+    void updateCardHighlight();
+    void playCardAtIndex(int index);
+    void setupShortcuts();
 
 protected:
 

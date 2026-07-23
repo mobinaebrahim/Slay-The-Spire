@@ -214,3 +214,12 @@ void Character::applyTurnEndEffects() {
         }
     }
 }
+
+vector<Card*> Player::getFullDeck() const {
+    vector<Card*> full;
+    full.insert(full.end(), drawPile.begin(), drawPile.end());
+    full.insert(full.end(), discardPile.begin(), discardPile.end());
+    full.insert(full.end(), hand.begin(), hand.end());
+    full.insert(full.end(), exhaustPile.begin(), exhaustPile.end());
+    return full;
+}

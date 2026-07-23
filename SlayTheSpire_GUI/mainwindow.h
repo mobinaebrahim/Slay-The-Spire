@@ -122,6 +122,11 @@ private:
     QMediaPlayer* pileOpenSoundPlayer;
     QAudioOutput* pileOpenSoundOutput;
 
+    QLabel* deckIconLabel;
+    QLabel* deckCountLabel;
+    QLabel* settingLabel;
+    QLabel* mapLabel;
+
 protected:
 
     QLabel* gameOverLabel;

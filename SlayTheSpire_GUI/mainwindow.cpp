@@ -72,6 +72,29 @@ MainWindow::MainWindow(QWidget *parent)
     goldCountLabel->setAlignment(Qt::AlignCenter);
     goldCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
 
+    settingLabel = new QLabel(this);
+    settingLabel->setFixedSize(46, 46);
+    settingLabel->setPixmap(QPixmap(":/images/icons/settings.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    settingLabel->move(this->width() - 60, 3);
+    settingLabel->installEventFilter(this);
+
+    mapLabel = new QLabel(this);
+    mapLabel->setFixedSize(46, 46);
+    mapLabel->setPixmap(QPixmap(":/images/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    mapLabel->move(this->width() - 172, 3);
+    mapLabel->installEventFilter(this);
+
+    deckIconLabel = new QLabel(this);
+    deckIconLabel->setFixedSize(46, 46);
+    deckIconLabel->setPixmap(QPixmap(":/images/icons/deck.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    deckIconLabel->move(this->width() - 116, 3);
+    deckIconLabel->installEventFilter(this);
+
+    deckCountLabel = new QLabel(deckIconLabel);
+    deckCountLabel->setGeometry(14, 30, 32, 16);
+    deckCountLabel->setAlignment(Qt::AlignCenter);
+    deckCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
+
     drawPileIconLabel = new QLabel(this);
     drawPileIconLabel->setFixedSize(84, 84);
     drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -257,6 +280,9 @@ MainWindow::MainWindow(QWidget *parent)
     playerHpTopLabel->raise();
     goldIconLabel->raise();
     goldCountLabel->raise();
+    mapLabel->raise();
+    deckIconLabel->raise();
+    settingLabel->raise();
     ui->EndTurnButton->raise();
 
     gameOverLabel = new QLabel(this);
@@ -443,6 +469,10 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     if (exhaustPileOverlay->isVisible())
         exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
+
+    deckIconLabel->move(this->width() - 116, 3);
+    mapLabel->move(this->width() - 172, 3);
+    settingLabel->move(this->width() - 60, 3);
 
     playerStatusRow->setGeometry(currentStartX, basePlayerY + spriteSize + 36, spriteSize, 30);
     enemyStatusRow->setGeometry(enemyX2, baseEnemyY - 5, spriteSize, 30);
@@ -668,6 +698,7 @@ void MainWindow::updateCharacterUI() {
     playerHpTopLabel->setText(QString("%1/%2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
     drawPileCountLabel->setText(QString::number(playerObject->getDrawPileSize()));
     discardPileCountLabel->setText(QString::number(playerObject->getDiscardPileSize()));
+    deckCountLabel->setText(QString::number((int)playerObject->getFullDeck().size()));
 
     int exhaustCount = playerObject->getExhaustPileSize();
     exhaustPileBadge->setVisible(exhaustCount > 0);
@@ -882,6 +913,11 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 
     if (obj == drawPileIconLabel && event->type() == QEvent::MouseButtonRelease) {
         showCardPileOverlay("Draw Pile", playerObject->getDrawPile(), "#7fd0ff");
+        return true;
+    }
+
+    if (obj == deckIconLabel && event->type() == QEvent::MouseButtonRelease) {
+        showCardPileOverlay("Deck", playerObject->getFullDeck(), "#66ccff");
         return true;
     }
 

@@ -70,5 +70,8 @@
         <file>audio/Potion.mp3</file>
         <file>audio/Card.mp3</file>
         <file>audio/DrawPile&amp;DiscardPile.mp3</file>
+        <file>images/icons/deck.png</file>
+        <file>images/icons/map.png</file>
+        <file>images/icons/settings.png</file>
     </qresource>
 </RCC>

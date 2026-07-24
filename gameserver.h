@@ -55,6 +55,30 @@ private:
 
     QString generate_room_code();
     void handle_message(QTcpSocket *sender, const QJsonObject &message);
+
+    // Room management
+    void handle_create_room(QTcpSocket *sender, const QJsonObject &message);
+    void handle_join_room(QTcpSocket *sender, const QJsonObject &message);
+
+    // Combat handlers
+    void handle_start_combat(QTcpSocket *sender, const QJsonObject &message);
+    void handle_play_card(QTcpSocket *sender, const QJsonObject &message);
+    void handle_end_turn(QTcpSocket *sender, const QJsonObject &message);
+
+    // Game logic
+    void initialize_player_deck(Player* player);
+    void spawn_enemy_for_room(RoomGame &game, const QString &enemyName);
+    void process_enemy_turn(const QString &roomCode);
+    void check_combat_over(const QString &roomCode);
+    void transfer_leader_if_needed(const QString &roomCode, QTcpSocket *deadSocket);
+    void start_next_player_turn(const QString &roomCode);
+
+    // Broadcast
+    void send_to_client(QTcpSocket *client, const QJsonObject &message);
+    void broadcast_to_room(const QString &roomCode, const QJsonObject &message);
+    void broadcast_state_update(const QString &roomCode);
+    QJsonObject buildStateUpdate(RoomGame &game, const QString &roomCode);
+    QJsonObject buildCombatOver(bool victory);
 };
 
 #endif // GAMESERVER_H

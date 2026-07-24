@@ -13,21 +13,22 @@ Cultist::Cultist() : Enemy("Cultist", 50, 50), isFirstTurn(true) {
 void Cultist::chooseAction() {
     if (isFirstTurn) {
         currentIntent = IntentType::Buff;
-        intentValue = 3; 
+        intentValue = 3;
     }
     else {
         currentIntent = IntentType::Attack;
-        intentValue = 6; 
+        intentValue = 6;
     }
 }
 
 void Cultist::executeAction(Character* target) {
     if (currentIntent == IntentType::Buff) {
         this->applyStatus(new StrengthEffect(intentValue));
-        isFirstTurn = false; 
+        isFirstTurn = false;
     }
     else if (currentIntent == IntentType::Attack) {
         if (target) {
+            this->applyStatus(new StrengthEffect(3));
             int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
         }

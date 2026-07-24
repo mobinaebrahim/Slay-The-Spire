@@ -156,7 +156,7 @@ QJsonObject GameServer::buildCombatOver(bool victory)
     return state;
 }
 
-//--- State building—add block ---
+//--- State building ---
 
 QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode)
 {
@@ -183,9 +183,15 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
             if (c) handArray.append(QString::fromStdString(c->getName()));
         }
         pObj["hand"] = handArray;
-
         pObj["hand_size"] = (int)p->getHand().size();
-        pObj["draw_pile_size"] = p->getDrawPileSize();
+
+        QJsonArray drawArray;
+        for (Card* c : p->getDrawPile()) {
+            if (c) drawArray.append(QString::fromStdString(c->getName()));
+        }
+        pObj["draw_pile"] = drawArray;
+        pObj["draw_pile_size"] = (int)p->getDrawPile().size();
+
         pObj["discard_pile_size"] = p->getDiscardPileSize();
 
         playersArray.append(pObj);

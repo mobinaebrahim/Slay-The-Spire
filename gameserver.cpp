@@ -57,43 +57,10 @@ void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &mes
     QString type = message["type"].toString();
 
     if (type == "create_room") {
-        QString roomCode = generate_room_code();
-        rooms[roomCode].append(senderSocket);
-        client_room[senderSocket] = roomCode;
-
-        QJsonObject response;
-        response["type"] = "room_created";
-        response["room_code"] = roomCode;
-        QJsonDocument responseDoc(response);
-        senderSocket->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
-
-        qDebug() << "Room created:" << roomCode;
+        handle_create_room(senderSocket, message);
     }
     else if (type == "join_room") {
-        QString roomCode = message["room_code"].toString();
-
-        if (!rooms.contains(roomCode) || rooms[roomCode].size() >= 2) {
-            QJsonObject response;
-            response["type"] = "error";
-            response["message"] = "Room not found or full";
-            QJsonDocument responseDoc(response);
-            senderSocket->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
-            return;
-        }
-
-        rooms[roomCode].append(senderSocket);
-        client_room[senderSocket] = roomCode;
-
-        QJsonObject response;
-        response["type"] = "room_joined";
-        response["room_code"] = roomCode;
-        QJsonDocument responseDoc(response);
-
-        for (QTcpSocket *client : rooms[roomCode]) {
-            client->write(responseDoc.toJson(QJsonDocument::Compact) + "\n");
-        }
-
-        qDebug() << "Client joined room:" << roomCode << "- Room size:" << rooms[roomCode].size();
+        handle_join_room(senderSocket, message);
     }
     else {
         QString roomCode = client_room.value(senderSocket);
@@ -391,4 +358,49 @@ void GameServer::process_enemy_turn(const QString &roomCode)
 
         broadcast_state_update(roomCode);
     }
+}
+
+// ---Room management---
+
+void GameServer::handle_create_room(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = generate_room_code();
+    rooms[roomCode].append(senderSocket);
+    client_room[senderSocket] = roomCode;
+
+    QString username = message["username"].toString("Player");
+    socketUsernames[senderSocket] = username;
+
+    QJsonObject response;
+    response["type"] = "room_created";
+    response["room_code"] = roomCode;
+    send_to_client(senderSocket, response);
+
+    qDebug() << "Room created:" << roomCode << "by" << username;
+}
+
+void GameServer::handle_join_room(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = message["room_code"].toString();
+
+    if (!rooms.contains(roomCode) || rooms[roomCode].size() >= 2) {
+        QJsonObject response;
+        response["type"] = "error";
+        response["message"] = "Room not found or full";
+        send_to_client(senderSocket, response);
+        return;
+    }
+
+    rooms[roomCode].append(senderSocket);
+    client_room[senderSocket] = roomCode;
+
+    QString username = message["username"].toString("Player");
+    socketUsernames[senderSocket] = username;
+
+    QJsonObject response;
+    response["type"] = "room_joined";
+    response["room_code"] = roomCode;
+    broadcast_to_room(roomCode, response);
+
+    qDebug() << "Client joined room:" << roomCode << "- Room size:" << rooms[roomCode].size();
 }

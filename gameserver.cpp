@@ -236,3 +236,55 @@ void GameServer::broadcast_state_update(const QString &roomCode)
         send_to_client(socket, state);
     }
 }
+
+// ---Combat: initialize player deck---
+
+void GameServer::initialize_player_deck(Player* player)
+{
+    for (int i = 0; i < 5; ++i) {
+        Card* strike = createCardByName("Strike");
+        if (strike) player->addCardToDrawPile(strike);
+    }
+    for (int i = 0; i < 4; ++i) {
+        Card* defend = createCardByName("Defend");
+        if (defend) player->addCardToDrawPile(defend);
+    }
+}
+
+// ---Combat: spawn enemy---
+
+void GameServer::spawn_enemy_for_room(RoomGame &game, const QString &enemyName)
+{
+    Enemy* enemy = nullptr;
+
+    if (enemyName == "JawWorm") enemy = new JawWorm();
+    else if (enemyName == "Cultist") enemy = new Cultist();
+    else if (enemyName == "Louse") enemy = new Louse();
+    else if (enemyName == "SmallSlime") enemy = new SmallSlime();
+    else if (enemyName == "MediumSlime") enemy = new MediumSlime();
+    else if (enemyName == "LargeSlime") enemy = new LargeSlime();
+    else if (enemyName == "BlueSlaver") enemy = new BlueSlaver();
+    else if (enemyName == "RedSlaver") enemy = new RedSlaver();
+    else if (enemyName == "Looter") enemy = new Thief("Looter");
+    else if (enemyName == "Mugger") enemy = new Thief("Mugger");
+    else if (enemyName == "SphericGuardian") enemy = new SphericGuardian();
+    else if (enemyName == "GremlinKnob") enemy = new GremlinKnob();
+    else if (enemyName == "ThreeSentries") enemy = new ThreeSentries("ThreeSentries", 38, 42);
+    else if (enemyName == "BookOfStabbing") enemy = new BookOfStabbing();
+    else if (enemyName == "Taskmaster") enemy = new Taskmaster();
+    else if (enemyName == "KingSlime") enemy = new KingSlime(game.battleManager);
+    else if (enemyName == "Hexaghost") enemy = new Hexaghost();
+    else if (enemyName == "TheChamp") enemy = new TheChamp();
+    else enemy = new JawWorm();
+
+    if (game.isMultiplayer && enemy) {
+        int newMaxHp = enemy->getMaxHp() * 2;
+        int newHp = enemy->getHp() * 2;
+        enemy->setMaxHp(newMaxHp);
+        enemy->setHp(newHp);
+    }
+
+    if (enemy) {
+        game.battleManager->spawnEnemy(enemy);
+    }
+}

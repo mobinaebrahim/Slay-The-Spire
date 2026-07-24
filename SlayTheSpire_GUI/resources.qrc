@@ -74,5 +74,6 @@
         <file>images/icons/map.png</file>
         <file>images/icons/settings.png</file>
         <file>images/icons/settings_overlay.png</file>
+        <file>images/not_enough_energy.png</file>
     </qresource>
 </RCC>

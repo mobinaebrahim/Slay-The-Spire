@@ -146,6 +146,8 @@ private:
 
     QLabel* settingsOverlayImage;
 
+    void showNotEnoughEnergy();
+
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;
 

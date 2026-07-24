@@ -1383,6 +1383,12 @@ void MainWindow::playCardAtIndex(int index) {
     Enemy* targetEnemy = allEnemies[0];
     int enemyHpBefore = targetEnemy->getHp();
 
+    if(card->getCost(playerObject) > playerObject->getEnergy())
+    {
+        showNotEnoughEnergy();
+        return;
+    }
+
     battleManager->playCardAction(card, targetEnemy);
 
     bool cardWasActuallyPlayed = (playerObject->getHandSize() < handSizeBefore);
@@ -1629,4 +1635,49 @@ void MainWindow::showPlayerTargetFrame() {
 
 void MainWindow::hidePlayerTargetFrame() {
     playerTargetFrame->hide();
+}
+
+void MainWindow::showNotEnoughEnergy()
+{
+    QLabel* bubble = new QLabel(this);
+
+    QPixmap pix(":/images/not_enough_energy.png");
+
+    qDebug() << pix.isNull();
+
+    bubble->setPixmap(pix.scaled(260, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    bubble->adjustSize();
+
+    QRect playerRect = playerSpriteLabel->geometry();
+
+    int startX = playerRect.center().x() - bubble->width()/2 + 150;
+    int startY = playerRect.top() - bubble->height() + 70;
+
+    bubble->move(startX, startY);
+    bubble->show();
+    bubble->raise();
+
+    auto* effect = new QGraphicsOpacityEffect(bubble);
+    bubble->setGraphicsEffect(effect);
+
+    auto* fade = new QPropertyAnimation(effect, "opacity");
+    fade->setDuration(2100);
+    fade->setStartValue(1.0);
+    fade->setEndValue(0.0);
+
+    auto* move = new QPropertyAnimation(bubble, "pos");
+    move->setDuration(2100);
+    move->setStartValue(QPoint(startX, startY));
+    move->setEndValue(QPoint(startX, startY - 45));
+    move->setEasingCurve(QEasingCurve::OutQuad);
+
+    auto* group = new QParallelAnimationGroup(this);
+
+    group->addAnimation(move);
+    group->addAnimation(fade);
+
+    connect(group, &QParallelAnimationGroup::finished, bubble, &QLabel::deleteLater);
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 }

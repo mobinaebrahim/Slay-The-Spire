@@ -62,6 +62,11 @@ void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &mes
     else if (type == "join_room") {
         handle_join_room(senderSocket, message);
     }
+
+    else if (type == "start_combat") {
+        handle_start_combat(senderSocket, message);
+    }
+
     else {
         QString roomCode = client_room.value(senderSocket);
         if (roomCode.isEmpty()) {
@@ -430,4 +435,62 @@ void GameServer::handle_join_room(QTcpSocket *senderSocket, const QJsonObject &m
     broadcast_to_room(roomCode, response);
 
     qDebug() << "Client joined room:" << roomCode << "- Room size:" << rooms[roomCode].size();
+}
+
+// ---Combat: start---
+
+void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = client_room.value(senderSocket);
+    if (roomCode.isEmpty()) return;
+
+    if (rooms[roomCode].isEmpty() || rooms[roomCode][0] != senderSocket) {
+        qDebug() << "Non-leader tried to start combat, ignoring.";
+        return;
+    }
+
+    RoomGame &game = roomGames[roomCode];
+
+    if (game.battleManager) {
+        delete game.battleManager;
+        game.socketToPlayer.clear();
+        game.playerAlive.clear();
+        game.endedTurn.clear();
+    }
+
+    game.battleManager = new BattleManager();
+    game.combatActive = true;
+    game.isPlayerTurn = true;
+    game.currentPlayerIndex = 0;
+    game.endedTurn.clear();
+    game.isMultiplayer = (rooms[roomCode].size() >= 2);
+
+    for (QTcpSocket *clientSocket : rooms[roomCode]) {
+        QString username = socketUsernames.value(clientSocket, "Player");
+        if (username.isEmpty()) username = "Player";
+
+        Player* p = new Player(username.toStdString(), 80, 80, 3, 99, game.battleManager);
+        game.battleManager->addPlayer(p);
+        game.socketToPlayer[clientSocket] = p;
+        game.playerAlive[clientSocket] = true;
+
+        initialize_player_deck(p);
+    }
+
+    QString enemyName = message["enemy_name"].toString("JawWorm");
+    game.currentEnemyName = enemyName;
+    spawn_enemy_for_room(game, enemyName);
+
+    game.battleManager->startCombat();
+
+    QJsonObject startMsg;
+    startMsg["type"] = "combat_started";
+    startMsg["is_multiplayer"] = game.isMultiplayer;
+    broadcast_to_room(roomCode, startMsg);
+
+    broadcast_state_update(roomCode);
+
+    qDebug() << "Combat started in room:" << roomCode
+             << "Players:" << rooms[roomCode].size()
+             << "Multiplayer:" << game.isMultiplayer;
 }

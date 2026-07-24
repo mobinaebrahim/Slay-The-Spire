@@ -189,7 +189,7 @@ void MediumSlime::chooseAction() {
     int randomIntent = 1 + (rand() % 100);
 
     if (randomIntent <= 30) {
-        currentIntent = IntentType::Debuff; 
+        currentIntent = IntentType::Combined;
         intentValue = 7; 
     }
     else if (randomIntent <= 70) {
@@ -208,16 +208,13 @@ void MediumSlime::executeAction(Character* target) {
             target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else if (currentIntent == IntentType::Debuff) {
-        if (target) {
-            if (intentValue == 7) {
-                target->takeDamage(calculateOutgoingDamage(7));
-                Player* player = dynamic_cast<Player*>(target);
-                if (player) 
-                    player->addCardToDiscardPile(new SlimeCard());
-            }
-            else 
-                target->applyStatus(new WeakEffect(1));
-        }
+            target->applyStatus(new WeakEffect(1));
+    }
+    else if(currentIntent == IntentType::Combined){
+        target->takeDamage(calculateOutgoingDamage(7));
+        Player* player = dynamic_cast<Player*>(target);
+        if (player)
+            player->addCardToDiscardPile(new SlimeCard());
     }
     chooseAction();
 }
@@ -330,7 +327,8 @@ SphericGuardian:: SphericGuardian() : Enemy("SphericGuardian", 0, 0), isFirstTur
 
 void SphericGuardian::chooseAction() {
     if (isFirstTurn) {
-        currentIntent = IntentType::Buff;
+        currentIntent = IntentType::Combined;
+        intentValue = 10;
         intentBlock = 25;
     }
     else {
@@ -341,7 +339,7 @@ void SphericGuardian::chooseAction() {
             intentBlock = 15;
         }
         else {
-            currentIntent = IntentType::Attack; // Slam (Attack twice)
+            currentIntent = IntentType::Attack;
             intentValue = 10;
             intentBlock = 0;
         }
@@ -351,7 +349,7 @@ void SphericGuardian::chooseAction() {
 void SphericGuardian::executeAction(Character* target){
     if (isFirstTurn) {
         this->addBlock(intentBlock);
-        target->takeDamage(calculateOutgoingDamage(10));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
         target->applyStatus(new FrailEffect(5)); 
         isFirstTurn = false;
     }

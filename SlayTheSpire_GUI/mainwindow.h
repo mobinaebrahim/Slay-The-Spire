@@ -9,7 +9,6 @@
 #include <string>
 #include <QVBoxLayout>
 #include <QGroupBox>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include <QGraphicsOpacityEffect>
@@ -27,6 +26,8 @@
 #include <QGridLayout>
 #include <QParallelAnimationGroup>
 #include <QShortcut>
+#include <QMouseEvent>
+#include <QPainterPath>
 #include "../Player.h"
 
 class Card;
@@ -133,7 +134,18 @@ private:
     void playCardAtIndex(int index);
     void setupShortcuts();
 
+    bool isDraggingCard = false;
+    int draggedCardIndex = -1;
+    QPoint dragPreviewOffset;
+    QLabel* dragArrowLabel;
+    void updateDragArrow(QPoint fromPoint, QPoint toPoint);
+
+    QLabel* playerTargetFrame;
+    void showPlayerTargetFrame();
+    void hidePlayerTargetFrame();
+
 protected:
+    void mouseMoveEvent(QMouseEvent* event) override;
 
     QLabel* gameOverLabel;
     QGraphicsOpacityEffect* gameOverOpacityEffect;
@@ -173,9 +185,9 @@ protected:
 
     void disableAllCards();
 
-protected:
     void resizeEvent(QResizeEvent* event) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void updateDragArrow(QPoint fromPoint, QPoint toPoint, bool isOverEnemy);
 };
 
 Card* createCardByName(const std::string& name);

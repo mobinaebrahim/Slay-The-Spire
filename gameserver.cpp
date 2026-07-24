@@ -206,6 +206,16 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
         pObj["exhaust_pile"] = exhaustArray;
         pObj["exhaust_pile_size"] = (int)p->getExhaustPile().size();
 
+        QJsonArray effectsArray;
+        for (auto* effect : p->getEffects()) {
+            if (!effect) continue;
+            QJsonObject effObj;
+            effObj["name"] = QString::fromStdString(effect->getName());
+            effObj["amount"] = effect->getAmount();
+            effectsArray.append(effObj);
+        }
+        pObj["effects"] = effectsArray;
+
         playersArray.append(pObj);
     }
     state["players"] = playersArray;

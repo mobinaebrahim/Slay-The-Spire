@@ -288,3 +288,62 @@ void GameServer::spawn_enemy_for_room(RoomGame &game, const QString &enemyName)
         game.battleManager->spawnEnemy(enemy);
     }
 }
+
+// ---Combat: check game over---
+
+void GameServer::check_combat_over(const QString &roomCode)
+{
+    if (!roomGames.contains(roomCode)) return;
+    RoomGame &game = roomGames[roomCode];
+    if (!game.combatActive || !game.battleManager) return;
+
+    if (game.battleManager->getEnemies().empty()) {
+        game.combatActive = false;
+        QJsonObject msg = buildCombatOver(true);
+        broadcast_to_room(roomCode, msg);
+        qDebug() << "Combat over - VICTORY in room:" << roomCode;
+        return;
+    }
+
+    bool anyAlive = false;
+    for (QTcpSocket *socket : rooms[roomCode]) {
+        if (game.playerAlive.value(socket, false)) {
+            anyAlive = true;
+            break;
+        }
+    }
+
+    if (!anyAlive) {
+        game.combatActive = false;
+        QJsonObject msg = buildCombatOver(false);
+        broadcast_to_room(roomCode, msg);
+        qDebug() << "Combat over - DEFEAT in room:" << roomCode;
+    }
+}
+
+// ---Combat: leader transfer---
+
+void GameServer::transfer_leader_if_needed(const QString &roomCode, QTcpSocket *deadSocket)
+{
+    if (!rooms.contains(roomCode) || rooms[roomCode].isEmpty()) return;
+
+    QTcpSocket *currentLeader = nullptr;
+    for (QTcpSocket *socket : rooms[roomCode]) {
+        if (socket != deadSocket) {
+            currentLeader = socket;
+            break;
+        }
+    }
+
+    if (!currentLeader) return;
+
+    for (QTcpSocket *socket : rooms[roomCode]) {
+        QJsonObject msg;
+        msg["type"] = "leader_changed";
+        msg["you_are_leader"] = (socket == currentLeader);
+        send_to_client(socket, msg);
+    }
+
+    qDebug() << "Leader transferred in room:" << roomCode
+             << "new leader:" << currentLeader->peerAddress().toString();
+}

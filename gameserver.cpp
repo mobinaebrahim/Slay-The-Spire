@@ -347,3 +347,48 @@ void GameServer::transfer_leader_if_needed(const QString &roomCode, QTcpSocket *
     qDebug() << "Leader transferred in room:" << roomCode
              << "new leader:" << currentLeader->peerAddress().toString();
 }
+
+// ---Combat: enemy turn---
+
+void GameServer::process_enemy_turn(const QString &roomCode)
+{
+    if (!roomGames.contains(roomCode)) return;
+    RoomGame &game = roomGames[roomCode];
+    if (!game.combatActive || !game.battleManager) return;
+
+    game.isPlayerTurn = false;
+    game.endedTurn.clear();
+
+    game.battleManager->enemyTurn();
+    game.battleManager->cleanupDeadEnemies();
+
+    for (QTcpSocket *socket : rooms[roomCode]) {
+        Player* p = game.socketToPlayer.value(socket, nullptr);
+        if (p && p->getHp() <= 0 && game.playerAlive.value(socket, false)) {
+            game.playerAlive[socket] = false;
+
+            if (rooms[roomCode].indexOf(socket) == 0) {
+                transfer_leader_if_needed(roomCode, socket);
+            }
+        }
+    }
+
+    broadcast_state_update(roomCode);
+    check_combat_over(roomCode);
+
+    if (game.combatActive) {
+        game.isPlayerTurn = true;
+        game.currentPlayerIndex = 0;
+
+        for (QTcpSocket *socket : rooms[roomCode]) {
+            Player* p = game.socketToPlayer.value(socket, nullptr);
+            if (p && game.playerAlive.value(socket, false)) {
+                p->resetEnergy();
+                p->applyTurnStartEffects();
+                p->drawCards(5);
+            }
+        }
+
+        broadcast_state_update(roomCode);
+    }
+}

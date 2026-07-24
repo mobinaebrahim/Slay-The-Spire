@@ -129,3 +129,28 @@ void GameServer::on_client_disconnected()
     disconnectedSocket->deleteLater();
 }
 
+// ============================================================
+// Broadcast helpers
+// ============================================================
+
+void GameServer::send_to_client(QTcpSocket *client, const QJsonObject &message)
+{
+    QJsonDocument doc(message);
+    client->write(doc.toJson(QJsonDocument::Compact) + "\n");
+}
+
+void GameServer::broadcast_to_room(const QString &roomCode, const QJsonObject &message)
+{
+    QJsonDocument doc(message);
+    for (QTcpSocket *client : rooms[roomCode]) {
+        client->write(doc.toJson(QJsonDocument::Compact) + "\n");
+    }
+}
+
+QJsonObject GameServer::buildCombatOver(bool victory)
+{
+    QJsonObject state;
+    state["type"] = "combat_over";
+    state["victory"] = victory;
+    return state;
+}

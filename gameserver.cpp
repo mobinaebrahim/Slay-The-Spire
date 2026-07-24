@@ -27,7 +27,7 @@ QString GameServer::generate_room_code()
 void GameServer::on_new_connection()
 {
     QTcpSocket *newClient = server->nextPendingConnection();
-    qDebug() << "New client connected.";
+    qDebug() << "New client connected:" << newClient->peerAddress().toString();
 
     connect(newClient, &QTcpSocket::readyRead, this, &GameServer::on_client_data_ready);
     connect(newClient, &QTcpSocket::disconnected, this, &GameServer::on_client_disconnected);

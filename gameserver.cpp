@@ -62,11 +62,15 @@ void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &mes
     else if (type == "join_room") {
         handle_join_room(senderSocket, message);
     }
-
     else if (type == "start_combat") {
         handle_start_combat(senderSocket, message);
     }
-
+    else if (type == "play_card") {
+        handle_play_card(senderSocket, message);
+    }
+    else if (type == "end_turn") {
+        handle_end_turn(senderSocket, message);
+    }
     else {
         QString roomCode = client_room.value(senderSocket);
         if (roomCode.isEmpty()) {
@@ -493,4 +497,99 @@ void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject
     qDebug() << "Combat started in room:" << roomCode
              << "Players:" << rooms[roomCode].size()
              << "Multiplayer:" << game.isMultiplayer;
+}
+
+// ---Combat: play card---
+
+void GameServer::handle_play_card(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = client_room.value(senderSocket);
+    if (roomCode.isEmpty() || !roomGames.contains(roomCode)) return;
+
+    RoomGame &game = roomGames[roomCode];
+    if (!game.combatActive || !game.battleManager) return;
+
+    if (!game.isPlayerTurn) {
+        qDebug() << "Not player's turn, ignoring play_card.";
+        return;
+    }
+
+    Player* actingPlayer = game.socketToPlayer.value(senderSocket, nullptr);
+    if (!actingPlayer) return;
+
+    if (!game.playerAlive.value(senderSocket, false)) {
+        qDebug() << "Dead player tried to play card, ignoring.";
+        return;
+    }
+
+    QString cardName = message["card_name"].toString();
+
+    Card* cardToPlay = nullptr;
+    for (Card* c : actingPlayer->getHand()) {
+        if (c && QString::fromStdString(c->getName()) == cardName) {
+            cardToPlay = c;
+            break;
+        }
+    }
+
+    if (!cardToPlay) {
+        qDebug() << "Card not found in hand:" << cardName;
+        return;
+    }
+
+    const auto& enemies = game.battleManager->getEnemies();
+    if (enemies.empty()) return;
+
+    Enemy* target = enemies[0];
+
+    game.battleManager->playCardAction(actingPlayer, cardToPlay, target);
+    game.battleManager->cleanupDeadEnemies();
+
+    broadcast_state_update(roomCode);
+    check_combat_over(roomCode);
+}
+
+// ---Combat: end turn---
+
+void GameServer::handle_end_turn(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = client_room.value(senderSocket);
+    if (roomCode.isEmpty() || !roomGames.contains(roomCode)) return;
+
+    RoomGame &game = roomGames[roomCode];
+    if (!game.combatActive || !game.battleManager) return;
+
+    if (!game.isPlayerTurn) {
+        qDebug() << "Not player's turn, ignoring end_turn.";
+        return;
+    }
+
+    if (!game.playerAlive.value(senderSocket, false)) {
+        qDebug() << "Dead player tried to end turn, ignoring.";
+        return;
+    }
+
+    if (game.endedTurn.contains(senderSocket)) {
+        qDebug() << "Player already ended turn, ignoring.";
+        return;
+    }
+
+    game.endedTurn.insert(senderSocket);
+
+    qDebug() << "Player ended turn. Ended:" << game.endedTurn.size()
+             << "Total alive:" << game.battleManager->getPlayers().size();
+
+    int aliveCount = 0;
+    for (QTcpSocket *socket : rooms[roomCode]) {
+        if (game.playerAlive.value(socket, false)) {
+            aliveCount++;
+        }
+    }
+
+    if ((int)game.endedTurn.size() >= aliveCount) {
+        qDebug() << "All players ended turn. Processing enemy turn...";
+        process_enemy_turn(roomCode);
+    } else {
+        broadcast_state_update(roomCode);
+    }
 }

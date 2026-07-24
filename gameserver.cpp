@@ -156,7 +156,7 @@ QJsonObject GameServer::buildCombatOver(bool victory)
     return state;
 }
 
-//--- State building---
+//--- State building—add block ---
 
 QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode)
 {
@@ -174,6 +174,7 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
         pObj["max_hp"] = p->getMaxHp();
         pObj["energy"] = p->getEnergy();
         pObj["max_energy"] = p->getMaxEnergy();
+        pObj["block"] = p->getBlock();
         pObj["is_alive"] = game.playerAlive.value(socket, false);
         pObj["username"] = QString::fromStdString(p->getName());
 

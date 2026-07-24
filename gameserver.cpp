@@ -192,7 +192,19 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
         pObj["draw_pile"] = drawArray;
         pObj["draw_pile_size"] = (int)p->getDrawPile().size();
 
-        pObj["discard_pile_size"] = p->getDiscardPileSize();
+        QJsonArray discardArray;
+        for (Card* c : p->getDiscardPile()) {
+            if (c) discardArray.append(QString::fromStdString(c->getName()));
+        }
+        pObj["discard_pile"] = discardArray;
+        pObj["discard_pile_size"] = (int)p->getDiscardPile().size();
+
+        QJsonArray exhaustArray;
+        for (Card* c : p->getExhaustPile()) {
+            if (c) exhaustArray.append(QString::fromStdString(c->getName()));
+        }
+        pObj["exhaust_pile"] = exhaustArray;
+        pObj["exhaust_pile_size"] = (int)p->getExhaustPile().size();
 
         playersArray.append(pObj);
     }

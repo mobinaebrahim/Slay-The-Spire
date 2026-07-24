@@ -6,11 +6,32 @@
 #include <QTcpSocket>
 #include <QMap>
 #include <QList>
+#include <QSet>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QRandomGenerator>
 
+#include "BattleManager.h"
+#include "player.h"
+#include "enemy.h"
+#include "NormalEnemies.h"
+#include "EliteEnemies.h"
+#include "BossStruggles.h"
+#include "CardFactory.h"
+
+struct RoomGame {
+    BattleManager* battleManager = nullptr;
+    QMap<QTcpSocket*, Player*> socketToPlayer;
+    QMap<QTcpSocket*, bool> playerAlive;
+    QSet<QTcpSocket*> endedTurn;
+    bool combatActive = false;
+    bool isPlayerTurn = true;
+    int currentPlayerIndex = 0;
+    QString currentEnemyName;
+    bool isMultiplayer = false;
+};
 
 class GameServer : public QObject
 {
@@ -29,6 +50,8 @@ private:
     QTcpServer *server;
     QMap<QString, QList<QTcpSocket*>> rooms;
     QMap<QTcpSocket*, QString> client_room;
+    QMap<QString, RoomGame> roomGames;
+    QMap<QTcpSocket*, QString> socketUsernames;
 
     QString generate_room_code();
     void handle_message(QTcpSocket *sender, const QJsonObject &message);

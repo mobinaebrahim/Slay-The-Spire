@@ -144,6 +144,8 @@ private:
     void showPlayerTargetFrame();
     void hidePlayerTargetFrame();
 
+    QLabel* settingsOverlayImage;
+
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;
 

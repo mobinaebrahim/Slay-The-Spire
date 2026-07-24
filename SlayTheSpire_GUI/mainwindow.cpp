@@ -80,6 +80,15 @@ MainWindow::MainWindow(QWidget *parent)
     settingLabel->move(this->width() - 60, 3);
     settingLabel->installEventFilter(this);
 
+    settingsOverlayImage = new QLabel(this);
+    settingsOverlayImage->setAlignment(Qt::AlignCenter);
+    settingsOverlayImage->setStyleSheet("background-color: rgba(0,0,0,220);");
+    settingsOverlayImage->setPixmap(QPixmap(":/images/icons/settings_overlay.png").scaled(
+        this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
+    settingsOverlayImage->hide();
+    settingsOverlayImage->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+
     mapLabel = new QLabel(this);
     mapLabel->setFixedSize(46, 46);
     mapLabel->setPixmap(QPixmap(":/images/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -514,6 +523,12 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     deckIconLabel->move(this->width() - 116, 3);
     mapLabel->move(this->width() - 172, 3);
     settingLabel->move(this->width() - 60, 3);
+
+    if (settingsOverlayImage && settingsOverlayImage->isVisible()) {
+        settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
+        settingsOverlayImage->setPixmap(QPixmap(":/images/settings_overlay.png").scaled(
+            this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
 
     playerStatusRow->setGeometry(currentStartX + 10, basePlayerY + playerH + 22, playerW, 30);
     enemyStatusRow->setGeometry(enemyX2, baseEnemyY - 5, enemyW, 30);
@@ -980,6 +995,15 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
         return true;
     }
 
+    if (obj == settingLabel && event->type() == QEvent::MouseButtonRelease) {
+        settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
+        settingsOverlayImage->setPixmap(QPixmap(":/images/icons/settings_overlay.png").scaled(
+            this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        settingsOverlayImage->show();
+        settingsOverlayImage->raise();
+        return true;
+    }
+
     if (obj == enemySpriteLabel || obj == enemyHpBar || obj == enemyIntentLabel) {
         if (event->type() == QEvent::Enter) {
             const auto& enemies = battleManager->getEnemies();
@@ -1415,6 +1439,8 @@ void MainWindow::setupShortcuts() {
         highlightedCardIndex = -1;
         updateCardHighlight();
         hidePileOverlay();
+        if (settingsOverlayImage && settingsOverlayImage->isVisible())
+            settingsOverlayImage->hide();
     });
 
     for (int i = 1; i <= 9; ++i) {

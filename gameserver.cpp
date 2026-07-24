@@ -156,7 +156,7 @@ QJsonObject GameServer::buildCombatOver(bool victory)
     return state;
 }
 
-//--- State building ---
+//--- State building UPDATED: block, effects, piles ---
 
 QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode)
 {
@@ -226,7 +226,19 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
         eObj["name"] = QString::fromStdString(e->getName());
         eObj["hp"] = e->getHp();
         eObj["max_hp"] = e->getMaxHp();
+        eObj["block"] = e->getBlock();
         eObj["intent"] = QString::fromStdString(e->getIntentString());
+
+        QJsonArray effArray;
+        for (auto* effect : e->getEffects()) {
+            if (!effect) continue;
+            QJsonObject effObj;
+            effObj["name"] = QString::fromStdString(effect->getName());
+            effObj["amount"] = effect->getAmount();
+            effArray.append(effObj);
+        }
+        eObj["effects"] = effArray;
+
         enemiesArray.append(eObj);
     }
     state["enemies"] = enemiesArray;

@@ -86,11 +86,38 @@ void GameServer::on_client_disconnected()
     QString roomCode = client_room.value(disconnectedSocket);
     if (!roomCode.isEmpty()) {
         rooms[roomCode].removeAll(disconnectedSocket);
-        if (rooms[roomCode].isEmpty()) {
-            rooms.remove(roomCode);
+
+        if (roomGames.contains(roomCode)) {
+            RoomGame &game = roomGames[roomCode];
+            game.socketToPlayer.remove(disconnectedSocket);
+            game.playerAlive.remove(disconnectedSocket);
+            game.endedTurn.remove(disconnectedSocket);
+
+            if (!rooms[roomCode].isEmpty()) {
+                QTcpSocket *newLeader = rooms[roomCode][0];
+                QJsonObject leaderMsg;
+                leaderMsg["type"] = "leader_changed";
+                leaderMsg["you_are_leader"] = true;
+                send_to_client(newLeader, leaderMsg);
+
+                for (int i = 1; i < rooms[roomCode].size(); ++i) {
+                    QJsonObject notLeaderMsg;
+                    notLeaderMsg["type"] = "leader_changed";
+                    notLeaderMsg["you_are_leader"] = false;
+                    send_to_client(rooms[roomCode][i], notLeaderMsg);
+                }
+            }
+
+            if (rooms[roomCode].isEmpty()) {
+                delete game.battleManager;
+                roomGames.remove(roomCode);
+                rooms.remove(roomCode);
+            }
         }
         client_room.remove(disconnectedSocket);
     }
+
+    socketUsernames.remove(disconnectedSocket);
 
     qDebug() << "Client disconnected.";
     disconnectedSocket->deleteLater();

@@ -417,7 +417,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new JawWorm());
+    battleManager->spawnEnemy(new Cultist());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -608,6 +608,16 @@ void MainWindow::updateHandUI() {
             playCardAtIndex(cardIndex);
         });
         layout->addWidget(btn);
+
+        QGraphicsOpacityEffect* fadeEffect = new QGraphicsOpacityEffect(btn);
+        btn->setGraphicsEffect(fadeEffect);
+        fadeEffect->setOpacity(0.0);
+
+        QPropertyAnimation* fadeIn = new QPropertyAnimation(fadeEffect, "opacity", this);
+        fadeIn->setDuration(800);
+        fadeIn->setStartValue(0.0);
+        fadeIn->setEndValue(1.0);
+        fadeIn->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
 

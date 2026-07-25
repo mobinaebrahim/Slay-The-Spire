@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new Cultist());
+    battleManager->spawnEnemy(new LargeSlime());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -451,13 +451,13 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     int playerW = 200, playerH = 300;
     currentStartX = 100;
     basePlayerY = (this->height() / 2) - (playerH / 2) - 90;
-    playerSpriteLabel->setGeometry(currentStartX, basePlayerY, playerW, playerH);
+    playerSpriteLabel->setGeometry(currentStartX + 30, basePlayerY, playerW, playerH);
 
     int barWidth = 180, barHeight = 22;
     topHudBar->setGeometry(0, 0, this->width(), 48);
-    playerHpBar->setGeometry(currentStartX + playerW / 2 - barWidth / 2 + 20, basePlayerY + 250, barWidth, barHeight);
-    playerBlockBadge->setGeometry(currentStartX + playerW - 30, basePlayerY - 8, 30, 30);
-    playerHitOverlay->setGeometry(currentStartX, basePlayerY, playerW, playerH);
+    playerHpBar->setGeometry(currentStartX + 30 + playerW / 2 - barWidth / 2 + 20, basePlayerY + 250, barWidth, barHeight);
+    playerBlockBadge->setGeometry(currentStartX + 20 + playerW - 30, basePlayerY - 8, 30, 30);
+    playerHitOverlay->setGeometry(currentStartX + 30, basePlayerY, playerW, playerH);
 
     int playerSpriteCenterY = basePlayerY + playerH / 2;
     int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 70;
@@ -485,7 +485,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
             this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }
 
-    playerStatusRow->setGeometry(currentStartX + 10, basePlayerY + playerH + 22, playerW, 30);
+    playerStatusRow->setGeometry(currentStartX + 40, basePlayerY + 280 , playerW, 30);
 }
 
 void MainWindow::on_EndTurnButton_clicked()
@@ -758,7 +758,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.enemy = enemy;
 
         slot.wrapper = new QWidget(enemyAreaContainer);
-        slot.wrapper->setFixedWidth(180);
+        slot.wrapper->setFixedWidth(200);
         QVBoxLayout* vbox = new QVBoxLayout(slot.wrapper);
         vbox->setContentsMargins(6, 0, 6, 0);
         vbox->setSpacing(4);
@@ -853,7 +853,7 @@ void MainWindow::updateAnimations() {
     angle += 0.2f;
     int floatOffset = static_cast<int>(std::sin(angle) * 6);
 
-    playerSpriteLabel->setGeometry(currentStartX, basePlayerY + floatOffset, 200, 300);
+    playerSpriteLabel->setGeometry(currentStartX + 30, basePlayerY + floatOffset, 200, 300);
 
     if (!isAttackAnimating) {
         QRect base = enemyAreaContainer->geometry();
@@ -1815,7 +1815,7 @@ void MainWindow::processNextEnemyInQueue() {
     bool isAttackingIntent = (intent == IntentType::Attack || intent == IntentType::Combined ||intent == IntentType::AttackAddCard || intent == IntentType::AttackDebuff);
 
     if (isAttackingIntent && slot && slot->sprite) {
-        int lungeDistance = 40;
+        int lungeDistance = 20;
         QRect startRect = slot->sprite->geometry();
         QRect lungeRect(startRect.x() - lungeDistance, startRect.y(), startRect.width(), startRect.height());
 

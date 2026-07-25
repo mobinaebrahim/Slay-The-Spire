@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new LargeSlime());
+    battleManager->spawnEnemy(new Cultist());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -695,7 +695,7 @@ void MainWindow::updateCharacterUI() {
         Enemy* enemy = slot.enemy;
         QString enemyName = QString::fromStdString(enemy->getName());
 
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(140, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         slot.nameLabel->setText(enemyName);
 
         slot.hpBar->setMaximum(enemy->getMaxHp());
@@ -758,7 +758,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.enemy = enemy;
 
         slot.wrapper = new QWidget(enemyAreaContainer);
-        slot.wrapper->setFixedWidth(160);
+        slot.wrapper->setFixedWidth(180);
         QVBoxLayout* vbox = new QVBoxLayout(slot.wrapper);
         vbox->setContentsMargins(6, 0, 6, 0);
         vbox->setSpacing(4);
@@ -780,10 +780,10 @@ void MainWindow::rebuildEnemyUI() {
             "padding: 3px; font-weight: bold;");
 
         slot.sprite = new QLabel(slot.wrapper);
-        slot.sprite->setFixedSize(140, 140);
+        slot.sprite->setFixedSize(180, 180);
         slot.sprite->setAlignment(Qt::AlignCenter);
         slot.sprite->setScaledContents(true);
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(140, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         slot.blockBadge = new QLabel(slot.sprite);
         slot.blockBadge->setFixedSize(28, 28);

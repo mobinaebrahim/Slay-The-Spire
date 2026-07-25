@@ -28,9 +28,9 @@ void Cultist::executeAction(Character* target) {
     }
     else if (currentIntent == IntentType::Attack) {
         if (target) {
-            this->applyStatus(new StrengthEffect(3));
             int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
+            this->applyStatus(new StrengthEffect(3));
         }
     }
     chooseAction();

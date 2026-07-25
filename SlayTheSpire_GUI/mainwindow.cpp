@@ -417,7 +417,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new Louse());
+    battleManager->spawnEnemy(new MediumSlime());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -698,6 +698,8 @@ static QString intentToShortText(Enemy* enemy) {
     case IntentType::Debuff:   return "⬇ Debuff";
     case IntentType::Combined: return "⚔🛡 " + QString::number(enemy->getIntentValue());
     case IntentType::Special:  return "❓ Special";
+    case IntentType::AttackAddCard: return "⚔🎴 Attack & Add card";
+    case IntentType::AttackDebuff: return "⚔⬇ Attack & Debuff";
     }
     return "?";
 }
@@ -884,16 +886,25 @@ void MainWindow::showEnemyTooltip(Enemy* enemy) {
     case IntentType::Combined:
         title = "Attack + Defend";
         desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
-                       "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.").arg(enemy->getIntentValue());
+        "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.").arg(enemy->getIntentValue());
         break;
     case IntentType::Special:
         title = "Special";
         desc = "This enemy intends to do something special.";
         break;
+    case IntentType::AttackAddCard:
+        title = "Attack + Add a card";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
+        "and <b><span style='color:#f5c518;'>add a card to your discard pile</span></b>.").arg(enemy->getIntentValue());
+        break;
+    case IntentType::AttackDebuff:
+        title = "Attack + Add a card";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
+        "and <b><span style='color:#c07af0;'>weaken</span></b> you.");
+        break;
     }
 
     customTooltipBox->setText(QString("<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1</div>""<div>%2</div>").arg(title, desc));
-
     customTooltipBox->adjustSize();
 
     int tipX = enemySpriteLabel->x() - customTooltipBox->width() - 20;

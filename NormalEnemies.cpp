@@ -189,7 +189,7 @@ void MediumSlime::chooseAction() {
     int randomIntent = 1 + (rand() % 100);
 
     if (randomIntent <= 30) {
-        currentIntent = IntentType::Combined;
+        currentIntent = IntentType::AttackAddCard;
         intentValue = 7; 
     }
     else if (randomIntent <= 70) {
@@ -210,7 +210,7 @@ void MediumSlime::executeAction(Character* target) {
     else if (currentIntent == IntentType::Debuff) {
             target->applyStatus(new WeakEffect(1));
     }
-    else if(currentIntent == IntentType::Combined){
+    else if(currentIntent == IntentType::AttackAddCard){
         target->takeDamage(calculateOutgoingDamage(7));
         Player* player = dynamic_cast<Player*>(target);
         if (player)
@@ -236,7 +236,7 @@ void LargeSlime::chooseAction() {
     else {
         int randomIntent = 1 + (rand() % 100);
         if (randomIntent <= 30) {
-            currentIntent = IntentType::Debuff; 
+            currentIntent = IntentType::AttackAddCard;
             intentValue = 7;
         }
         else if (randomIntent <= 70) {
@@ -261,15 +261,13 @@ void LargeSlime::executeAction(Character* target) {
                 target->takeDamage(calculateOutgoingDamage(intentValue));
         }
         else if (currentIntent == IntentType::Debuff) {
+            target->applyStatus(new WeakEffect(1));
+        }
+        else if (currentIntent == IntentType::AttackAddCard) {
             if (target) {
-                if (intentValue == 7) {
-                    target->takeDamage(calculateOutgoingDamage(7));
-                    Player* p = dynamic_cast<Player*>(target);
-                    if (p)
-                        p->addCardToDiscardPile(new SlimeCard());
-                }
-                else 
-                    target->applyStatus(new WeakEffect(1));
+                target->takeDamage(calculateOutgoingDamage(7));
+                Player* p = dynamic_cast<Player*>(target);
+                if (p) p->addCardToDiscardPile(new SlimeCard());
             }
         }
     }
@@ -378,7 +376,7 @@ void BlueSlaver::chooseAction() {
         intentValue = 12;
     }
     else {
-        currentIntent = IntentType::Combined; 
+        currentIntent = IntentType::AttackDebuff;
         intentValue = 7; 
     }
 }
@@ -386,7 +384,7 @@ void BlueSlaver::chooseAction() {
 void BlueSlaver::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack)
         target->takeDamage(calculateOutgoingDamage(intentValue));
-    else if (currentIntent == IntentType::Combined) {
+    else if (currentIntent == IntentType::AttackDebuff) {
         target->takeDamage(calculateOutgoingDamage(intentValue));
         target->applyStatus(new WeakEffect(1)); 
     }
@@ -417,7 +415,7 @@ void RedSlaver::chooseAction() {
             intentValue = 13;
         }
         else { 
-            currentIntent = IntentType::Combined;
+            currentIntent = IntentType::AttackDebuff;
             intentValue = 8; 
         }
     }

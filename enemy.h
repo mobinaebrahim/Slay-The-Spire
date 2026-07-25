@@ -8,7 +8,7 @@ using namespace std;
 class BattleManager;
 class Card;
 
-enum class IntentType { Attack, Defend, Buff, Debuff, Combined, Special};
+enum class IntentType { Attack, Defend, Buff, Debuff, Combined, AttackDebuff, AttackAddCard, Special};
 
 class Enemy : public Character {
 protected:

@@ -39,6 +39,7 @@ public:
     void chooseAction() override;
     void executeAction(Character* target) override;
     int takeDamage(int incomingDamage) override;
+    int getColorChance() const { return colorChance; }
 };
 
 class SmallSlime : public Enemy {

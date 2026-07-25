@@ -748,7 +748,7 @@ void MainWindow::updateCharacterUI() {
         Enemy* enemy = enemies[0];
         QString enemyName = QString::fromStdString(enemy->getName());
 
-        QPixmap enemyPixmap = getEnemyPixmap(enemyName);
+        QPixmap enemyPixmap = getEnemyPixmap(enemy);
         enemySpriteLabel->setPixmap(enemyPixmap.scaled(250, 250, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         enemyNameLabel->setText(enemyName);
 
@@ -766,7 +766,16 @@ void MainWindow::updateCharacterUI() {
     }
 }
 
-QPixmap MainWindow::getEnemyPixmap(const QString& enemyName) {
+QPixmap MainWindow::getEnemyPixmap(Enemy* enemy) {
+    QString enemyName = QString::fromStdString(enemy->getName());
+    if (enemyName == "Louse") {
+        Louse* louse = dynamic_cast<Louse*>(enemy);
+        if (louse) {
+            return QPixmap(louse->getColorChance() == 1
+            ? ":/images/enemies/Green_Louse.png"
+            : ":/images/enemies/Red_Louse.png");
+        }
+    }
     if (enemyName == "BlueSlaver") return QPixmap(":/images/enemies/BlueSlaver.png");
     if (enemyName == "BookOfStabbing") return QPixmap(":/images/enemies/BookOfStabbing.png");
     if (enemyName == "Cultist") return QPixmap(":/images/enemies/Cultist.png");
@@ -776,7 +785,6 @@ QPixmap MainWindow::getEnemyPixmap(const QString& enemyName) {
     if (enemyName == "KingSlime") return QPixmap(":/images/enemies/KingSlime.png");
     if (enemyName == "LargeSlime") return QPixmap(":/images/enemies/LargeSlime.png");
     if (enemyName == "Looter") return QPixmap(":/images/enemies/Looter.png");
-    if (enemyName == "Louse") return QPixmap(":/images/enemies/Louse.png");
     if (enemyName == "MediumSlime") return QPixmap(":/images/enemies/MediumSlime.png");
     if (enemyName == "Mugger") return QPixmap(":/images/enemies/Mugger.png");
     if (enemyName == "RedSlaver") return QPixmap(":/images/enemies/RedSlaver.png");

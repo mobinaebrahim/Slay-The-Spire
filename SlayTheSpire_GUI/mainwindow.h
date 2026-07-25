@@ -182,7 +182,7 @@ protected:
     int enemyX;
 
     void updateCharacterUI();
-    QPixmap getEnemyPixmap(const QString& enemyName);
+    QPixmap getEnemyPixmap(Enemy* enemy);
     void updateAnimations();
 
     void playEnemyNonAttackTurn();

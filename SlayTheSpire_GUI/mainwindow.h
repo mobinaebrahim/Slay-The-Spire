@@ -51,6 +51,18 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    struct EnemyUISlot {
+        Enemy* enemy = nullptr;
+        QWidget* wrapper = nullptr;
+        QLabel* sprite = nullptr;
+        QProgressBar* hpBar = nullptr;
+        QLabel* blockBadge = nullptr;
+        QLabel* intentLabel = nullptr;
+        QLabel* nameLabel = nullptr;
+        QWidget* statusRow = nullptr;
+    };
+
     std::vector<Card*> playerHand;
     BattleManager* battleManager;
     Player* playerObject;
@@ -131,7 +143,7 @@ private:
 
     int highlightedCardIndex = -1;
     void updateCardHighlight();
-    void playCardAtIndex(int index);
+    void playCardAtIndex(int index, Enemy* explicitTarget = nullptr);
     void setupShortcuts();
 
     bool isDraggingCard = false;
@@ -148,6 +160,25 @@ private:
 
     void showNotEnoughEnergy();
 
+    QWidget* enemyAreaContainer;
+    QHBoxLayout* enemyAreaLayout;
+    std::vector<EnemyUISlot> enemySlots;
+    int targetedEnemyIndex = 0;
+    Enemy* dragHoverTarget = nullptr;
+
+    void rebuildEnemyUI();
+    Enemy* enemyFromWidget(QObject* obj);
+    Enemy* findEnemySlotAt(const QPoint& windowPos);
+
+    std::vector<Enemy*> enemyTurnQueue;
+    int enemyTurnQueueIndex = 0;
+
+    void processNextEnemyInQueue();
+    void highlightAttackingEnemy(Enemy* enemy);
+    void unhighlightAttackingEnemy(Enemy* enemy);
+    EnemyUISlot* findSlotFor(Enemy* enemy);
+    QRect enemySpriteLabelRectFor(Enemy* enemy);
+
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;
 
@@ -156,7 +187,7 @@ protected:
     void showGameOverText(const QString& text, const QColor& color);
 
     QLabel* customTooltipBox;
-    void showEnemyTooltip(Enemy* enemy);
+    void showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget = nullptr);
 
     QMediaPlayer* bgMusicPlayer;
     QAudioOutput* bgAudioOutput;
@@ -171,8 +202,6 @@ protected:
     void playHitEffect(QLabel* overlay, QGraphicsOpacityEffect* opacityEffect);
     bool isAttackAnimating = false;
 
-    void playEnemyAttack();
-
     QTimer* animationTimer;
     float angle = 0;
     int basePlayerY;
@@ -184,8 +213,6 @@ protected:
     void updateCharacterUI();
     QPixmap getEnemyPixmap(Enemy* enemy);
     void updateAnimations();
-
-    void playEnemyNonAttackTurn();
 
     void disableAllCards();
 

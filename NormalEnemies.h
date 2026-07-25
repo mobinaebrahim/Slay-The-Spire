@@ -64,6 +64,7 @@ public:
     LargeSlime();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    int takeDamage(int incomingDamage) override;
 };
 
 class Thief : public Enemy {

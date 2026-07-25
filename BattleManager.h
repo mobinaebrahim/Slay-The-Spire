@@ -28,6 +28,10 @@ public:
     void dealDamageToAllEnemies(int damage);
     int GetTotalDamageToAllEnemies(int damage);
 
+    void beginEnemyTurnPhase();
+    void processSingleEnemyTurn(Enemy* enemy);
+    void endEnemyTurnPhase();
+
     void setPlayer(Player* p) { player = p; }
     const vector<Enemy*>& getEnemies() const { return enemies; }
     std::vector<Enemy*> enemiesToRemove;

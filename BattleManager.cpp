@@ -83,3 +83,20 @@ bool BattleManager::isCombatOver() {
 
     return false;
 }
+
+void BattleManager::beginEnemyTurnPhase() {
+    isPlayerTurn = false;
+    player->applyTurnEndEffects();
+    player->endTurnCleanUp();
+}
+
+void BattleManager::processSingleEnemyTurn(Enemy* enemy) {
+    if (enemy->getHp() > 0) {
+        enemy->executeAction(player);
+        enemy->applyTurnEndEffects();
+    }
+}
+
+void BattleManager::endEnemyTurnPhase() {
+    playerTurn();
+}

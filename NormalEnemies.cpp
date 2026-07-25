@@ -288,6 +288,17 @@ void LargeSlime::executeAction(Character* target) {
     chooseAction();
 }
 
+int LargeSlime::takeDamage(int incomingDamage) {
+    int actualDamage = Enemy::takeDamage(incomingDamage);
+
+    if (this->hp > 0 && this->hp <= (this->maxHp / 2) && !hasSplited) {
+        currentIntent = IntentType::Combined;
+        intentValue = 0;
+        intentBlock = 0;
+    }
+    return actualDamage;
+}
+
 //__________________________________________Thief__________________________________________
 Thief::Thief(string name) : Enemy(name, 48, 48), turnCounter(1) {
     this->hp = 44 + (rand() % 13);

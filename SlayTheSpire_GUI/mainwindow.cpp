@@ -40,6 +40,12 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMinimumSize(1280, 720);
     this->setMouseTracking(true);
 
+    enemyAreaContainer = new QWidget(this);
+    enemyAreaLayout = new QHBoxLayout(enemyAreaContainer);
+    enemyAreaLayout->setContentsMargins(0, 0, 0, 0);
+    enemyAreaLayout->setSpacing(30);
+    enemyAreaLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+
     playerEnergyOrb = new QLabel(this);
     playerEnergyOrb->setFixedSize(70, 70);
     playerEnergyOrb->setPixmap(QPixmap(":/images/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -210,27 +216,6 @@ MainWindow::MainWindow(QWidget *parent)
         );
     playerBlockBadge->hide();
 
-    enemyHpBar = new QProgressBar(this);
-    enemyHpBar->setTextVisible(true);
-    enemyHpBar->setStyleSheet(playerHpBar->styleSheet());
-
-    enemyBlockBadge = new QLabel(this);
-    enemyBlockBadge->setAlignment(Qt::AlignCenter);
-    enemyBlockBadge->setFixedSize(36, 36);
-    enemyBlockBadge->setStyleSheet(
-        "background-color: #2b3a55; color: #9fd8ff; border: 2px solid #5c85b0; "
-        "border-radius: 18px; font-weight: bold; font-size: 13px;"
-        );
-    enemyBlockBadge->hide();
-
-    enemyIntentLabel = new QLabel(this);
-    enemyIntentLabel->setAlignment(Qt::AlignCenter);
-    enemyIntentLabel->setFixedHeight(28);
-    enemyIntentLabel->setStyleSheet(
-        "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
-        "padding: 3px; font-weight: bold;"
-        );
-
     customTooltipBox = new QLabel(this);
     customTooltipBox->setStyleSheet(
         "background-color: rgba(20,20,25,235); color: white; "
@@ -241,25 +226,10 @@ MainWindow::MainWindow(QWidget *parent)
     customTooltipBox->hide();
     customTooltipBox->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    enemyNameLabel = new QLabel(this);
-    enemyNameLabel->setAlignment(Qt::AlignCenter);
-    enemyNameLabel->setFixedHeight(20);
-    enemyNameLabel->setStyleSheet(
-        "color: white; font-weight: bold; font-size: 13px; "
-        "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
-
     playerSpriteLabel = new QLabel(this);
     playerSpriteLabel->setPixmap(QPixmap(":/images/characters/IronClad.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     playerSpriteLabel->setAlignment(Qt::AlignCenter);
     playerSpriteLabel->setScaledContents(true);
-
-    enemySpriteLabel = new QLabel(this);
-    enemySpriteLabel->setAlignment(Qt::AlignCenter);
-    enemySpriteLabel->setScaledContents(true);
-
-    enemySpriteLabel->installEventFilter(this);
-    enemyHpBar->installEventFilter(this);
-    enemyIntentLabel->installEventFilter(this);
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -382,11 +352,6 @@ MainWindow::MainWindow(QWidget *parent)
     playerStatusLayout->setContentsMargins(0, 0, 0, 0);
     playerStatusLayout->setSpacing(4);
 
-    enemyStatusRow = new QWidget(this);
-    QHBoxLayout* enemyStatusLayout = new QHBoxLayout(enemyStatusRow);
-    enemyStatusLayout->setContentsMargins(0, 0, 0, 0);
-    enemyStatusLayout->setSpacing(4);
-
     hoverCardLabel = new QLabel(this);
     hoverCardLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     hoverCardLabel->setStyleSheet("background: transparent; border: none;");
@@ -417,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new SphericGuardian());
+    battleManager->spawnEnemy(new LargeSlime());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -451,7 +416,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 
             if (originBtn) {
                 QPoint cardTop = originBtn->mapTo(this, QPoint(originBtn->width() / 2, 0));
-                bool overEnemy = enemySpriteLabel->geometry().adjusted(-60, -60, 60, 60).contains(mousePos);
+                dragHoverTarget = nullptr;
+                for (auto& slot : enemySlots) {
+                    QRect r = slot.sprite->geometry();
+                    QPoint topLeft = slot.sprite->mapTo(this, QPoint(0,0));
+                    QRect windowRect(topLeft, r.size());
+                    if (windowRect.adjusted(-40, -40, 40, 40).contains(mousePos)) {
+                        dragHoverTarget = slot.enemy;
+                        break;
+                    }
+                }
+                bool overEnemy = (dragHoverTarget != nullptr);
                 updateDragArrow(cardTop, mousePos, overEnemy);
             }
         } else if (hoverCardLabel && hoverCardLabel->isVisible()) {
@@ -474,48 +449,28 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     }
 
     int playerW = 200, playerH = 300;
-    int enemyW  = 200, enemyH  = 200;
-    int gap = 550;
-
-    currentStartX = (this->width() - (playerW + enemyW + gap)) / 2;
-
-    basePlayerY   = (this->height() / 2) - (playerH / 2) - 90;
-    baseEnemyY    = (this->height() / 2) - (enemyH / 2) - 80;
-
+    currentStartX = 100;
+    basePlayerY = (this->height() / 2) - (playerH / 2) - 90;
     playerSpriteLabel->setGeometry(currentStartX, basePlayerY, playerW, playerH);
-    enemySpriteLabel->setGeometry(currentStartX + playerW + gap, baseEnemyY, enemyW, enemyH);
 
     int barWidth = 180, barHeight = 22;
-
     topHudBar->setGeometry(0, 0, this->width(), 48);
-
-    playerHpBar->setGeometry(
-        currentStartX + playerW / 2 - barWidth / 2 + 20,
-        basePlayerY + 280,
-        barWidth, barHeight);
-
+    playerHpBar->setGeometry(currentStartX + playerW / 2 - barWidth / 2 + 20, basePlayerY + 250, barWidth, barHeight);
     playerBlockBadge->setGeometry(currentStartX + playerW - 30, basePlayerY - 8, 30, 30);
-
-    int enemyX2 = currentStartX + playerW + gap;
-
-    enemyHpBar->setGeometry(
-        enemyX2 + enemyW / 2 - barWidth / 2,
-        baseEnemyY - 32,
-        barWidth, barHeight);
-
-    enemyBlockBadge->setGeometry(enemyX2 - 5, baseEnemyY + enemyH - 35, 36, 36);
-
-    enemyIntentLabel->setGeometry(enemyX2 - 20, baseEnemyY - 65, enemyW + 40, 28);
-    enemyNameLabel->setGeometry(enemyX2 - 20, baseEnemyY - 90, enemyW + 40, 20);
-
     playerHitOverlay->setGeometry(currentStartX, basePlayerY, playerW, playerH);
-    enemyHitOverlay->setGeometry(enemyX2, baseEnemyY, enemyW, enemyH);
+
+    int playerSpriteCenterY = basePlayerY + playerH / 2;
+    int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 70;
+
+    int enemyAreaH = 320;
+    int enemyContainerTop = playerSpriteCenterY - spriteCenterOffsetInWrapper;
+    int enemyAreaX = currentStartX + playerW + 150;
+    int enemyAreaW = this->width() - enemyAreaX - 60;
+    enemyAreaContainer->setGeometry(enemyAreaX, enemyContainerTop, enemyAreaW, enemyAreaH);
+    baseEnemyY = enemyContainerTop;
 
     int endTurnW = 230, endTurnH = 82;
-    ui->EndTurnButton->setGeometry(
-        this->width() - endTurnW + 30,
-        this->height() - endTurnH - 100,
-        endTurnW, endTurnH);
+    ui->EndTurnButton->setGeometry(this->width() - endTurnW + 30, this->height() - endTurnH - 100, endTurnW, endTurnH);
 
     if (exhaustPileOverlay->isVisible())
         exhaustPileOverlay->setGeometry(0, 0, this->width(), this->height());
@@ -531,7 +486,6 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     }
 
     playerStatusRow->setGeometry(currentStartX + 10, basePlayerY + playerH + 22, playerW, 30);
-    enemyStatusRow->setGeometry(enemyX2, baseEnemyY - 5, enemyW, 30);
 }
 
 void MainWindow::on_EndTurnButton_clicked()
@@ -552,18 +506,14 @@ void MainWindow::on_EndTurnButton_clicked()
     }
 
     ui->EndTurnButton->setEnabled(false);
+    isAttackAnimating = true;
 
-    const auto& enemies = battleManager->getEnemies();
-    bool enemyWillAttack = false;
-    if (!enemies.empty()) {
-        IntentType intent = enemies[0]->getIntentType();
-        enemyWillAttack = (intent == IntentType::Attack || intent == IntentType::Combined);
-    }
+    battleManager->beginEnemyTurnPhase();
 
-    if (enemyWillAttack)
-        playEnemyAttack();
-    else
-        playEnemyNonAttackTurn();
+    enemyTurnQueue = battleManager->getEnemies();
+    enemyTurnQueueIndex = 0;
+
+    processNextEnemyInQueue();
 }
 
 void MainWindow::updateHandUI() {
@@ -672,11 +622,11 @@ void MainWindow::initializePlayerDeck(int totalCards) {
     }
 
     std::vector<std::string> allCardNames = {
-                                             "Bash", "Blood for Blood", "Clash", "Feed", "Immolate", "PerfectedStrike", "Reaper",
-                                             "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
-                                             "DualWield", "Defend", "DemonForm", "Disarm", "Entrench",
-                                             "Exhume", "FeelNoPain", "Impervious", "Inflame", "LimitBreak", "Metallicize",
-                                             "Offering", "ShrugItOff", "Daze", "Slime", "Wound", "Burn", "JAX", "CurseOfBell"};
+    "Bash", "Blood for Blood", "Clash", "Feed", "Immolate", "PerfectedStrike", "Reaper",
+    "Strike", "Bludgeon", "TwinStrike", "Whirlwind", "Barricade", "Bloodletting", "Brutality",
+    "DualWield", "Defend", "DemonForm", "Disarm", "Entrench",
+    "Exhume", "FeelNoPain", "Impervious", "Inflame", "LimitBreak", "Metallicize",
+    "Offering", "ShrugItOff", "Daze", "Slime", "Wound", "Burn", "JAX", "CurseOfBell"};
 
     int remainingCards = totalCards - 5;
 
@@ -718,7 +668,6 @@ void MainWindow::updateCharacterUI() {
         playerBlockBadge->setText(QString::number(pBlock));
 
     energyOrbCountLabel->setText(QString("%1/%2").arg(playerObject->getEnergy()).arg(playerObject->getMaxEnergy()));
-
     goldCountLabel->setText(QString::number(playerObject->getGold()));
     playerHpTopLabel->setText(QString("%1/%2").arg(playerObject->getHp()).arg(playerObject->getMaxHp()));
     drawPileCountLabel->setText(QString::number(playerObject->getDrawPileSize()));
@@ -733,38 +682,34 @@ void MainWindow::updateCharacterUI() {
     }
 
     const auto& enemies = battleManager->getEnemies();
-    bool hasEnemy = !enemies.empty();
-
-    enemySpriteLabel->setVisible(hasEnemy);
-    enemyHpBar->setVisible(hasEnemy);
-    enemyIntentLabel->setVisible(hasEnemy);
-    enemyNameLabel->setVisible(hasEnemy);
-    enemyBlockBadge->setVisible(false);
-
-    if (!hasEnemy){
-        customTooltipBox->hide();
-        updateStatusEffectRow(enemyStatusRow, nullptr);
+    bool needsRebuild = (enemies.size() != enemySlots.size());
+    if (!needsRebuild) {
+        for (size_t i = 0; i < enemies.size(); ++i) {
+            if (enemySlots[i].enemy != enemies[i]) { needsRebuild = true; break; }
+        }
     }
+    if (needsRebuild)
+        rebuildEnemyUI();
 
-    if (hasEnemy) {
-        Enemy* enemy = enemies[0];
+    for (auto& slot : enemySlots) {
+        Enemy* enemy = slot.enemy;
         QString enemyName = QString::fromStdString(enemy->getName());
 
-        QPixmap enemyPixmap = getEnemyPixmap(enemy);
-        enemySpriteLabel->setPixmap(enemyPixmap.scaled(250, 250, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        enemyNameLabel->setText(enemyName);
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(140, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.nameLabel->setText(enemyName);
 
-        enemyHpBar->setMaximum(enemy->getMaxHp());
-        enemyHpBar->setValue(enemy->getHp());
-        enemyHpBar->setFormat(QString("%1 / %2").arg(enemy->getHp()).arg(enemy->getMaxHp()));
-        updateStatusEffectRow(enemyStatusRow, enemy);
+        slot.hpBar->setMaximum(enemy->getMaxHp());
+        slot.hpBar->setValue(enemy->getHp());
+        slot.hpBar->setFormat(QString("%1 / %2").arg(enemy->getHp()).arg(enemy->getMaxHp()));
+
+        updateStatusEffectRow(slot.statusRow, enemy);
 
         int eBlock = enemy->getBlock();
-        enemyBlockBadge->setVisible(eBlock > 0);
+        slot.blockBadge->setVisible(eBlock > 0);
         if (eBlock > 0)
-            enemyBlockBadge->setText(QString::number(eBlock));
+            slot.blockBadge->setText(QString::number(eBlock));
 
-        enemyIntentLabel->setText(intentToShortText(enemy));
+        slot.intentLabel->setText(intentToShortText(enemy));
     }
 }
 
@@ -799,13 +744,121 @@ QPixmap MainWindow::getEnemyPixmap(Enemy* enemy) {
     return QPixmap(":/images/enemy_default.png");
 }
 
+void MainWindow::rebuildEnemyUI() {
+    for (auto& slot : enemySlots) {
+        slot.wrapper->hide();
+        slot.wrapper->deleteLater();
+    }
+    enemySlots.clear();
+
+    const auto& enemies = battleManager->getEnemies();
+
+    for (Enemy* enemy : enemies) {
+        EnemyUISlot slot;
+        slot.enemy = enemy;
+
+        slot.wrapper = new QWidget(enemyAreaContainer);
+        slot.wrapper->setFixedWidth(160);
+        QVBoxLayout* vbox = new QVBoxLayout(slot.wrapper);
+        vbox->setContentsMargins(6, 0, 6, 0);
+        vbox->setSpacing(4);
+
+        slot.nameLabel = new QLabel(slot.wrapper);
+        slot.nameLabel->setAlignment(Qt::AlignCenter);
+        slot.nameLabel->setFixedHeight(20);
+        slot.nameLabel->setFixedWidth(150);
+        slot.nameLabel->setStyleSheet(
+            "color: white; font-weight: bold; font-size: 13px; "
+            "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
+
+        slot.intentLabel = new QLabel(slot.wrapper);
+        slot.intentLabel->setAlignment(Qt::AlignCenter);
+        slot.intentLabel->setFixedHeight(26);
+        slot.intentLabel->setFixedWidth(150);
+        slot.intentLabel->setStyleSheet(
+            "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
+            "padding: 3px; font-weight: bold;");
+
+        slot.sprite = new QLabel(slot.wrapper);
+        slot.sprite->setFixedSize(140, 140);
+        slot.sprite->setAlignment(Qt::AlignCenter);
+        slot.sprite->setScaledContents(true);
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(140, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+        slot.blockBadge = new QLabel(slot.sprite);
+        slot.blockBadge->setFixedSize(28, 28);
+        slot.blockBadge->setAlignment(Qt::AlignCenter);
+        slot.blockBadge->setStyleSheet(
+            "background-color: #2b3a55; color: #9fd8ff; border: 2px solid #5c85b0; "
+            "border-radius: 14px; font-weight: bold; font-size: 12px;");
+        slot.blockBadge->move(slot.sprite->width() - 30, slot.sprite->height() - 30);
+        slot.blockBadge->hide();
+
+        slot.hpBar = new QProgressBar(slot.wrapper);
+        slot.hpBar->setTextVisible(true);
+        slot.hpBar->setFixedHeight(20);
+        slot.hpBar->setFixedWidth(150);
+        slot.hpBar->setStyleSheet(playerHpBar->styleSheet());
+
+        slot.statusRow = new QWidget(slot.wrapper);
+        QHBoxLayout* srLayout = new QHBoxLayout(slot.statusRow);
+        srLayout->setContentsMargins(0, 0, 0, 0);
+        srLayout->setSpacing(4);
+        srLayout->setAlignment(Qt::AlignCenter);
+
+        vbox->addWidget(slot.nameLabel);
+        vbox->addWidget(slot.intentLabel);
+        vbox->addWidget(slot.sprite, 0, Qt::AlignCenter);
+        vbox->addWidget(slot.hpBar);
+        vbox->addWidget(slot.statusRow, 0, Qt::AlignCenter);
+
+        QVariant enemyPtr = QVariant::fromValue<void*>(static_cast<void*>(enemy));
+        slot.sprite->setProperty("enemyPtr", enemyPtr);
+        slot.hpBar->setProperty("enemyPtr", enemyPtr);
+        slot.intentLabel->setProperty("enemyPtr", enemyPtr);
+
+        slot.sprite->installEventFilter(this);
+        slot.hpBar->installEventFilter(this);
+        slot.intentLabel->installEventFilter(this);
+
+        enemyAreaLayout->addWidget(slot.wrapper);
+        slot.wrapper->show();
+        enemySlots.push_back(slot);
+    }
+
+    if (enemySlots.empty()) {
+        targetedEnemyIndex = -1;
+    } else {
+        targetedEnemyIndex = qBound(0, targetedEnemyIndex, (int)enemySlots.size() - 1);
+
+        EnemyUISlot& slot = enemySlots[targetedEnemyIndex];
+        slot.wrapper->setProperty("isTargeted", true);
+        QGraphicsDropShadowEffect* glow = new QGraphicsDropShadowEffect(slot.sprite);
+        glow->setBlurRadius(45);
+        glow->setColor(QColor(245, 197, 24, 180));
+        glow->setOffset(0, 0);
+        slot.sprite->setGraphicsEffect(glow);
+    }
+}
+
+Enemy* MainWindow::enemyFromWidget(QObject* obj) {
+    QWidget* w = qobject_cast<QWidget*>(obj);
+    if (!w) return nullptr;
+    QVariant v = w->property("enemyPtr");
+    if (!v.isValid()) return nullptr;
+    return static_cast<Enemy*>(v.value<void*>());
+}
+
 void MainWindow::updateAnimations() {
     angle += 0.2f;
     int floatOffset = static_cast<int>(std::sin(angle) * 6);
 
     playerSpriteLabel->setGeometry(currentStartX, basePlayerY + floatOffset, 200, 300);
-    if (!isAttackAnimating)
-        enemySpriteLabel->setGeometry(currentStartX + 200 + 550, baseEnemyY - floatOffset, 200, 200);
+
+    if (!isAttackAnimating) {
+        QRect base = enemyAreaContainer->geometry();
+        enemyAreaContainer->move(base.x(), baseEnemyY - floatOffset);
+    }
 }
 
 void MainWindow::checkGameOver() {
@@ -815,6 +868,8 @@ void MainWindow::checkGameOver() {
         isGameOver = true;
         ui->EndTurnButton->setEnabled(false);
         disableAllCards();
+        enemyTurnQueue.clear();
+        enemyTurnQueueIndex = 0;
         showGameOverText("DEFEAT", QColor("#c0392b"));
         return;
     }
@@ -823,6 +878,8 @@ void MainWindow::checkGameOver() {
         isGameOver = true;
         ui->EndTurnButton->setEnabled(false);
         disableAllCards();
+        enemyTurnQueue.clear();
+        enemyTurnQueueIndex = 0;
         showGameOverText("VICTORY", QColor("#f5c518"));
         return;
     }
@@ -862,7 +919,7 @@ void MainWindow::showGameOverText(const QString& text, const QColor& color) {
     geomAnim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void MainWindow::showEnemyTooltip(Enemy* enemy) {
+void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
     if (!enemy) { customTooltipBox->hide(); return; }
 
     QString title, desc;
@@ -907,8 +964,10 @@ void MainWindow::showEnemyTooltip(Enemy* enemy) {
     customTooltipBox->setText(QString("<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1</div>""<div>%2</div>").arg(title, desc));
     customTooltipBox->adjustSize();
 
-    int tipX = enemySpriteLabel->x() - customTooltipBox->width() - 20;
-    int tipY = enemySpriteLabel->y() + 40;
+    QWidget* anchor = anchorWidget ? anchorWidget : this;
+    QPoint anchorPos = anchor->mapTo(this, QPoint(0, 0));
+    int tipX = anchorPos.x() - customTooltipBox->width() - 20;
+    int tipY = anchorPos.y() + 40;
     customTooltipBox->move(tipX, tipY);
     customTooltipBox->show();
     customTooltipBox->raise();
@@ -973,16 +1032,14 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
             QPoint localRelease = this->mapFromGlobal(globalRelease);
 
             if (isAttack) {
-                QRect enemyRect = enemySpriteLabel->geometry().adjusted(-60, -60, 60, 60);
-                if (enemyRect.contains(localRelease))
-                    playCardAtIndex(draggedCardIndex);
+                if (dragHoverTarget)
+                    playCardAtIndex(draggedCardIndex, dragHoverTarget);
             } else {
                 QRect playerRect = playerSpriteLabel->geometry().adjusted(-60, -60, 60, 60);
                 if (playerRect.contains(localRelease))
                     playCardAtIndex(draggedCardIndex);
             }
-
-            draggedCardIndex = -1;
+            dragHoverTarget = nullptr;
             return true;
         }
     }
@@ -1033,15 +1090,40 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
         return true;
     }
 
-    if (obj == enemySpriteLabel || obj == enemyHpBar || obj == enemyIntentLabel) {
-        if (event->type() == QEvent::Enter) {
-            const auto& enemies = battleManager->getEnemies();
-            if (!enemies.empty())
-                showEnemyTooltip(enemies[0]);
-        } else if (event->type() == QEvent::Leave) {
-            customTooltipBox->hide();
+    Enemy* clickedEnemy = enemyFromWidget(obj);
+    if (clickedEnemy && event->type() == QEvent::MouseButtonRelease) {
+        for (auto& s : enemySlots) {
+            if (s.sprite && s.sprite->graphicsEffect()) {
+                s.sprite->graphicsEffect()->deleteLater();
+                s.sprite->setGraphicsEffect(nullptr);
+            }
+            s.wrapper->setProperty("isTargeted", false);
         }
+
+        for (size_t i = 0; i < enemySlots.size(); ++i) {
+            if (enemySlots[i].enemy == clickedEnemy) {
+                targetedEnemyIndex = (int)i;
+                enemySlots[i].wrapper->setProperty("isTargeted", true);
+
+                QGraphicsDropShadowEffect* glow = new QGraphicsDropShadowEffect(enemySlots[i].sprite);
+                glow->setBlurRadius(45);
+                glow->setColor(QColor(245, 197, 24, 180));
+                glow->setOffset(0, 0);
+                enemySlots[i].sprite->setGraphicsEffect(glow);
+                break;
+            }
+        }
+        return true;
     }
+
+    if (clickedEnemy && (event->type() == QEvent::Enter || event->type() == QEvent::Leave)) {
+        if (event->type() == QEvent::Enter)
+            showEnemyTooltip(clickedEnemy, qobject_cast<QWidget*>(obj));
+        else
+            customTooltipBox->hide();
+        return QMainWindow::eventFilter(obj, event);
+    }
+
     return QMainWindow::eventFilter(obj, event);
 }
 
@@ -1066,77 +1148,6 @@ void MainWindow::playHitEffect(QLabel* overlay, QGraphicsOpacityEffect* opacityE
     seq->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void MainWindow::playEnemyAttack() {
-    isAttackAnimating = true;
-
-    int lungeDistance = 60;
-    QRect startRect = enemySpriteLabel->geometry();
-    QRect lungeRect(startRect.x() - lungeDistance, startRect.y(), startRect.width(), startRect.height());
-
-    QPropertyAnimation* forward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
-    forward->setDuration(300);
-    forward->setStartValue(startRect);
-    forward->setEndValue(lungeRect);
-    forward->setEasingCurve(QEasingCurve::OutQuad);
-
-    connect(forward, &QPropertyAnimation::finished, this, [=]() {
-        QTimer::singleShot(150, this, [=]() {
-            int playerHpBefore = playerObject->getHp();
-
-            battleManager->enemyTurn();
-            battleManager->cleanupDeadEnemies();
-
-            int damageDealt = playerHpBefore - playerObject->getHp();
-            if (damageDealt > 0)
-                showFloatingDamage(playerSpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
-
-            hitSoundPlayer->setPosition(0);
-            hitSoundPlayer->play();
-
-            playHitEffect(playerHitOverlay, playerHitOpacity);
-            updateCharacterUI();
-
-            QPropertyAnimation* backward = new QPropertyAnimation(enemySpriteLabel, "geometry", this);
-            backward->setDuration(350);
-            backward->setStartValue(lungeRect);
-            backward->setEndValue(startRect);
-            backward->setEasingCurve(QEasingCurve::InQuad);
-
-            connect(backward, &QPropertyAnimation::finished, this, [=]() {
-                QTimer::singleShot(200, this, [=]() {
-                    isAttackAnimating = false;
-                    checkGameOver();
-                    if (!isGameOver)
-                        ui->EndTurnButton->setEnabled(true);
-                    updateHandUI();
-                    updateCharacterUI();
-                });
-            });
-
-            backward->start(QAbstractAnimation::DeleteWhenStopped);
-        });
-    });
-
-    forward->start(QAbstractAnimation::DeleteWhenStopped);
-}
-
-void MainWindow::playEnemyNonAttackTurn() {
-    isAttackAnimating = true;
-
-    battleManager->enemyTurn();
-    battleManager->cleanupDeadEnemies();
-    updateCharacterUI();
-
-    QTimer::singleShot(400, this, [=]() {
-        isAttackAnimating = false;
-        checkGameOver();
-        if (!isGameOver)
-            ui->EndTurnButton->setEnabled(true);
-        updateHandUI();
-        updateCharacterUI();
-    });
-}
-
 void MainWindow::showCardPileOverlay(const QString& title, const vector<Card*>& cards, const QString& titleColor) {
     pileOpenSoundPlayer->setPosition(500);
     pileOpenSoundPlayer->play();
@@ -1153,8 +1164,7 @@ void MainWindow::showCardPileOverlay(const QString& title, const vector<Card*>& 
     }
 
     pileOverlayTitle->setText(title);
-    pileOverlayTitle->setStyleSheet(QString(
-                                        "color: %1; font-size: 24px; font-weight: bold; background: transparent;").arg(titleColor));
+    pileOverlayTitle->setStyleSheet(QString("color: %1; font-size: 24px; font-weight: bold; background: transparent;").arg(titleColor));
 
     const int columns = 5;
     int row = 0, col = 0;
@@ -1221,7 +1231,7 @@ void MainWindow::updateStatusEffectRow(QWidget* rowWidget, Character* character)
         badge->setAlignment(Qt::AlignCenter);
         badge->setText(QString("%1 %2").arg(name).arg(amount));
         badge->setStyleSheet(QString("background-color: %1; color: white; border-radius: 6px; "
-                                     "font-weight: bold; font-size: 10px;").arg(effectColor(name)));
+        "font-weight: bold; font-size: 10px;").arg(effectColor(name)));
 
         badge->setProperty("effectName", name);
         badge->setProperty("effectAmount", amount);
@@ -1249,9 +1259,8 @@ void MainWindow::showStatusEffectTooltip(QLabel* badge) {
     int amount = badge->property("effectAmount").toInt();
     QString desc = effectDescription(name, amount);
 
-    customTooltipBox->setText(QString(
-                                  "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1 (%2)</div>"
-                                  "<div>%3</div>").arg(name).arg(amount).arg(desc));
+    customTooltipBox->setText(QString("<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1 (%2)</div>"
+    "<div>%3</div>").arg(name).arg(amount).arg(desc));
 
     customTooltipBox->adjustSize();
 
@@ -1337,8 +1346,7 @@ void MainWindow::showFloatingDamage(QRect targetRect, int amount, const QColor& 
 
     QLabel* dmgLabel = new QLabel(this);
     dmgLabel->setText(QString("-%1").arg(amount));
-    dmgLabel->setStyleSheet(QString(
-                                "color: %1; font-size: 30px; font-weight: 900; background: transparent;").arg(color.name()));
+    dmgLabel->setStyleSheet(QString("color: %1; font-size: 30px; font-weight: 900; background: transparent;").arg(color.name()));
     dmgLabel->adjustSize();
 
     int startX = targetRect.x() + targetRect.width() / 2 - dmgLabel->width() / 2;
@@ -1378,7 +1386,7 @@ void MainWindow::showToastMessage(const QString& text) {
     QTimer::singleShot(1500, toastLabel, &QLabel::hide);
 }
 
-void MainWindow::playCardAtIndex(int index) {
+void MainWindow::playCardAtIndex(int index, Enemy* explicitTarget) {
     if (isGameOver || isAttackAnimating) return;
 
     const std::vector<Card*>& playerHand = playerObject->getHand();
@@ -1396,14 +1404,17 @@ void MainWindow::playCardAtIndex(int index) {
         return;
     }
 
+    Enemy* targetEnemy = explicitTarget;
+    if (!targetEnemy) {
+        int idx = qBound(0, targetedEnemyIndex, (int)allEnemies.size() - 1);
+        targetEnemy = allEnemies[idx];
+    }
+
     bool isAttackCard = (card->getType() == CardType::Attack);
     int handSizeBefore = playerObject->getHandSize();
-
-    Enemy* targetEnemy = allEnemies[0];
     int enemyHpBefore = targetEnemy->getHp();
 
-    if(card->getCost(playerObject) > playerObject->getEnergy())
-    {
+    if (card->getCost(playerObject) > playerObject->getEnergy()) {
         showNotEnoughEnergy();
         return;
     }
@@ -1421,17 +1432,21 @@ void MainWindow::playCardAtIndex(int index) {
     battleManager->cleanupDeadEnemies();
     checkGameOver();
 
+    QRect enemyRectForFx = enemySpriteLabelRectFor(targetEnemy);
+
     if (isAttackCard && cardWasActuallyPlayed && !isGameOver) {
         QTimer::singleShot(150, this, [=]() {
             if (damageDealt > 0)
-                showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
+                showFloatingDamage(enemyRectForFx, damageDealt, QColor("#ff4d4d"));
             hitSoundPlayer->stop();
             hitSoundPlayer->setPosition(0);
             hitSoundPlayer->play();
+
+            enemyHitOverlay->setGeometry(enemyRectForFx);
             playHitEffect(enemyHitOverlay, enemyHitOpacity);
         });
     } else if (damageDealt > 0) {
-        showFloatingDamage(enemySpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
+        showFloatingDamage(enemyRectForFx, damageDealt, QColor("#ff4d4d"));
     }
 
     highlightedCardIndex = -1;
@@ -1699,4 +1714,176 @@ void MainWindow::showNotEnoughEnergy()
     connect(group, &QParallelAnimationGroup::finished, bubble, &QLabel::deleteLater);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+MainWindow::EnemyUISlot* MainWindow::findSlotFor(Enemy* enemy) {
+    for (auto& slot : enemySlots)
+        if (slot.enemy == enemy) return &slot;
+    return nullptr;
+}
+
+QRect MainWindow::enemySpriteLabelRectFor(Enemy* enemy) {
+    EnemyUISlot* slot = findSlotFor(enemy);
+    if (!slot || !slot->sprite) return QRect(0,0,0,0);
+    QPoint topLeft = slot->sprite->mapTo(this, QPoint(0,0));
+    return QRect(topLeft, slot->sprite->size());
+}
+
+void MainWindow::highlightAttackingEnemy(Enemy* enemy) {
+    EnemyUISlot* slot = findSlotFor(enemy);
+    if (slot && slot->sprite) {
+        if (slot->sprite->graphicsEffect()) {
+            slot->sprite->graphicsEffect()->deleteLater();
+        }
+        QGraphicsDropShadowEffect* glow = new QGraphicsDropShadowEffect(slot->sprite);
+        glow->setBlurRadius(55);
+        glow->setColor(QColor(255, 60, 40, 200));
+        glow->setOffset(0, 0);
+        slot->sprite->setGraphicsEffect(glow);
+    }
+}
+
+void MainWindow::unhighlightAttackingEnemy(Enemy* enemy) {
+    if (!enemy) return;
+    if (isGameOver) return;
+
+    EnemyUISlot* slot = findSlotFor(enemy);
+    if (!slot || !slot->sprite) return;
+
+    if (slot->sprite->graphicsEffect()) {
+        slot->sprite->graphicsEffect()->deleteLater();
+        slot->sprite->setGraphicsEffect(nullptr);
+    }
+
+    bool isTargeted = slot->wrapper->property("isTargeted").toBool();
+    if (isTargeted) {
+        QGraphicsDropShadowEffect* glow = new QGraphicsDropShadowEffect(slot->sprite);
+        glow->setBlurRadius(45);
+        glow->setColor(QColor(245, 197, 24, 180));
+        glow->setOffset(0, 0);
+        slot->sprite->setGraphicsEffect(glow);
+    }
+}
+
+void MainWindow::processNextEnemyInQueue() {
+    if (isGameOver) {
+        isAttackAnimating = false;
+        return;
+    }
+    while (enemyTurnQueueIndex < (int)enemyTurnQueue.size()) {
+        Enemy* enemy = enemyTurnQueue[enemyTurnQueueIndex];
+        bool stillInBattle = false;
+        for (Enemy* e : battleManager->getEnemies()) {
+            if (e == enemy) { stillInBattle = true; break; }
+        }
+        if (!stillInBattle || enemy->getHp() <= 0) {
+            enemyTurnQueueIndex++;
+        } else {
+            break;
+        }
+    }
+    if (enemyTurnQueueIndex >= (int)enemyTurnQueue.size()) {
+        battleManager->endEnemyTurnPhase();
+        battleManager->cleanupDeadEnemies();
+
+        isAttackAnimating = false;
+        checkGameOver();
+        if (!isGameOver) {
+            ui->EndTurnButton->setEnabled(true);
+            updateHandUI();
+            updateCharacterUI();
+        }
+        return;
+    }
+
+    Enemy* currentEnemy = enemyTurnQueue[enemyTurnQueueIndex];
+    EnemyUISlot* slot = findSlotFor(currentEnemy);
+
+    if (!slot) {
+        rebuildEnemyUI();
+        slot = findSlotFor(currentEnemy);
+        if (!slot) {
+            enemyTurnQueueIndex++;
+            QTimer::singleShot(50, this, &MainWindow::processNextEnemyInQueue);
+            return;
+        }
+    }
+
+    highlightAttackingEnemy(currentEnemy);
+
+    IntentType intent = currentEnemy->getIntentType();
+    bool isAttackingIntent = (intent == IntentType::Attack || intent == IntentType::Combined ||intent == IntentType::AttackAddCard || intent == IntentType::AttackDebuff);
+
+    if (isAttackingIntent && slot && slot->sprite) {
+        int lungeDistance = 40;
+        QRect startRect = slot->sprite->geometry();
+        QRect lungeRect(startRect.x() - lungeDistance, startRect.y(), startRect.width(), startRect.height());
+
+        QPropertyAnimation* forward = new QPropertyAnimation(slot->sprite, "geometry", this);
+        forward->setDuration(250);
+        forward->setStartValue(startRect);
+        forward->setEndValue(lungeRect);
+        forward->setEasingCurve(QEasingCurve::OutQuad);
+
+        connect(forward, &QPropertyAnimation::finished, this, [=]() {
+            int playerHpBefore = playerObject->getHp();
+
+            battleManager->processSingleEnemyTurn(currentEnemy);
+            battleManager->cleanupDeadEnemies();
+
+            int damageDealt = playerHpBefore - playerObject->getHp();
+            if (damageDealt > 0)
+                showFloatingDamage(playerSpriteLabel->geometry(), damageDealt, QColor("#ff4d4d"));
+
+            hitSoundPlayer->setPosition(0);
+            hitSoundPlayer->play();
+            playHitEffect(playerHitOverlay, playerHitOpacity);
+            updateCharacterUI();
+
+            EnemyUISlot* freshSlot = findSlotFor(currentEnemy);
+
+            auto proceedToNext = [=]() {
+                if (!isGameOver)
+                    unhighlightAttackingEnemy(currentEnemy);
+                enemyTurnQueueIndex++;
+                checkGameOver();
+                if (isGameOver) {
+                    isAttackAnimating = false;
+                    disableAllCards();
+                    return;
+                }
+                processNextEnemyInQueue();
+            };
+
+            if (!freshSlot || !freshSlot->sprite) {
+                QTimer::singleShot(1500, this, proceedToNext);
+                return;
+            }
+
+            QPropertyAnimation* backward = new QPropertyAnimation(freshSlot->sprite, "geometry", this);
+            backward->setDuration(300);
+            backward->setStartValue(freshSlot->sprite->geometry());
+            backward->setEndValue(startRect);
+            backward->setEasingCurve(QEasingCurve::InQuad);
+
+            connect(backward, &QPropertyAnimation::finished, this, [=]() {
+                QTimer::singleShot(1500, this, proceedToNext);
+            });
+            backward->start(QAbstractAnimation::DeleteWhenStopped);
+        });
+        forward->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+    else {
+        battleManager->processSingleEnemyTurn(currentEnemy);
+        battleManager->cleanupDeadEnemies();
+        updateCharacterUI();
+
+        QTimer::singleShot(600, this, [=]() {
+            if (!isGameOver) {
+                unhighlightAttackingEnemy(currentEnemy);
+            }
+            enemyTurnQueueIndex++;
+            processNextEnemyInQueue();
+        });
+    }
 }

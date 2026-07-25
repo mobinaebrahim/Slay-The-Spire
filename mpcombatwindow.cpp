@@ -8,8 +8,11 @@
 
 MPCombatWindow::MPCombatWindow(QWidget *parent, bool isLeader)
     : QWidget(parent)
+    , ui(new Ui::MPCombatWindow)
     , m_isLeader(isLeader)
 {
+    ui->setupUi(this);
+
     setWindowFlags(Qt::Window);
     setWindowTitle("Combat");
     setMinimumSize(1280, 720);
@@ -30,6 +33,7 @@ MPCombatWindow::MPCombatWindow(QWidget *parent, bool isLeader)
 
 MPCombatWindow::~MPCombatWindow()
 {
+    delete ui;
 }
 
 // ================================================================
@@ -258,10 +262,10 @@ void MPCombatWindow::buildUI()
     connect(closePileOverlayButton, &QPushButton::clicked, this, &MPCombatWindow::hidePileOverlay);
 
     // --- Cards + End Turn ---
-    m_cardsContainer = new QWidget(this);
+    m_cardsContainer = ui->CardsContainer;
     QHBoxLayout *cardLayout = new QHBoxLayout(m_cardsContainer);
 
-    m_endTurnBtn = new QPushButton("End Turn", this);
+    m_endTurnBtn = ui->EndTurnButton;
     m_endTurnBtn->setFixedSize(150, 60);
     m_endTurnBtn->setStyleSheet(
         "QPushButton { background-color: #7a1f1f; color: white; font-weight: bold; border-radius: 8px; }"

@@ -1,5 +1,5 @@
-#ifndef MPCOMBATPAGE_H
-#define MPCOMBATPAGE_H
+#ifndef MPCOMBATWINDOW_H
+#define MPCOMBATWINDOW_H
 
 #include <QWidget>
 #include <QLabel>
@@ -22,6 +22,20 @@
 #include <QJsonArray>
 #include <QStringList>
 
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MPCombatWindow;
+}
+QT_END_NAMESPACE
+
+// ============================================================
+// MPCombatWindow
+// ------------------------------------------------------------
+// نسخه‌ی چندنفره‌ی صفحه‌ی Combat، از نظر بصری هم‌سطح MainWindow
+// تک‌نفره (اسپرایت، انیمیشن شناور، جلوه‌ی Hit، Hover Card،
+// Floating Damage، صدا)، ولی هیچ منطق بازی‌ای رو خودش اجرا
+// نمی‌کنه — همه‌چیز از state_update سرور میاد.
+// ============================================================
 class MPCombatWindow : public QWidget
 {
     Q_OBJECT
@@ -38,6 +52,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
+    Ui::MPCombatWindow *ui;
+
     bool m_isLeader = false;
     QString m_myUsername;
     QString m_teammateUsername;
@@ -161,4 +177,6 @@ private:
     void hidePileOverlay();
 };
 
-#endif // MPCOMBATPAGE_H
+
+
+#endif // MPCOMBATWINDOW_H

@@ -133,7 +133,8 @@ void MapPage::onCombatStarted()
     m_combatOpen = true;
 
     qDebug() << "Creating CombatPage for" << (m_isLeader ? "Leader" : "Teammate");
-    MPCombatWindow *combat = new MPCombatWindow(this, m_isLeader);    combat->setAttribute(Qt::WA_DeleteOnClose);
+    //MPCombatWindow *combat = new MPCombatWindow(this, m_isLeader);    combat->setAttribute(Qt::WA_DeleteOnClose);
+    MPCombatWindow *combat = new MPCombatWindow(nullptr, m_isLeader);
 
     this->hide();
 

@@ -253,7 +253,21 @@ void LargeSlime::chooseAction() {
 void LargeSlime::executeAction(Character* target) {
     if (currentIntent == IntentType::Combined) {
         hasSplited = true;
-        //incomplete
+        int remainingHp = this->hp;
+
+        MediumSlime* slime1 = new MediumSlime();
+        MediumSlime* slime2 = new MediumSlime();
+        slime1->setMaxHp(remainingHp);
+        slime1->setHp(remainingHp);
+        slime2->setMaxHp(remainingHp);
+        slime2->setHp(remainingHp);
+
+        if (battleManagerPtr) {
+            battleManagerPtr->spawnEnemy(slime1);
+            battleManagerPtr->spawnEnemy(slime2);
+            battleManagerPtr->removeEnemy(this);
+        }
+        return;
     }
     else {
         if (currentIntent == IntentType::Attack) {

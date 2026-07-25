@@ -2,6 +2,7 @@
 #include <algorithm>
 
 void BattleManager:: spawnEnemy(Enemy* newEnemy) {
+    newEnemy->setBattleManager(this);
     enemies.push_back(newEnemy);
 }
 
@@ -51,7 +52,8 @@ void BattleManager::enemyTurn() {
     player->applyTurnEndEffects();
     player->endTurnCleanUp();
 
-    for (Enemy* enemy : enemies) {
+    std::vector<Enemy*> enemiesSnapshot = enemies;
+    for (Enemy* enemy : enemiesSnapshot) {
         if (enemy->getHp() > 0) {
             enemy->executeAction(player);
             enemy->applyTurnEndEffects();

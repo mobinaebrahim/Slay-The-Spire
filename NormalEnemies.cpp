@@ -130,13 +130,13 @@ void Louse::executeAction(Character* target) {
 }
 
 int Louse::takeDamage(int incomingDamage) {
-    Enemy::takeDamage(incomingDamage);
-
+    int actualDamage = Character::takeDamage(incomingDamage);
     if (this->hp > 0 && !hasCurledUp) {
-        int randomBlock = 3 + (rand() % 5); 
+        int randomBlock = 3 + (rand() % 5);
         this->block += randomBlock;
-        hasCurledUp = true; 
+        hasCurledUp = true;
     }
+    return actualDamage;
 }
 
 //________________________________________SmallSlime_______________________________________

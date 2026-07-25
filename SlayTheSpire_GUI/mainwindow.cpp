@@ -417,7 +417,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new SphericGuardian());
+    battleManager->spawnEnemy(new Louse());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);

@@ -26,6 +26,9 @@ private:
 public:
     Player(string n, int h, int max, int en, int g, BattleManager* bm);
 
+    const vector<Card*>& getDrawPile() const { return drawPile; }
+    const vector<Card*>& getDiscardPile() const { return discardPile;}
+
     int getGold() const { return gold; }
     int getDrawPileSize() const { return drawPile.size(); }
     int getDiscardPileSize() const { return discardPile.size(); }

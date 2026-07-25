@@ -1,5 +1,7 @@
 #include "networkmanager.h"
+#include "usermanager.h"
 #include <QDebug>
+#include <QJsonDocument>
 
 NetworkManager& NetworkManager::instance()
 {
@@ -34,16 +36,26 @@ void NetworkManager::send_json(const QJsonObject &obj)
 
 void NetworkManager::create_room()
 {
+    m_isLeader = true;
+    // به‌جای تکیه بر m_username (که ممکنه هیچ‌جا set نشده باشه)،
+    // مستقیم از user_manager (همون سیستم لاگین) یوزرنیم واقعی رو می‌گیریم.
+    m_username = user_manager::instance().get_current_username();
+
     QJsonObject msg;
     msg["type"] = "create_room";
+    msg["username"] = m_username;
     send_json(msg);
 }
 
 void NetworkManager::join_room(const QString &room_code)
 {
+    m_isLeader = false;
+    m_username = user_manager::instance().get_current_username();
+
     QJsonObject msg;
     msg["type"] = "join_room";
     msg["room_code"] = room_code;
+    msg["username"] = m_username;
     send_json(msg);
 }
 

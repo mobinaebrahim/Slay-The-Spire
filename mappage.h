@@ -12,7 +12,7 @@
 #include "gamemap.h"
 #include "audiomanager.h"
 #include "networkmanager.h"
-#include "combatpage.h"
+#include "mpcombatwindow.h"
 
 class MapPage : public QWidget
 {
@@ -21,10 +21,14 @@ public:
     explicit MapPage(QWidget *parent = nullptr, bool isLeader = true);
     ~MapPage();
 
+private slots:
+    void onCombatStarted();
+
 private:
     MapView *m_mapView;
     GameMap *m_gameMap;
     bool m_isLeader = true;
+    bool m_combatOpen = false;
 
     void handleRoomEntered(MapNode *node);
 

@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new LargeSlime());
+    battleManager->spawnEnemy(new Thief("Mugger"));
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -880,7 +880,10 @@ void MainWindow::checkGameOver() {
         disableAllCards();
         enemyTurnQueue.clear();
         enemyTurnQueueIndex = 0;
-        showGameOverText("VICTORY", QColor("#f5c518"));
+        if (battleManager->getAnyEnemyDied())
+            showGameOverText("VICTORY", QColor("#f5c518"));
+        else
+            showGameOverText("ESCAPED", QColor("#8a8a8a"));
         return;
     }
 }

@@ -1,4 +1,5 @@
 #include "BattleManager.h"
+#include "NormalEnemies.h"
 #include <algorithm>
 
 void BattleManager:: spawnEnemy(Enemy* newEnemy) {
@@ -57,6 +58,8 @@ void BattleManager::enemyTurn() {
         if (enemy->getHp() > 0) {
             enemy->executeAction(player);
             enemy->applyTurnEndEffects();
+            if (enemy->wantsToFlee())
+                removeEnemy(enemy);
         }
     }
     playerTurn();
@@ -66,8 +69,13 @@ void BattleManager::playCardAction(Card* card, Enemy* target) {
     if (!isPlayerTurn) 
         return;
     player->playCard(card, target);
-    if (target && target->getHp() <= 0) 
+    if (target && target->getHp() <= 0) {
+        anyEnemyDiedThisCombat = true;
+        Thief* thief = dynamic_cast<Thief*>(target);
+        if (thief && thief->getStolenGold() > 0)
+            player->increaseGold(thief->getStolenGold());
         removeEnemy(target);
+    }
 }
 
 void BattleManager::startCombat() {
@@ -94,6 +102,8 @@ void BattleManager::processSingleEnemyTurn(Enemy* enemy) {
     if (enemy->getHp() > 0) {
         enemy->executeAction(player);
         enemy->applyTurnEndEffects();
+        if (enemy->wantsToFlee())
+            removeEnemy(enemy);
     }
 }
 

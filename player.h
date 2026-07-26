@@ -59,6 +59,7 @@ public:
     void addCardToDrawPile(Card* card);
     void addCardToDiscardPile(Card* card);
     void loseGold(int amount);
+    void increaseGold(int amount);
     void playCard(Card* card, Character* target);
     int countCardsByName(string name);
     bool isHandAllAttacks();

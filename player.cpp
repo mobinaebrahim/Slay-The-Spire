@@ -153,6 +153,10 @@ void Player::loseGold(int amount) {
         gold = 0; 
 }
 
+void Player::increaseGold(int amount) {
+    gold += amount;
+}
+
 void Player::playCard(Card* card, Character* target) {
 
     if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 

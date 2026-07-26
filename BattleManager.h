@@ -14,6 +14,7 @@ private:
     vector<Enemy*> enemies;
     Player* player;
     bool isPlayerTurn;
+    bool anyEnemyDiedThisCombat = false;
 public:
     BattleManager() : player(nullptr), isPlayerTurn(true) {}
 
@@ -27,6 +28,7 @@ public:
     void playCardAction(Card* card, Enemy* target);
     void dealDamageToAllEnemies(int damage);
     int GetTotalDamageToAllEnemies(int damage);
+    bool getAnyEnemyDied() const { return anyEnemyDiedThisCombat; }
 
     void beginEnemyTurnPhase();
     void processSingleEnemyTurn(Enemy* enemy);

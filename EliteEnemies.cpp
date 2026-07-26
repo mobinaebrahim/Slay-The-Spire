@@ -1,4 +1,5 @@
 #include "EliteEnemies.h"
+#include "BattleManager.h"
 
 //_______________________________________GremlinKnob_______________________________________
 GremlinKnob::GremlinKnob() : Enemy("GremlinKnob", 82, 86) {
@@ -40,7 +41,7 @@ void GremlinKnob::executeAction(Character* target) {
 
 //______________________________________ThreeSentries______________________________________
 ThreeSentries::ThreeSentries(string name, int minHp, int maxHp) : Enemy("ThreeSentries", 38, 42) {
-    int hp = 38 + (rand() % 4);
+    int hp = minHp + (rand() % (maxHp - minHp + 1));
     this->hp = hp;
     this->maxHp = hp;
 }
@@ -75,6 +76,13 @@ MiddleSentry::MiddleSentry() : ThreeSentries("MiddleSentry", 38, 42) {
 SideSentry::SideSentry() : ThreeSentries("SideSentry", 38, 42) {
     isNextMoveBeam = false; 
     chooseAction();
+}
+
+void ThreeSentries::spawnGroup(BattleManager* bm) {
+    if (!bm) return;
+    bm->spawnEnemy(new SideSentry());
+    bm->spawnEnemy(new MiddleSentry());
+    bm->spawnEnemy(new SideSentry());
 }
 
 //______________________________________BookOfStabbing_____________________________________

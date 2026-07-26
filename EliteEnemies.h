@@ -24,6 +24,7 @@ public:
     ThreeSentries(string name, int minHp, int maxHp);
     void chooseAction() override;
     void executeAction(Character* target) override;
+    static void spawnGroup(BattleManager* bm);
 };
 
 class MiddleSentry : public ThreeSentries {

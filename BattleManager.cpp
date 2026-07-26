@@ -17,6 +17,12 @@ void BattleManager::removeEnemy(Enemy* enemy) {
 }
 
 void BattleManager::cleanupDeadEnemies() {
+    for (Enemy* e : enemies) {
+        if (e->getHp() <= 0) {
+            if (std::find(enemiesToRemove.begin(), enemiesToRemove.end(), e) == enemiesToRemove.end())
+                enemiesToRemove.push_back(e);
+        }
+    }
     for (Enemy* enemy : enemiesToRemove) {
         auto it = std::find(enemies.begin(), enemies.end(), enemy);
         if (it != enemies.end()) {

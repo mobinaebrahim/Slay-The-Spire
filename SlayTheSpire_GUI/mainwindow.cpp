@@ -382,7 +382,8 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new BlueSlaver());
+    //battleManager->spawnEnemy(new ThreeSentries());
+    ThreeSentries::spawnGroup(battleManager);
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -460,7 +461,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     playerHitOverlay->setGeometry(currentStartX + 30, basePlayerY, playerW, playerH);
 
     int playerSpriteCenterY = basePlayerY + playerH / 2;
-    int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 70;
+    int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 75;
 
     int enemyAreaH = 320;
     int enemyContainerTop = playerSpriteCenterY - spriteCenterOffsetInWrapper;
@@ -695,7 +696,7 @@ void MainWindow::updateCharacterUI() {
         Enemy* enemy = slot.enemy;
         QString enemyName = QString::fromStdString(enemy->getName());
 
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(230, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         slot.nameLabel->setText(enemyName);
 
         slot.hpBar->setMaximum(enemy->getMaxHp());
@@ -758,7 +759,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.enemy = enemy;
 
         slot.wrapper = new QWidget(enemyAreaContainer);
-        slot.wrapper->setFixedWidth(200);
+        slot.wrapper->setFixedWidth(230);
         QVBoxLayout* vbox = new QVBoxLayout(slot.wrapper);
         vbox->setContentsMargins(6, 0, 6, 0);
         vbox->setSpacing(4);
@@ -766,7 +767,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.nameLabel = new QLabel(slot.wrapper);
         slot.nameLabel->setAlignment(Qt::AlignCenter);
         slot.nameLabel->setFixedHeight(20);
-        slot.nameLabel->setFixedWidth(150);
+        slot.nameLabel->setFixedWidth(210);
         slot.nameLabel->setStyleSheet(
             "color: white; font-weight: bold; font-size: 13px; "
             "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
@@ -774,16 +775,16 @@ void MainWindow::rebuildEnemyUI() {
         slot.intentLabel = new QLabel(slot.wrapper);
         slot.intentLabel->setAlignment(Qt::AlignCenter);
         slot.intentLabel->setFixedHeight(26);
-        slot.intentLabel->setFixedWidth(150);
+        slot.intentLabel->setFixedWidth(210);
         slot.intentLabel->setStyleSheet(
             "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
             "padding: 3px; font-weight: bold;");
 
         slot.sprite = new QLabel(slot.wrapper);
-        slot.sprite->setFixedSize(180, 180);
+        slot.sprite->setFixedSize(230, 200);
         slot.sprite->setAlignment(Qt::AlignCenter);
         slot.sprite->setScaledContents(true);
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(230, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         slot.blockBadge = new QLabel(slot.sprite);
         slot.blockBadge->setFixedSize(28, 28);
@@ -797,7 +798,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.hpBar = new QProgressBar(slot.wrapper);
         slot.hpBar->setTextVisible(true);
         slot.hpBar->setFixedHeight(20);
-        slot.hpBar->setFixedWidth(150);
+        slot.hpBar->setFixedWidth(210);
         slot.hpBar->setStyleSheet(playerHpBar->styleSheet());
 
         slot.statusRow = new QWidget(slot.wrapper);

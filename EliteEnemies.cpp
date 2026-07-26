@@ -140,3 +140,10 @@ void Taskmaster::executeAction(Character* target) {
 
     chooseAction();
 }
+
+void Taskmaster::spawnGroup(BattleManager* bm) {
+    if (!bm) return;
+    bm->spawnEnemy(new Taskmaster());
+    bm->spawnEnemy(new BlueSlaver());
+    bm->spawnEnemy(new RedSlaver());
+}

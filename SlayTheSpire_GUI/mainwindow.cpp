@@ -382,8 +382,8 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new BookOfStabbing());
-    //ThreeSentries::spawnGroup(battleManager);
+    //battleManager->spawnEnemy(new Taskmaster());
+    Taskmaster::spawnGroup(battleManager);
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);

@@ -5,9 +5,12 @@
 #include "enemy.h"
 #include "player.h"
 #include "StatusCard.h"
+#include "NormalEnemies.h"
 #include <string>
 #include <vector>
 using namespace std;
+
+class BattleManager;
 
 class GremlinKnob : public Enemy {
 public:
@@ -51,6 +54,7 @@ public:
     Taskmaster();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    static void spawnGroup(BattleManager* bm);
 };
 
 #endif

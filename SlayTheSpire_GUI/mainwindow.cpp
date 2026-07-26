@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new Hexaghost());
+    battleManager->spawnEnemy(new TheChamp());
     //Taskmaster::spawnGroup(battleManager);
     initializePlayerDeck(15);
     setupShortcuts();
@@ -1253,7 +1253,7 @@ void MainWindow::updateStatusEffectRow(QWidget* rowWidget, Character* character)
         int amount = effect->getAmount();
 
         QLabel* badge = new QLabel(rowWidget);
-        badge->setFixedSize(90, 26);
+        badge->setFixedSize(60, 26);
         badge->setAlignment(Qt::AlignCenter);
         badge->setText(QString("%1 %2").arg(name).arg(amount));
         badge->setStyleSheet(QString("background-color: %1; color: white; border-radius: 6px; "

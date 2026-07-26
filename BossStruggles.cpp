@@ -146,22 +146,32 @@ TheChamp::TheChamp() : Enemy("TheChamp", 150, 150), isTauntTurn(false) {
     int randomHp = 150 + (rand() % 101);
     this->hp = randomHp;
     this->maxHp = randomHp;
+    chooseAction();
 }
 
 void TheChamp::chooseAction() {
     int randVal = rand() % 100;
-
-    if (isTauntTurn) 
+    if (isTauntTurn) {
         currentIntent = IntentType::Debuff;
+        intentValue = 2;
+    }
     else {
-        if(randVal <= 15)
+        if (randVal <= 15) {
             currentIntent = IntentType::Special;
-        if(randVal > 15 && randVal <= 30)
+            intentValue = 15;
+        }
+        else if (randVal <= 30) {
             currentIntent = IntentType::Buff;
-        if(randVal > 30 && randVal <= 55)
-            currentIntent = IntentType::Combined;
-        else
+            intentValue = 2;
+        }
+        else if (randVal <= 55) {
+            currentIntent = IntentType::AttackDebuff;
+            intentValue = 12;
+        }
+        else {
             currentIntent = IntentType::Attack;
+            intentValue = 16;
+        }
     }
 }
 
@@ -174,14 +184,13 @@ void TheChamp::executeAction(Character* target) {
         this->addBlock(15);
         this->applyStatus(new MetallicizeEffect(5));
     }
-    else if (currentIntent == IntentType::Combined) {
+    else if (currentIntent == IntentType::AttackDebuff) {
         target->takeDamage(calculateOutgoingDamage(12));
         target->applyStatus(new FrailEffect(2));
         target->applyStatus(new VulnerableEffect(2));
     }
     else if (currentIntent == IntentType::Attack) {
-        target->takeDamage(calculateOutgoingDamage(8));
-        target->takeDamage(calculateOutgoingDamage(8));
+        target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else {
         this->applyStatus(new StrengthEffect(2));

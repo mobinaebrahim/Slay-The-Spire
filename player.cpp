@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "BattleManager.h"
+#include "StatusCard.h"
 #include <algorithm>
 #include <random>
 #include <chrono>
@@ -226,4 +227,17 @@ vector<Card*> Player::getFullDeck() const {
     full.insert(full.end(), hand.begin(), hand.end());
     full.insert(full.end(), exhaustPile.begin(), exhaustPile.end());
     return full;
+}
+
+void Player::upgradeAllBurns() {
+    auto upgradeBurnsIn = [](std::vector<Card*>& pile) {
+        for (Card* card : pile) {
+            if (dynamic_cast<BurnCard*>(card))
+                card->upgrade();
+        }
+    };
+    upgradeBurnsIn(hand);
+    upgradeBurnsIn(drawPile);
+    upgradeBurnsIn(discardPile);
+    upgradeBurnsIn(exhaustPile);
 }

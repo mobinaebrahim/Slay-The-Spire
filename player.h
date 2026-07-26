@@ -63,6 +63,7 @@ public:
     void playCard(Card* card, Character* target);
     int countCardsByName(string name);
     bool isHandAllAttacks();
+    void upgradeAllBurns();
 };
 
 #endif

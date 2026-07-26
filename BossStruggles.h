@@ -30,6 +30,7 @@ public:
     Hexaghost();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    bool isDividerTurn() const { return turnCount == 2; }
 };
 
 class TheChamp : public Enemy {

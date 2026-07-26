@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new KingSlime(battleManager));
+    battleManager->spawnEnemy(new Hexaghost());
     //Taskmaster::spawnGroup(battleManager);
     initializePlayerDeck(15);
     setupShortcuts();
@@ -496,8 +496,10 @@ void MainWindow::on_EndTurnButton_clicked()
 
     const auto& hand = playerObject->getHand();
     for (Card* card : hand) {
-        if (card && card->getName() == "Burn")
-            playerObject->decreaseHp(2);
+        if (card && card->getName() == "Burn") {
+            int dmg = card->getIsUpgraded() ? 4 : 2;
+            playerObject->decreaseHp(dmg);
+        }
     }
 
     checkGameOver();
@@ -642,6 +644,11 @@ void MainWindow::initializePlayerDeck(int totalCards) {
 }
 
 static QString intentToShortText(Enemy* enemy) {
+
+    Hexaghost* hexa = dynamic_cast<Hexaghost*>(enemy);
+    if (hexa && hexa->isDividerTurn())
+        return "🔥 Divider";
+
     switch (enemy->getIntentType()) {
     case IntentType::Attack:   return "⚔ " + QString::number(enemy->getIntentValue());
     case IntentType::Defend:   return "🛡 Block";
@@ -926,6 +933,20 @@ void MainWindow::showGameOverText(const QString& text, const QColor& color) {
 void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
     if (!enemy) { customTooltipBox->hide(); return; }
 
+    Hexaghost* hexa = dynamic_cast<Hexaghost*>(enemy);
+    if (hexa && hexa->isDividerTurn()) {
+        customTooltipBox->setText(
+            "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>Divider</div>"
+            "<div>This enemy intends to unleash the <b>Divider</b> attack.</div>");
+        customTooltipBox->adjustSize();
+        QWidget* anchor = anchorWidget ? anchorWidget : this;
+        QPoint anchorPos = anchor->mapTo(this, QPoint(0, 0));
+        customTooltipBox->move(anchorPos.x() - customTooltipBox->width() - 20, anchorPos.y() + 40);
+        customTooltipBox->show();
+        customTooltipBox->raise();
+        return;
+    }
+
     QString title, desc;
     switch (enemy->getIntentType()) {
     case IntentType::Attack:
@@ -949,6 +970,7 @@ void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
         desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
         "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.").arg(enemy->getIntentValue());
         break;
+
     case IntentType::Special:
         title = "Special";
         desc = "This enemy intends to do something special.";

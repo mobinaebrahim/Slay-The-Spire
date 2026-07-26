@@ -27,6 +27,7 @@ public:
 	virtual bool isPlayable() const; 
 	virtual void upgrade();
     virtual string getUnplayableReason(Character* caster) const { return ""; }
+    bool getIsUpgraded() const { return isUpgraded; }
 };
 
 #endif

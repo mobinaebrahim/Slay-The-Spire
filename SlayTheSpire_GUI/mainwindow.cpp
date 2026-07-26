@@ -382,7 +382,7 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new Thief("Mugger"));
+    battleManager->spawnEnemy(new BlueSlaver());
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -960,7 +960,7 @@ void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
     case IntentType::AttackDebuff:
         title = "Attack + Add a card";
         desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
-        "and <b><span style='color:#c07af0;'>weaken</span></b> you.");
+        "and <b><span style='color:#c07af0;'>weaken</span></b> you.").arg(enemy->getIntentValue());
         break;
     }
 

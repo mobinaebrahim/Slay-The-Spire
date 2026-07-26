@@ -27,15 +27,15 @@ int DexterityEffect::modifyBlock(int baseBlock) { return baseBlock + amount; }
 VulnerableEffect::VulnerableEffect(int turns) : StatusEffect("Vulnerable", turns) {}
 
 int VulnerableEffect::modifyIncomingDamage(int baseDamage) {
-    if (amount > 0) 
-        return baseDamage * 1.5; 
+    if (amount > 0) {
+        int result = baseDamage * 1.5;
+        amount--;
+        return result;
+    }
     return baseDamage;
 }
 
-void VulnerableEffect::onTurnEnd(Character* owner) {
-    if (amount > 0)
-        amount--;
-}
+void VulnerableEffect::onTurnEnd(Character* owner) {}
 
 //________________________________________WeakEffect________________________________________
 WeakEffect::WeakEffect(int turns) : StatusEffect("Weak", turns) {}

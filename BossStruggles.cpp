@@ -36,10 +36,19 @@ void KingSlime::executeAction(Character* target) {
 int KingSlime::takeDamage(int amount) {
     int actualDamage = Enemy::takeDamage(amount);
 
-    if (this->hp <= (this->maxHp / 2) && !hasSplit) {
+    if (this->hp > 0 && this->hp <= (this->maxHp / 2) && !hasSplit) {
         hasSplit = true;
-        myManager->spawnEnemy(new LargeSlime());
-        myManager->spawnEnemy(new LargeSlime());
+        int remainingHp = this->hp;
+
+        LargeSlime* slime1 = new LargeSlime();
+        LargeSlime* slime2 = new LargeSlime();
+        slime1->setMaxHp(remainingHp);
+        slime1->setHp(remainingHp);
+        slime2->setMaxHp(remainingHp);
+        slime2->setHp(remainingHp);
+
+        myManager->spawnEnemy(slime1);
+        myManager->spawnEnemy(slime2);
         myManager->removeEnemy(this);
     }
     return actualDamage;

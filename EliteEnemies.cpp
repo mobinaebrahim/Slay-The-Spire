@@ -99,7 +99,7 @@ void BookOfStabbing::chooseAction() {
 
     if (randVal < 85) {
         currentIntent = IntentType::Attack;
-        intentValue = stabCount + 2;
+        intentValue = 6 * (stabCount + 2);
     }
     else {
         currentIntent = IntentType::Attack;
@@ -112,8 +112,7 @@ void BookOfStabbing::executeAction(Character* target) {
         target->takeDamage(calculateOutgoingDamage(21));
     }
     else {
-        for (int i = 0; i < intentValue; i++) 
-            target->takeDamage(calculateOutgoingDamage(6)); 
+        target->takeDamage(calculateOutgoingDamage(intentValue));
         stabCount++;
     }
     chooseAction();

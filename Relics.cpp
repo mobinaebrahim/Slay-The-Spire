@@ -4,6 +4,7 @@
 #include "card.h"
 #include "StatusEffect.h"
 #include "StatusCard.h"
+#include "CurseCard.h"
 #include <cstdlib>
 
 //_________________________________ Relic (base) _________________________________
@@ -64,3 +65,40 @@ void Kunai::onTurnStart(Player* owner, BattleManager* bm) {
 //_______________________________ PreservedInsect ________________________________
 PreservedInsect::PreservedInsect() : Relic("Preserved Insect", "Elites start with 25% less HP.") {}
 // will complete in BattleManager::spawnEnemy 
+
+//_________________________________ CallingBell __________________________________
+CallingBell::CallingBell() : Relic("Calling Bell", "Obtain the Curse of the Bell and 3 random normal relics.") {}
+void CallingBell::onObtain(Player* owner) {
+    if (!owner)
+        return;
+    owner->addCardToDrawPile(new CurseOfBellCard());
+    // incomplete
+}
+
+//__________________________________ MarkOfPain __________________________________
+MarkOfPain::MarkOfPain() : Relic("Mark of Pain", "Gain 1 extra energy per turn. Start combat with 2 Wounds in draw pile.") {}
+void MarkOfPain::onTurnStart(Player* owner, BattleManager* bm) {
+    if (owner)
+        owner->increaseEnergy(1);
+}
+void MarkOfPain::onCombatStart(Player* owner, BattleManager* bm) {
+    if (owner) {
+        owner->addCardToDrawPile(new WoundCard());
+        owner->addCardToDrawPile(new WoundCard());
+    }
+}
+
+//_________________________________ VelvetChoker _________________________________
+VelvetChoker::VelvetChoker() : Relic("Velvet Choker", "Gain 1 extra energy per turn. Cannot play more than 6 cards per turn.") {}
+void VelvetChoker::onTurnStart(Player* owner, BattleManager* bm) {
+    if (owner)
+        owner->increaseEnergy(1);
+    //incomplete
+}
+
+//_________________________________ SlaversCollar ________________________________
+SlaversCollar::SlaversCollar() : Relic("Slaver's Collar", "During Boss and Elite combats, gain 1 Energy at the start of your turn.") {}
+void SlaversCollar::onTurnStart(Player* owner, BattleManager* bm) {
+    //if (owner && bm && bm->isBossOrEliteCombat())
+    //    owner->increaseEnergy(1);
+}

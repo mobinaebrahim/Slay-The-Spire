@@ -74,4 +74,30 @@ public:
     PreservedInsect();
 };
 
+//__________________________________ Boss ___________________________________
+class CallingBell : public Relic {
+public:
+    CallingBell();
+    void onObtain(Player* owner) override;
+};
+
+class MarkOfPain : public Relic {
+public:
+    MarkOfPain();
+    void onTurnStart(Player* owner, BattleManager* bm) override;
+    void onCombatStart(Player* owner, BattleManager* bm) override;
+};
+
+class VelvetChoker : public Relic {
+public:
+    VelvetChoker();
+    void onTurnStart(Player* owner, BattleManager* bm) override;
+};
+
+class SlaversCollar : public Relic {
+public:
+    SlaversCollar();
+    void onTurnStart(Player* owner, BattleManager* bm) override;
+};
+
 #endif

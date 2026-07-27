@@ -34,7 +34,6 @@
 #include "cardfactory.h"
 #include "usermanager.h"
 
-
 MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
                        int initialGold, const std::vector<std::string>& deckNames,
                        CombatType combatType)
@@ -48,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     QString playerName = user_manager::instance().get_current_username();
     if (playerName.isEmpty())
-        playerName = "Dina";
+        playerName = "player";
 
     playerObject = new Player(playerName.toStdString(), maxHp, initialHp, 3, initialGold, battleManager);
     battleManager->setPlayer(playerObject);
@@ -529,6 +528,11 @@ void MainWindow::checkGameOver() {
         enemyTurnQueue.clear();
         enemyTurnQueueIndex = 0;
         showGameOverText("DEFEAT", QColor("#c0392b"));
+
+        QTimer::singleShot(2500, this, [this]() {
+            emit combatFinished(false, playerObject->getHp(), playerObject->getMaxHp());
+            close();
+        });
         return;
     }
 
@@ -538,10 +542,16 @@ void MainWindow::checkGameOver() {
         disableAllCards();
         enemyTurnQueue.clear();
         enemyTurnQueueIndex = 0;
-        if (battleManager->getAnyEnemyDied())
+        bool won = battleManager->getAnyEnemyDied();
+        if (won)
             showGameOverText("VICTORY", QColor("#f5c518"));
         else
             showGameOverText("ESCAPED", QColor("#8a8a8a"));
+
+        QTimer::singleShot(2500, this, [this, won]() {
+            emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp());
+            close();
+        });
         return;
     }
 }

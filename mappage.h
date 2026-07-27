@@ -20,10 +20,6 @@ class MapPage : public QWidget
 {
     Q_OBJECT
 public:
-    // savedMapData: اگه خالی نباشه، یعنی داریم یه سیوی قبلی رو ادامه می‌دیم
-    // (به‌جای generate() یه نقشه‌ی تازه، از روی این JSON بازسازی می‌کنیم).
-    // existingSaveId: اگه >= 0 باشه، همون ردیف تو دیتابیس آپدیت می‌شه؛
-    // اگه -1 باشه (بازی تک‌نفره‌ی جدید)، یه سیوی تازه ساخته می‌شه.
     explicit MapPage(QWidget *parent = nullptr, bool isLeader = true, bool isMultiplayer = true,
                      int existingSaveId = -1, const QJsonObject &savedMapData = QJsonObject());
     ~MapPage();
@@ -38,6 +34,8 @@ private:
     bool m_isMultiplayer = true;
     bool m_combatOpen = false;
     int m_saveId = -1;
+    int m_playerHp = 80;
+    int m_playerMaxHp = 80;
 
     void persistProgress();
 

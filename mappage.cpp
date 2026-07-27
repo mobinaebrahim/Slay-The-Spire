@@ -21,17 +21,13 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
 
     if (m_isLeader) {
         if (!m_isMultiplayer && !savedMapData.isEmpty()) {
-            // ادامه‌ی یه بازی تک‌نفره‌ی ذخیره‌شده: نقشه رو از روی
-            // JSON بازسازی می‌کنیم (نه generate تازه)، پس پیشرفت
-            // (اتاق‌های visited/available و موقعیت فعلی) حفظ می‌شه.
+
             m_gameMap->fromJson(savedMapData);
         } else {
             m_gameMap->generate();
             m_gameMap->startRun();
 
             if (!m_isMultiplayer) {
-                // بازی تک‌نفره‌ی کاملاً جدید: همین الان یه ردیف سیو بساز
-                // تا از همین اول یه id معتبر برای آپدیت‌های بعدی داشته باشیم.
                 QString currentUser = user_manager::instance().get_current_username();
                 m_saveId = SaveManager::instance().create_save(
                     currentUser, "Autosave", "IronClad", 0, 0, m_gameMap->toJson());
@@ -52,7 +48,6 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
     }
 
     if (!m_isMultiplayer) {
-        // بازی تک‌نفره: هیچ listener شبکه‌ای لازم نیست.
     } else {
         connect(&NetworkManager::instance(), &NetworkManager::game_action_received, this,
                 [this](const QJsonObject &obj){
@@ -114,7 +109,6 @@ void MapPage::sendMapData()
 
 void MapPage::persistProgress()
 {
-    // فقط بازی تک‌نفره سیو می‌شه؛ Multiplayer فعلاً مفهوم Save/Continue نداره.
     if (m_isMultiplayer || m_saveId < 0) return;
 
     int floor = m_gameMap->currentNode() ? m_gameMap->currentNode()->floor() : 0;
@@ -222,15 +216,29 @@ void MapPage::openCombat(MapNode *node)
     qDebug() << "openCombat called, isLeader=" << m_isLeader << "isMultiplayer=" << m_isMultiplayer;
 
     if (!m_isMultiplayer) {
-        // بازی تک‌نفره: صفحه‌ی نبرد محلی دوستمون (MainWindow) رو مستقیم
-        // باز می‌کنیم — هیچ پیامی به سرور فرستاده نمی‌شه.
-        MainWindow *combatWindow = new MainWindow(nullptr);
-        combatWindow->setAttribute(Qt::WA_DeleteOnClose);
+        m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
 
+        MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp);
+        combatWindow->setAttribute(Qt::WA_DeleteOnClose);
         this->hide();
 
-        connect(combatWindow, &QObject::destroyed, this, [this](){
-            this->show();
+        connect(combatWindow, &MainWindow::combatFinished, this,
+                [this](bool victory, int finalHp, int maxHp) {
+                    if (victory) {
+                        m_playerHp = finalHp;
+                        m_playerMaxHp = maxHp;
+                    } else {
+                        m_playerHp = 0;
+                    }
+                });
+
+        connect(combatWindow, &QObject::destroyed, this, [this]() {
+            if (m_playerHp <= 0) {
+                this->close();
+            } else {
+                this->show();
+                m_mapView->buildScene(m_gameMap);
+            }
         });
 
         combatWindow->showFullScreen();
@@ -238,14 +246,12 @@ void MapPage::openCombat(MapNode *node)
     }
 
     if (m_isLeader) {
-        // Leader sends start_combat to server
         QJsonObject msg;
         msg["type"] = "start_combat";
-        msg["enemy_name"] = "JawWorm"; // TODO: based on node
+        msg["enemy_name"] = "JawWorm";
         NetworkManager::instance().send_game_action(msg);
-        // MPCombatWindow will be opened when combat_started is received
     }
-    // Teammate waits for combat_started from server
+
 }
 
 void MapPage::openElite(MapNode *node)

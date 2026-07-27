@@ -51,7 +51,6 @@ public:
 signals:
     void combatFinished(bool victory, int currentHp, int maxHp);
 
-
 private slots:
     void on_EndTurnButton_clicked();
 

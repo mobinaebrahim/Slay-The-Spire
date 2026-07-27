@@ -19,18 +19,54 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
     layout->addWidget(m_mapView);
     setLayout(layout);
 
+    // --- Top HUD (HP / Gold / Deck) ---
+    buildHud();
+
+    // --- Parse save data ---
+    QJsonObject mapJson;
+    QJsonObject playerJson;
+
+    if (!savedMapData.isEmpty()) {
+        if (savedMapData.contains("map")) {
+            // new format: { "map": {...}, "player": {...} }
+            mapJson = savedMapData["map"].toObject();
+            playerJson = savedMapData["player"].toObject();
+        } else {
+            // old format (backward compat): just the map JSON
+            mapJson = savedMapData;
+        }
+    }
+
     if (m_isLeader) {
         if (!m_isMultiplayer && !savedMapData.isEmpty()) {
+            // continuing a single-player save
+            m_gameMap->fromJson(mapJson);
 
-            m_gameMap->fromJson(savedMapData);
+            m_playerHp    = playerJson["hp"].toInt(80);
+            m_playerMaxHp = playerJson["max_hp"].toInt(80);
+            m_playerGold  = playerJson["gold"].toInt(99);
+
+            QJsonArray deckArr = playerJson["deck"].toArray();
+            for (const QJsonValue &v : deckArr)
+                m_deckNames.push_back(v.toString().toStdString());
         } else {
             m_gameMap->generate();
             m_gameMap->startRun();
 
             if (!m_isMultiplayer) {
                 QString currentUser = user_manager::instance().get_current_username();
+
+                QJsonObject fullSave;
+                fullSave["map"] = m_gameMap->toJson();
+
+                QJsonObject playerObj;
+                playerObj["hp"] = m_playerHp;
+                playerObj["max_hp"] = m_playerMaxHp;
+                playerObj["gold"] = m_playerGold;
+                fullSave["player"] = playerObj;
+
                 m_saveId = SaveManager::instance().create_save(
-                    currentUser, "Autosave", "IronClad", 0, 0, m_gameMap->toJson());
+                    currentUser, "Autosave", "IronClad", 0, 0, fullSave);
             }
         }
 
@@ -46,6 +82,8 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
             });
         }
     }
+
+    updateHud();
 
     if (!m_isMultiplayer) {
     } else {
@@ -107,12 +145,105 @@ void MapPage::sendMapData()
     NetworkManager::instance().send_game_action(msg);
 }
 
+void MapPage::buildHud()
+{
+    m_topHud = new QWidget(this);
+    m_topHud->setFixedHeight(48);
+    m_topHud->setStyleSheet(
+        "background-color: rgba(30, 20, 15, 220); "
+        "border-bottom: 2px solid rgba(255, 215, 130, 60);"
+        );
+
+    QHBoxLayout* hudLayout = new QHBoxLayout(m_topHud);
+    hudLayout->setContentsMargins(12, 4, 12, 4);
+    hudLayout->setSpacing(8);
+
+    QLabel* hpIcon = new QLabel(m_topHud);
+    hpIcon->setPixmap(QPixmap(":/assets/icons/hp.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    hpIcon->setFixedSize(32, 32);
+
+    m_hpBar = new QProgressBar(m_topHud);
+    m_hpBar->setRange(0, m_playerMaxHp);
+    m_hpBar->setValue(m_playerHp);
+    m_hpBar->setTextVisible(true);
+    m_hpBar->setFixedSize(140, 20);
+    m_hpBar->setStyleSheet(
+        "QProgressBar { border: 2px solid #3a1f1f; border-radius: 6px; "
+        "background: #2b1414; color: white; font-weight: bold; text-align: center; }"
+        "QProgressBar::chunk { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:0, "
+        "stop:0 #8e0e0e, stop:1 #d94040); border-radius: 4px; }"
+        );
+
+    m_hpLabel = new QLabel(m_topHud);
+    m_hpLabel->setStyleSheet("color: white; font-weight: bold; font-size: 13px; background: transparent;");
+
+    hudLayout->addWidget(hpIcon);
+    hudLayout->addWidget(m_hpBar);
+    hudLayout->addWidget(m_hpLabel);
+    hudLayout->addStretch();
+
+    QLabel* goldIcon = new QLabel(m_topHud);
+    goldIcon->setPixmap(QPixmap(":/assets/icons/gold.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    goldIcon->setFixedSize(32, 32);
+
+    m_goldLabel = new QLabel(m_topHud);
+    m_goldLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
+
+    hudLayout->addWidget(goldIcon);
+    hudLayout->addWidget(m_goldLabel);
+    hudLayout->addSpacing(12);
+
+    QLabel* deckIcon = new QLabel(m_topHud);
+    deckIcon->setPixmap(QPixmap(":/assets/icons/deck.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    deckIcon->setFixedSize(32, 32);
+
+    m_deckLabel = new QLabel(m_topHud);
+    m_deckLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
+
+    hudLayout->addWidget(deckIcon);
+    hudLayout->addWidget(m_deckLabel);
+
+    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(this->layout());
+    if (mainLayout) {
+        mainLayout->insertWidget(0, m_topHud);
+    }
+}
+
+void MapPage::updateHud()
+{
+    m_hpBar->setMaximum(m_playerMaxHp);
+    m_hpBar->setValue(m_playerHp);
+    m_hpBar->setFormat(QString("%1 / %2").arg(m_playerHp).arg(m_playerMaxHp));
+    m_hpLabel->setText(QString("%1/%2").arg(m_playerHp).arg(m_playerMaxHp));
+
+    m_goldLabel->setText(QString::number(m_playerGold));
+
+    int deckCount = m_deckNames.empty() ? 15 : static_cast<int>(m_deckNames.size());
+    m_deckLabel->setText(QString::number(deckCount));
+}
+
 void MapPage::persistProgress()
 {
     if (m_isMultiplayer || m_saveId < 0) return;
 
     int floor = m_gameMap->currentNode() ? m_gameMap->currentNode()->floor() : 0;
-    SaveManager::instance().update_save(m_saveId, 0, floor, m_gameMap->toJson());
+
+    QJsonObject fullSave;
+    fullSave["map"] = m_gameMap->toJson();
+
+    QJsonObject playerObj;
+    playerObj["hp"] = m_playerHp;
+    playerObj["max_hp"] = m_playerMaxHp;
+    playerObj["gold"] = m_playerGold;
+
+    QJsonArray deckArr;
+    for (const auto &name : m_deckNames)
+        deckArr.append(QString::fromStdString(name));
+    playerObj["deck"] = deckArr;
+
+    fullSave["player"] = playerObj;
+
+    SaveManager::instance().update_save(m_saveId, 0, floor, fullSave);
 }
 
 void MapPage::handleIncomingRoomSelected(int floor, int index)
@@ -205,22 +336,49 @@ void MapPage::handleIncomingMapData(const QJsonObject &mapJson)
     });
 }
 
-void MapPage::updateHud()
-{
-    m_hpBar->setMaximum(m_playerMaxHp);
-    m_hpBar->setValue(m_playerHp);
-    m_hpBar->setFormat(QString("%1 / %2").arg(m_playerHp).arg(m_playerMaxHp));
-    m_hpLabel->setText(QString("%1/%2").arg(m_playerHp).arg(m_playerMaxHp));
-
-    m_goldLabel->setText(QString::number(m_playerGold));
-
-    int deckCount = m_deckNames.empty() ? 15 : static_cast<int>(m_deckNames.size());
-    m_deckLabel->setText(QString::number(deckCount));
-}
-
 void MapPage::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
+}
+
+void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
+{
+    Q_UNUSED(node); // later you can pick a different enemy set based on room/floor
+
+    // entering a new room -> +5 HP (capped at max)
+    m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
+    updateHud();
+
+    MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
+                                              m_playerGold, m_deckNames, type);
+    combatWindow->setAttribute(Qt::WA_DeleteOnClose);
+    this->hide();
+
+    connect(combatWindow, &MainWindow::combatFinished, this,
+            [this](bool victory, int finalHp, int maxHp,
+                   int finalGold, const std::vector<std::string>& finalDeck) {
+                if (victory) {
+                    m_playerHp    = finalHp;
+                    m_playerMaxHp = maxHp;
+                    m_playerGold  = finalGold;
+                    m_deckNames   = finalDeck;
+                    updateHud();
+                    persistProgress(); // auto-save after every victory
+                } else {
+                    m_playerHp = 0; // dead
+                }
+            });
+
+    connect(combatWindow, &QObject::destroyed, this, [this]() {
+        if (m_playerHp <= 0) {
+            this->close(); // defeat -> back to main menu
+        } else {
+            this->show();
+            m_mapView->buildScene(m_gameMap);
+        }
+    });
+
+    combatWindow->showFullScreen();
 }
 
 void MapPage::openCombat(MapNode *node)
@@ -228,40 +386,7 @@ void MapPage::openCombat(MapNode *node)
     qDebug() << "openCombat called, isLeader=" << m_isLeader << "isMultiplayer=" << m_isMultiplayer;
 
     if (!m_isMultiplayer) {
-
-
-        m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
-        updateHud();
-
-        MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
-                                                  m_playerGold, m_deckNames);
-        combatWindow->setAttribute(Qt::WA_DeleteOnClose);
-        this->hide();
-
-        connect(combatWindow, &MainWindow::combatFinished, this,
-                [this](bool victory, int finalHp, int maxHp,
-                       int finalGold, const std::vector<std::string>& finalDeck) {
-                    if (victory) {
-                        m_playerHp   = finalHp;
-                        m_playerMaxHp= maxHp;
-                        m_playerGold = finalGold;
-                        m_deckNames  = finalDeck;
-                        updateHud();
-                    } else {
-                        m_playerHp = 0;
-                    }
-                });
-
-        connect(combatWindow, &QObject::destroyed, this, [this]() {
-            if (m_playerHp <= 0) {
-                this->close();
-            } else {
-                this->show();
-                m_mapView->buildScene(m_gameMap);
-            }
-        });
-
-        combatWindow->showFullScreen();
+        openSinglePlayerCombat(node, CombatType::Normal);
         return;
     }
 
@@ -275,6 +400,10 @@ void MapPage::openCombat(MapNode *node)
 
 void MapPage::openElite(MapNode *node)
 {
+    if (!m_isMultiplayer) {
+        openSinglePlayerCombat(node, CombatType::Elite);
+        return;
+    }
     QMessageBox::information(this, "Elite", "Entered an elite room.");
 }
 
@@ -300,6 +429,10 @@ void MapPage::openTreasure(MapNode *node)
 
 void MapPage::openBossFight(MapNode *node)
 {
+    if (!m_isMultiplayer) {
+        openSinglePlayerCombat(node, CombatType::Boss);
+        return;
+    }
     QMessageBox::information(this, "Boss", "You reached the boss!");
 }
 

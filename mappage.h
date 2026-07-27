@@ -1,25 +1,25 @@
 #ifndef MAPPAGE_H
 #define MAPPAGE_H
 
-#include <QDialog>
+#include <QWidget>
 #include <QTimer>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QPushButton>
-#include <QJsonObject>
-#include <vector>
-#include <string>
 #include <QLabel>
 #include <QProgressBar>
-#include <QHBoxLayout>
-
+#include <QJsonObject>
+#include <QJsonArray>
+#include <vector>
+#include <string>
 
 #include "mapview.h"
 #include "gamemap.h"
 #include "audiomanager.h"
 #include "networkmanager.h"
 #include "mpcombatwindow.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"   // needed for CombatType
 #include "savemanager.h"
 
 class MapPage : public QWidget
@@ -40,20 +40,27 @@ private:
     bool m_isMultiplayer = true;
     bool m_combatOpen = false;
     int m_saveId = -1;
+
+    // Progress kept between combats
     int m_playerHp = 80;
     int m_playerMaxHp = 80;
-    std::vector<std::string> m_deckNames;
-    QWidget* m_topHud = nullptr;
-    QProgressBar* m_hpBar = nullptr;
-    QLabel* m_hpLabel = nullptr;
-    QLabel* m_goldLabel = nullptr;
-    QLabel* m_deckLabel = nullptr;
+    int m_playerGold = 99;
+    std::vector<std::string> m_deckNames; // empty = use default deck on first fight
 
+    // Top HUD (HP / Gold / Deck)
+    QWidget *m_topHud = nullptr;
+    QProgressBar *m_hpBar = nullptr;
+    QLabel *m_hpLabel = nullptr;
+    QLabel *m_goldLabel = nullptr;
+    QLabel *m_deckLabel = nullptr;
+
+    void buildHud();
     void updateHud();
 
     void persistProgress();
-
     void handleRoomEntered(MapNode *node);
+
+    void openSinglePlayerCombat(MapNode *node, CombatType type);
 
     void openCombat(MapNode *node);
     void openElite(MapNode *node);

@@ -1,0 +1,64 @@
+[33mcommit 959ec6bc6aa6f7b932c50cdf9708bd18f3281bd5[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Mon Jul 27 06:01:11 2026 -0700
+
+     Add deck and gold
+
+ assets/video/background.mp4 | Bin [31m78824406[m -> [32m0[m bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit 0188bf829ffbab610a4f8ecd0fa00f7f871b1aa2[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Mon Jul 27 05:47:59 2026 -0700
+
+    noisfh
+
+ assets/video/....mp4                   | Bin [31m10788116[m -> [32m0[m bytes
+ assets/video/backgrou (2).mp4          | Bin [31m2874351[m -> [32m0[m bytes
+ assets/video/backgrou.mp4              | Bin [31m121517650[m -> [32m0[m bytes
+ assets/video/{..mp4 => background.mp4} | Bin
+ assets/video/background_22285812.mp4   |   0
+ 5 files changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit 6e0778f739d2c234510d0c407b5e62598a65592e[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Mon Jul 27 01:40:49 2026 -0700
+
+     fix : Update gamesaver
+
+ assets/video/....mp4                              | Bin [31m0[m -> [32m10788116[m bytes
+ assets/video/..mp4                                | Bin [31m0[m -> [32m78824406[m bytes
+ assets/video/{background.mp4 => backgrou (2).mp4} | Bin
+ assets/video/backgrou.mp4                         | Bin [31m0[m -> [32m121517650[m bytes
+ assets/video/background_22285812.mp4              |   0
+ 5 files changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit 6c6920837907dabea0f80874af7d0b8f74509bcb[m[33m ([m[1;31morigin/feature-menu[m[33m, [m[1;32mfeature-menu[m[33m)[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Wed Jul 1 07:57:54 2026 -0700
+
+    assets : add background video
+
+ assets/video/background.mp4 | Bin [31m0[m -> [32m2874351[m bytes
+ assets/video/bakground.jpg  | Bin [31m0[m -> [32m786120[m bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit 29ff3499ebac53e3731870297fbb02042a982ad8[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Wed Jul 1 07:53:35 2026 -0700
+
+    chore: initial project setup
+
+ assets/video/background.mp4 | Bin [31m2874351[m -> [32m0[m bytes
+ assets/video/bakground.jpg  | Bin [31m786120[m -> [32m0[m bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+[33mcommit 8a403a9db284cad3b25a128d53bc119c07f52129[m[33m ([m[1;31morigin/mainmenu[m[33m, [m[1;31morigin/feature-main-menu[m[33m)[m
+Author: mobinaebrahim <mobinaebrahim1385@gmail.com>
+Date:   Wed Jul 1 07:03:05 2026 -0700
+
+    chore : initial project setup
+
+ assets/video/background.mp4 | Bin [31m0[m -> [32m2874351[m bytes
+ assets/video/bakground.jpg  | Bin [31m0[m -> [32m786120[m bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)

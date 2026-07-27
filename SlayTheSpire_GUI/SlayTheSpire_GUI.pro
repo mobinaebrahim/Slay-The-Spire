@@ -16,6 +16,7 @@ SOURCES += \
     ../NormalEnemies.cpp \
     ../Potion.cpp \
     ../PowerCard.cpp \
+    ../Relics.cpp \
     ../SkillCard.cpp \
     ../StatusCard.cpp \
     ../StatusEffect.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     ../NormalEnemies.h \
     ../Potion.h \
     ../PowerCard.h \
+    ../Relics.h \
     ../SkillCard.h \
     ../StatusCard.h \
     ../StatusEffect.h \

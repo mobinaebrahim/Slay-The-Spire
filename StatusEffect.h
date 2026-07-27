@@ -93,4 +93,12 @@ public:
     void onCardExhausted(Character* owner) override;
 };
 
+class TempStrengthEffect : public StatusEffect {
+public:
+    TempStrengthEffect(int increaseDamageBy);
+    int modifyOutgoingDamage(int baseDamage) override;
+    void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
+};
+
 #endif

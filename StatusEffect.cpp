@@ -105,3 +105,10 @@ void FeelNoPainEffect::onCardExhausted(Character* owner) {
     int finalBlock = owner->calculate_total_block(amount);
     owner->addBlock(finalBlock);
 }
+
+//____________________________________TempStrengthEffect____________________________________
+TempStrengthEffect::TempStrengthEffect(int increaseDamageBy) : StatusEffect("Strength", increaseDamageBy) {}
+
+int TempStrengthEffect::modifyOutgoingDamage(int baseDamage) { return baseDamage + amount; }
+
+void TempStrengthEffect::onTurnEnd(Character* owner) { amount = 0; }

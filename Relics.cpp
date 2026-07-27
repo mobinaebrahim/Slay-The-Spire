@@ -120,7 +120,7 @@ void WarpedTongs::onCombatStart(Player* owner, BattleManager* bm) {
 MutagenicStrength::MutagenicStrength() : Relic("Mutagenic Strength", "At the start of combat, gain 3 Strength. Lose it at the end of that turn.") {}
 void MutagenicStrength::onCombatStart(Player* owner, BattleManager* bm) {
     if (owner)
-        //owner->applyStatus(new TempStrengthEffect(3));
+        owner->applyStatus(new TempStrengthEffect(3));
 }
 
 //_______________________________ CultistHeadpiece _______________________________

@@ -32,361 +32,48 @@
 #include "EliteEnemies.h"
 #include "enemy.h"
 #include "cardfactory.h"
+#include "usermanager.h"
 
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
+                       int initialGold, const std::vector<std::string>& deckNames,
+                       CombatType combatType)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setMinimumSize(1280, 720);
-    this->setMouseTracking(true);
-
-    enemyAreaContainer = new QWidget(this);
-    enemyAreaLayout = new QHBoxLayout(enemyAreaContainer);
-    enemyAreaLayout->setContentsMargins(0, 0, 0, 0);
-    enemyAreaLayout->setSpacing(30);
-    enemyAreaLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
-
-    playerEnergyOrb = new QLabel(this);
-    playerEnergyOrb->setFixedSize(70, 70);
-    playerEnergyOrb->setPixmap(QPixmap(":/assets/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    energyOrbCountLabel = new QLabel(playerEnergyOrb);
-    energyOrbCountLabel->setGeometry(0, 0, 70, 70);
-    energyOrbCountLabel->setAlignment(Qt::AlignCenter);
-    energyOrbCountLabel->setStyleSheet("background: transparent; color: white; font-weight: 900; font-size: 20px;");
-
-    topHudBar = new QWidget(this);
-    topHudBar->setStyleSheet(
-        "background-color: rgba(300, 300, 300, 250); "
-        "border-bottom: 2px solid rgba(255, 215, 130, 60);"
-        );
-
-    playerHeartIcon = new QLabel(this);
-    playerHeartIcon->setFixedSize(40, 40);
-    playerHeartIcon->setPixmap(QPixmap(":/assets/icons/hp.png").scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    playerHeartIcon->move(14, 6);
-
-    playerHpTopLabel = new QLabel(this);
-    playerHpTopLabel->setGeometry(58, 24, 70, 24);
-    playerHpTopLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
-
-    goldIconLabel = new QLabel(this);
-    goldIconLabel->setFixedSize(46, 46);
-    goldIconLabel->setPixmap(QPixmap(":/assets/icons/gold.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    goldIconLabel->move(150, 3);
-
-    goldCountLabel = new QLabel(goldIconLabel);
-    goldCountLabel->setGeometry(14, 30, 32, 16);
-    goldCountLabel->setAlignment(Qt::AlignCenter);
-    goldCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
-
-    settingLabel = new QLabel(this);
-    settingLabel->setFixedSize(46, 46);
-    settingLabel->setPixmap(QPixmap(":/assets/icons/settings.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    settingLabel->move(this->width() - 60, 3);
-    settingLabel->installEventFilter(this);
-
-    settingsOverlayImage = new QLabel(this);
-    settingsOverlayImage->setAlignment(Qt::AlignCenter);
-    settingsOverlayImage->setStyleSheet("background-color: rgba(0,0,0,220);");
-    settingsOverlayImage->setPixmap(QPixmap(":/assets/icons/settings_overlay.png").scaled(
-        this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
-    settingsOverlayImage->hide();
-    settingsOverlayImage->setAttribute(Qt::WA_TransparentForMouseEvents, false);
-
-    mapLabel = new QLabel(this);
-    mapLabel->setFixedSize(46, 46);
-    mapLabel->setPixmap(QPixmap(":/assets/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    mapLabel->move(this->width() - 172, 3);
-    mapLabel->installEventFilter(this);
-
-    deckIconLabel = new QLabel(this);
-    deckIconLabel->setFixedSize(46, 46);
-    deckIconLabel->setPixmap(QPixmap(":/assets/icons/deck.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    deckIconLabel->move(this->width() - 116, 3);
-    deckIconLabel->installEventFilter(this);
-
-    deckCountLabel = new QLabel(deckIconLabel);
-    deckCountLabel->setGeometry(14, 30, 32, 16);
-    deckCountLabel->setAlignment(Qt::AlignCenter);
-    deckCountLabel->setStyleSheet("color: white; font-weight: bold; font-size: 14px; background: transparent;");
-
-    drawPileIconLabel = new QLabel(this);
-    drawPileIconLabel->setFixedSize(84, 84);
-    drawPileIconLabel->setPixmap(QPixmap(":/assets/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    drawPileIconLabel->installEventFilter(this);
-
-    drawPileCountLabel = new QLabel(drawPileIconLabel);
-    drawPileCountLabel->setGeometry(12, 28, 28, 16);
-    drawPileCountLabel->setAlignment(Qt::AlignCenter);
-    drawPileCountLabel->setStyleSheet(
-        "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
-        "font-size: 11px; border-radius: 4px;");
-
-    discardWrapper = new QWidget(this);
-    discardWrapper->setFixedSize(90, 90);
-
-    discardPileIconLabel = new QLabel(discardWrapper);
-    discardPileIconLabel->setGeometry(16, 16, 74, 74);
-    discardPileIconLabel->setPixmap(QPixmap(":/assets/icons/discard_pile.png").scaled(74, 74, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    discardPileCountLabel = new QLabel(discardPileIconLabel);
-    discardPileCountLabel->setGeometry(12, 28, 28, 16);
-    discardPileCountLabel->setAlignment(Qt::AlignCenter);
-    discardPileCountLabel->setStyleSheet(
-        "background-color: rgba(0,0,0,170); color: white; font-weight: bold; "
-        "font-size: 11px; border-radius: 4px;");
-
-    exhaustPileBadge = new QLabel(discardWrapper);
-    exhaustPileBadge->setFixedSize(26, 26);
-    exhaustPileBadge->move(0, 0);
-    exhaustPileBadge->setAlignment(Qt::AlignCenter);
-    exhaustPileBadge->setStyleSheet(
-        "background-color: #6a3fa0; color: white; border: 2px solid #9b6fd6; "
-        "border-radius: 13px; font-weight: bold; font-size: 11px;");
-    exhaustPileBadge->hide();
-
-    exhaustPileOverlay = new QWidget(this);
-    exhaustPileOverlay->setStyleSheet("background-color: rgba(0,0,0,190);");
-    exhaustPileOverlay->hide();
-
-    QVBoxLayout* overlayLayout = new QVBoxLayout(exhaustPileOverlay);
-    overlayLayout->setAlignment(Qt::AlignCenter);
-
-    pileOverlayTitle = new QLabel("", exhaustPileOverlay);
-    pileOverlayTitle->setAlignment(Qt::AlignCenter);
-    pileOverlayTitle->setStyleSheet("font-size: 24px; font-weight: bold; background: transparent;");
-    overlayLayout->addWidget(pileOverlayTitle);
-
-    exhaustCardsContainer = new QWidget();
-    QGridLayout* cardsGridLayout = new QGridLayout(exhaustCardsContainer);
-    cardsGridLayout->setSpacing(12);
-    cardsGridLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
-
-    pileScrollArea = new QScrollArea(exhaustPileOverlay);
-    pileScrollArea->setWidget(exhaustCardsContainer);
-    pileScrollArea->setWidgetResizable(true);
-    pileScrollArea->setStyleSheet("background: transparent; border: none;");
-    pileScrollArea->setFixedHeight(500);
-    pileScrollArea->setMinimumWidth(700);
-    overlayLayout->addWidget(pileScrollArea, 0, Qt::AlignCenter);
-
-    closeExhaustOverlayButton = new QPushButton("Close", exhaustPileOverlay);
-    closeExhaustOverlayButton->setFixedSize(120, 40);
-    closeExhaustOverlayButton->setStyleSheet(
-        "QPushButton { background-color: #6a3fa0; color: white; border-radius: 6px; font-weight: bold; }"
-        "QPushButton:hover { background-color: #7d4bb5; }");
-    overlayLayout->addWidget(closeExhaustOverlayButton, 0, Qt::AlignCenter);
-
-    connect(closeExhaustOverlayButton, &QPushButton::clicked, this, &MainWindow::hidePileOverlay);
-    discardWrapper->installEventFilter(this);
-    exhaustPileBadge->installEventFilter(this);
-    ui->EndTurnButton->installEventFilter(this);
-
-    ui->EndTurnButton->setText("");
-    ui->EndTurnButton->setIcon(QIcon(":/assets/icons/end_turn.png"));
-    ui->EndTurnButton->setIconSize(QSize(320, 100));
-    ui->EndTurnButton->setFixedSize(230, 82);
-    ui->EndTurnButton->setContentsMargins(0, 0, 0, 0);
-    ui->EndTurnButton->setStyleSheet(
-        "QPushButton { border: none; background: transparent; } "
-        "QPushButton:hover { background: rgba(200,200,200,25); border-radius: 5px; } "
-        "QPushButton:pressed { background: rgba(200,200,200,50); border-radius: 5px; } "
-        "QPushButton:disabled { opacity: 0.3; }");
-
-    ui->EndTurnButton->setParent(this);
-
-    playerHpBar = new QProgressBar(this);
-    playerHpBar->setTextVisible(true);
-    playerHpBar->setRange(0, 80);
-    playerHpBar->setStyleSheet(
-        "QProgressBar { border: 2px solid #3a1f1f; border-radius: 6px; "
-        "background: #2b1414; color: white; font-weight: bold; text-align: center; }"
-        "QProgressBar::chunk { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:0, "
-        "stop:0 #8e0e0e, stop:1 #d94040); border-radius: 4px; }"
-        );
-
-    playerBlockBadge = new QLabel(this);
-    playerBlockBadge->setAlignment(Qt::AlignCenter);
-    playerBlockBadge->setFixedSize(30, 30);
-    playerBlockBadge->setStyleSheet(
-        "background-color: #2b3a55; color: #9fd8ff; border: 2px solid #5c85b0; "
-        "border-radius: 15px; font-weight: bold;"
-        );
-    playerBlockBadge->hide();
-
-    customTooltipBox = new QLabel(this);
-    customTooltipBox->setStyleSheet(
-        "background-color: rgba(20,20,25,235); color: white; "
-        "border: 1px solid rgba(255,255,255,40); border-radius: 6px; "
-        "padding: 10px; font-size: 13px;");
-    customTooltipBox->setWordWrap(true);
-    customTooltipBox->setFixedWidth(260);
-    customTooltipBox->hide();
-    customTooltipBox->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    playerSpriteLabel = new QLabel(this);
-    playerSpriteLabel->setPixmap(QPixmap(":/assets/characters/IronClad.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    playerSpriteLabel->setAlignment(Qt::AlignCenter);
-    playerSpriteLabel->setScaledContents(true);
-
-    QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->setSpacing(0);
-
-    mainLayout->addStretch(1);
-    mainLayout->addStretch(3);
-
-    QHBoxLayout* bottomBarLayout = new QHBoxLayout();
-    bottomBarLayout->addWidget(playerEnergyOrb, 0, Qt::AlignBottom);
-    bottomBarLayout->addWidget(ui->CardsContainer, 1);
-    bottomBarLayout->addWidget(drawPileIconLabel, 0, Qt::AlignBottom);
-    bottomBarLayout->addWidget(discardWrapper, 0, Qt::AlignBottom);
-    bottomBarLayout->addSpacing(12);
-    mainLayout->addLayout(bottomBarLayout);
-
-    delete this->centralWidget()->layout();
-    this->centralWidget()->setLayout(mainLayout);
-
-    QHBoxLayout* cardLayout = new QHBoxLayout(ui->CardsContainer);
-    ui->CardsContainer->setLayout(cardLayout);
-
-    backgroundLabel = new QLabel(this);
-    backgroundLabel->setPixmap(QPixmap(":/assets/scene.png").scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
-    backgroundLabel->setGeometry(0, 0, this->width(), this->height());
-    backgroundLabel->lower();
-    topHudBar->raise();
-    playerHeartIcon->raise();
-    playerHpTopLabel->raise();
-    goldIconLabel->raise();
-    goldCountLabel->raise();
-    mapLabel->raise();
-    deckIconLabel->raise();
-    settingLabel->raise();
-    ui->EndTurnButton->raise();
-
-    gameOverLabel = new QLabel(this);
-    gameOverLabel->setAlignment(Qt::AlignCenter);
-    gameOverLabel->hide();
-
-    gameOverOpacityEffect = new QGraphicsOpacityEffect(gameOverLabel);
-    gameOverLabel->setGraphicsEffect(gameOverOpacityEffect);
-    gameOverOpacityEffect->setOpacity(0.0);
-
-    QPixmap slashPixmap(200, 200);
-    slashPixmap.fill(Qt::transparent);
-    {
-        QPainter painter(&slashPixmap);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        QPen glowPen(QColor(255, 120, 120, 140));
-        glowPen.setWidth(14);
-        glowPen.setCapStyle(Qt::RoundCap);
-        painter.setPen(glowPen);
-        painter.drawLine(30, 30, 170, 170);
-
-        QPen corePen(QColor(255, 20, 20, 235));
-        corePen.setWidth(6);
-        corePen.setCapStyle(Qt::RoundCap);
-        painter.setPen(corePen);
-        painter.drawLine(30, 30, 170, 170);
-    }
-
-    playerHitOverlay = new QLabel(this);
-    playerHitOverlay->setFixedSize(200, 200);
-    playerHitOverlay->setPixmap(slashPixmap);
-    playerHitOverlay->hide();
-    playerHitOpacity = new QGraphicsOpacityEffect(playerHitOverlay);
-    playerHitOverlay->setGraphicsEffect(playerHitOpacity);
-    playerHitOpacity->setOpacity(0.0);
-
-    enemyHitOverlay = new QLabel(this);
-    enemyHitOverlay->setFixedSize(200, 200);
-    enemyHitOverlay->setPixmap(slashPixmap);
-    enemyHitOverlay->hide();
-    enemyHitOpacity = new QGraphicsOpacityEffect(enemyHitOverlay);
-    enemyHitOverlay->setGraphicsEffect(enemyHitOpacity);
-    enemyHitOpacity->setOpacity(0.0);
-
-    bgAudioOutput = new QAudioOutput(this);
-    bgMusicPlayer = new QMediaPlayer(this);
-    bgMusicPlayer->setAudioOutput(bgAudioOutput);
-    bgMusicPlayer->setSource(QUrl("qrc:/assets/audio/Exordium.mp3"));
-    bgAudioOutput->setVolume(0.4);
-
-    connect(bgMusicPlayer, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status){
-        if (status == QMediaPlayer::EndOfMedia) {
-            bgMusicPlayer->setPosition(0);
-            bgMusicPlayer->play();
-        }
-    });
-    bgMusicPlayer->play();
-
-    hitSoundOutput = new QAudioOutput(this);
-    hitSoundPlayer = new QMediaPlayer(this);
-    hitSoundPlayer->setAudioOutput(hitSoundOutput);
-    hitSoundPlayer->setSource(QUrl("qrc:/assets/audio/hit.mp3"));
-    hitSoundOutput->setVolume(0.8);
-
-    cardPlaySoundOutput = new QAudioOutput(this);
-    cardPlaySoundPlayer = new QMediaPlayer(this);
-    cardPlaySoundPlayer->setAudioOutput(cardPlaySoundOutput);
-    cardPlaySoundPlayer->setSource(QUrl("qrc:/assets/audio/Card.mp3"));
-    cardPlaySoundOutput->setVolume(3);
-
-    endTurnHoverSoundOutput = new QAudioOutput(this);
-    endTurnHoverSoundPlayer = new QMediaPlayer(this);
-    endTurnHoverSoundPlayer->setAudioOutput(endTurnHoverSoundOutput);
-    endTurnHoverSoundPlayer->setSource(QUrl("qrc:/assets/audio/End Turn.mp3"));
-    endTurnHoverSoundOutput->setVolume(3);
-
-    pileOpenSoundOutput = new QAudioOutput(this);
-    pileOpenSoundPlayer = new QMediaPlayer(this);
-    pileOpenSoundPlayer->setAudioOutput(pileOpenSoundOutput);
-    pileOpenSoundPlayer->setSource(QUrl("qrc:/assets/audio/DrawPile&DiscardPile.mp3"));
-    pileOpenSoundOutput->setVolume(3);
-
-    playerStatusRow = new QWidget(this);
-    QHBoxLayout* playerStatusLayout = new QHBoxLayout(playerStatusRow);
-    playerStatusLayout->setContentsMargins(0, 0, 0, 0);
-    playerStatusLayout->setSpacing(4);
-
-    hoverCardLabel = new QLabel(this);
-    hoverCardLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-    hoverCardLabel->setStyleSheet("background: transparent; border: none;");
-    hoverCardLabel->hide();
-
-    QGraphicsDropShadowEffect* hoverShadow = new QGraphicsDropShadowEffect(hoverCardLabel);
-    hoverShadow->setBlurRadius(45);
-    hoverShadow->setOffset(0, 14);
-    hoverShadow->setColor(QColor(0, 0, 0, 210));
-    hoverCardLabel->setGraphicsEffect(hoverShadow);
-
-    toastLabel = new QLabel(this);
-    toastLabel->setAlignment(Qt::AlignCenter);
-    toastLabel->setStyleSheet(
-        "background-color: rgba(180,30,30,220); color: white; font-weight: bold; "
-        "font-size: 16px; border-radius: 8px; padding: 10px;");
-    toastLabel->hide();
-
-    dragArrowLabel = new QLabel(this);
-    dragArrowLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-    dragArrowLabel->hide();
-
-    playerTargetFrame = new QLabel(this);
-    playerTargetFrame->setAttribute(Qt::WA_TransparentForMouseEvents);
-    playerTargetFrame->hide();
 
     std::srand(std::time(nullptr));
     battleManager = new BattleManager();
-    playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
+
+    QString playerName = user_manager::instance().get_current_username();
+    if (playerName.isEmpty())
+        playerName = "Dina";
+
+    playerObject = new Player(playerName.toStdString(), maxHp, initialHp, 3, initialGold, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new TheChamp());
-    //Taskmaster::spawnGroup(battleManager);
-    initializePlayerDeck(15);
+
+    switch (combatType) {
+    case CombatType::Normal:
+        spawnNormalEncounter();
+        break;
+    case CombatType::Elite:
+        spawnEliteEncounter();
+        break;
+    case CombatType::Boss:
+        spawnBossEncounter();
+        break;
+    }
+
+    if (!deckNames.empty()) {
+        for (const auto& name : deckNames) {
+            Card* c = createCardByName(name);
+            if (c) playerObject->addCardToDrawPile(c);
+        }
+    } else {
+        initializePlayerDeck(15);
+    }
+
     setupShortcuts();
     playerObject->drawCards(5);
 
@@ -397,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(animationTimer, &QTimer::timeout, this, &MainWindow::updateAnimations);
     animationTimer->start(50);
 }
-
 MainWindow::~MainWindow()
 {
     delete ui;

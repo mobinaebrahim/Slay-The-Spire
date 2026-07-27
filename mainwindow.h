@@ -44,7 +44,13 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr, int initialHp = 80, int maxHp = 80);
+
     ~MainWindow() override;
+
+signals:
+    void combatFinished(bool victory, int currentHp, int maxHp);
+
 
 private slots:
     void on_EndTurnButton_clicked();

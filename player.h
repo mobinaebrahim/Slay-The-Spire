@@ -6,6 +6,7 @@
 #include "card.h"
 #include "enemy.h"
 #include "Potion.h"
+#include "Relics.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -29,6 +30,8 @@ private:
     vector<Relic*> relics;
 
 public:
+    int cardsPlayedThisTurn = 0;
+
     Player(string n, int h, int max, int en, int g, BattleManager* bm);
 
     int getGold() const { return gold; }
@@ -43,8 +46,8 @@ public:
     const vector<Card*>& getDrawPile() const { return drawPile; }
     const vector<Card*>& getDiscardPile() const { return discardPile; }
     vector<Card*> getFullDeck() const;
-    void resetEnergy();
 
+    void resetEnergy();
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);
     void increaseMaxHP(int amount);
@@ -76,7 +79,6 @@ public:
     void addRelic(Relic* relic);
     bool hasRelic(string relicName) const;
     const vector<Relic*>& getRelics() const { return relics; }
-    int cardsPlayedThisTurn = 0;
 
     int takeDamage(int incomingDamage) override;
 };

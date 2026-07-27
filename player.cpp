@@ -163,7 +163,7 @@ void Player::playCard(Card* card, Character* target) {
     if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
         return;
 
-    if (hasRelic("VelvetChoker") && cardsPlayedThisTurn >= 6)
+    if (hasRelic("Velvet Choker") && cardsPlayedThisTurn >= 6)
         return;
 
     int finalCost = card->getCost(this); 
@@ -177,6 +177,11 @@ void Player::playCard(Card* card, Character* target) {
             if (enemy != nullptr)
                 enemy->onPlayerPlayedCard(card);
         }
+
+        cardsPlayedThisTurn++;
+        for(auto* relic : relics)
+            relic->onCardPlayed(this, card);
+
         auto it = std::find(hand.begin(), hand.end(), card);
         if (it != hand.end()) {
             hand.erase(it);

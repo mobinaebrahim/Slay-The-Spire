@@ -94,5 +94,6 @@
         <file>images/relics/SlaversCollar.png</file>
         <file>images/relics/VelvetChoker.png</file>
         <file>images/relics/WarpedTongs.png</file>
+        <file>audio/crow.mp3</file>
     </qresource>
 </RCC>

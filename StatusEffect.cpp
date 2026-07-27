@@ -107,7 +107,7 @@ void FeelNoPainEffect::onCardExhausted(Character* owner) {
 }
 
 //____________________________________TempStrengthEffect____________________________________
-TempStrengthEffect::TempStrengthEffect(int increaseDamageBy) : StatusEffect("Strength", increaseDamageBy) {}
+TempStrengthEffect::TempStrengthEffect(int increaseDamageBy) : StatusEffect("TempStrength", increaseDamageBy) {}
 
 int TempStrengthEffect::modifyOutgoingDamage(int baseDamage) { return baseDamage + amount; }
 

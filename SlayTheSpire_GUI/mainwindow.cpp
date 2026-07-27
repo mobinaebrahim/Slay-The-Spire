@@ -347,6 +347,17 @@ MainWindow::MainWindow(QWidget *parent)
     pileOpenSoundPlayer->setSource(QUrl("qrc:/audio/DrawPile&DiscardPile.mp3"));
     pileOpenSoundOutput->setVolume(3);
 
+    crowSoundOutput = new QAudioOutput(this);
+    crowSoundPlayer = new QMediaPlayer(this);
+    crowSoundPlayer->setAudioOutput(crowSoundOutput);
+    crowSoundPlayer->setSource(QUrl("qrc:/audio/crow.mp3"));
+    crowSoundOutput->setVolume(0.7);
+
+    battleManager->onCombatStartSoundCallback = [this]() {
+        crowSoundPlayer->setPosition(0);
+        crowSoundPlayer->play();
+    };
+
     playerStatusRow = new QWidget(this);
     QHBoxLayout* playerStatusLayout = new QHBoxLayout(playerStatusRow);
     playerStatusLayout->setContentsMargins(0, 0, 0, 0);

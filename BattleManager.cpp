@@ -3,6 +3,14 @@
 #include <algorithm>
 
 void BattleManager:: spawnEnemy(Enemy* newEnemy) {
+    if (player && player->hasRelic("Preserved Insect")) {
+        if (newEnemy->isElite() || newEnemy->isBoss()) {
+            int reducedMax = static_cast<int>(newEnemy->getMaxHp() * 0.75);
+            newEnemy->setMaxHp(reducedMax);
+            newEnemy->setHp(reducedMax);
+        }
+    }
+
     newEnemy->setBattleManager(this);
     enemies.push_back(newEnemy);
 }
@@ -88,6 +96,7 @@ void BattleManager::playCardAction(Card* card, Enemy* target) {
 }
 
 void BattleManager::startCombat() {
+    anyEnemyDiedThisCombat = false;
     for (auto* relic : player->getRelics())
         relic->onCombatStart(player, this);
     playerTurn();
@@ -120,4 +129,12 @@ void BattleManager::processSingleEnemyTurn(Enemy* enemy) {
 
 void BattleManager::endEnemyTurnPhase() {
     playerTurn();
+}
+
+bool BattleManager::isBossOrEliteCombat() const {
+    for (Enemy* e : enemies) {
+        if (e->isElite() || e->isBoss())
+            return true;
+    }
+    return false;
 }

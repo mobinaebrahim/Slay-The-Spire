@@ -1,4 +1,5 @@
 #include "Potion.h"
+#include "Player.h"
 
 //_______________________________________Potion_______________________________________
 Potion::Potion(string n, string d) : name(n), description(d){}

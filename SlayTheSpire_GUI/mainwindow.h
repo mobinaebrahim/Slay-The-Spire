@@ -179,6 +179,9 @@ private:
     EnemyUISlot* findSlotFor(Enemy* enemy);
     QRect enemySpriteLabelRectFor(Enemy* enemy);
 
+    QMediaPlayer* crowSoundPlayer;
+    QAudioOutput* crowSoundOutput;
+
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;
 

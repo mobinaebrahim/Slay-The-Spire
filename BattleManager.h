@@ -15,7 +15,6 @@ private:
     Player* player;
     bool isPlayerTurn;
     bool anyEnemyDiedThisCombat = false;
-    bool isBossOrElite = false;
 public:
     BattleManager() : player(nullptr), isPlayerTurn(true) {}
 
@@ -38,9 +37,8 @@ public:
     void setPlayer(Player* p) { player = p; }
     const vector<Enemy*>& getEnemies() const { return enemies; }
     std::vector<Enemy*> enemiesToRemove;
+    bool isBossOrEliteCombat() const;
 
-    void setBossOrElite(bool value) { isBossOrElite = value; }
-    bool isBossOrEliteCombat() const { return isBossOrElite; }
     std::function<void()> onCombatStartSoundCallback;
 };
 

@@ -30,4 +30,11 @@ public:
     virtual void onObtain(Player* owner) {}
 };
 
+//_________________________________ Starter _________________________________
+class BurningBlood : public Relic {
+public:
+    BurningBlood();
+    void onCombatEnd(Player* owner, BattleManager* bm) override;
+};
+
 #endif

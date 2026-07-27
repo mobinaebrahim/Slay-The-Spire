@@ -10,6 +10,7 @@
 #include <QResizeEvent>
 #include <QRandomGenerator>
 #include <QMessageBox>
+#include <QJsonObject>
 #include <QApplication>
 
 #include "authpage.h"
@@ -57,7 +58,7 @@ private:
     QAudioOutput *audioOutput;
 
     void handle_play_button();
-    void open_map_page(bool isLeader, bool isMultiplayer);
+    void open_map_page(bool isLeader, bool isMultiplayer, int existingSaveId = -1, const QJsonObject &savedMapData = QJsonObject());
 };
 
 #endif // MAINMENUWINDOW_H

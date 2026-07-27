@@ -1,14 +1,11 @@
 #ifndef CARD_H
 #define CARD_H
-
 #include <string>
 #include <iostream>
 using namespace std;
 class BattleManager;
 class character;
-
 enum class CardType{ Attack, Skill, Power, Status, Curse};
-
 class Card {
 protected:
     CardType type;
@@ -27,6 +24,6 @@ public:
     virtual bool isPlayable() const;
     virtual void upgrade();
     virtual string getUnplayableReason(Character* caster) const { return ""; }
+    bool getIsUpgraded() const { return isUpgraded; }
 };
-
 #endif

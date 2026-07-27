@@ -8,7 +8,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     ui->setupUi(this);
 
     // ---start background music---
-    //AudioManager::instance().playMusic(":/assets/music/background.mp3");
+    AudioManager::instance().playMusic(":/assets/music/background.mp3");
 
     // ---play click sound for every button in this window---
     const QList<QPushButton*> allButtons = this->findChildren<QPushButton*>();
@@ -109,13 +109,24 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     connect(ui->btnPlay, &QPushButton::clicked, this, &MainMenuWindow::handle_play_button);
 
     connect(ui->btnContinue, &QPushButton::clicked, this, [this](){
-        QMessageBox::information(this, "Continue", "Continuing your saved game!");
-        // TODO: add actual continue game logic here using load_save
+        QString currentUser = user_manager::instance().get_current_username();
+        QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
 
         // Reset UI state for next time
         ui->btnContinue->hide();
         ui->btnAbandon->hide();
         ui->btnPlay->show();
+
+        if (saves.isEmpty()) {
+            QMessageBox::warning(this, "Continue", "No saved game found.");
+            return;
+        }
+
+        // لیست بر اساس save_date DESC مرتبه، پس اولی جدیدترینه.
+        int saveId = saves[0].id;
+        QJsonObject mapData = SaveManager::instance().load_save(saveId);
+
+        open_map_page(true, false, saveId, mapData);
     });
 
     connect(ui->btnAbandon, &QPushButton::clicked, this, [this](){
@@ -227,17 +238,10 @@ void MainMenuWindow::handle_play_button()
     // اگه Cancel زد، هیچ کاری نمی‌کنیم.
 }
 
-// ================================================================
-// نقطه‌ی واحد باز کردن MapPage. مسئول:
-//  - بستن/مخفی کردن MainMenu
-//  - باز کردن MapPage تمام‌صفحه
-//  - وقتی MapPage بسته می‌شه (چه با دکمه‌ی Return، چه با پایان
-//    بازی)، MainMenu دوباره نشون داده بشه — دقیقاً همون صفحه‌ای
-//    که کاربر توش بود، نه یه پنجره‌ی جدید.
-// ================================================================
-void MainMenuWindow::open_map_page(bool isLeader, bool isMultiplayer)
+
+void MainMenuWindow::open_map_page(bool isLeader, bool isMultiplayer, int existingSaveId, const QJsonObject &savedMapData)
 {
-    MapPage *mapDlg = new MapPage(nullptr, isLeader, isMultiplayer);
+    MapPage *mapDlg = new MapPage(nullptr, isLeader, isMultiplayer, existingSaveId, savedMapData);
     mapDlg->setAttribute(Qt::WA_DeleteOnClose);
 
     this->hide();

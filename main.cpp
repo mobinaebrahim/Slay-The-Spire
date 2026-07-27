@@ -47,13 +47,6 @@ int main(int argc, char *argv[])
 
     NetworkManager::instance().connect_to_server("127.0.0.1", 5000);
 
-    // توجه: دیگه setUsername و listener مربوط به room_created/room_joined
-    // اینجا نیست. باز کردن MapPage فقط و فقط یک‌جا انجام می‌شه:
-    // MainMenuWindow::open_map_page (که با سیگنال room_joined صدا زده
-    // می‌شه، نه room_created). یوزرنیم هم دیگه اینجا ست نمی‌شه چون
-    // اونموقع هنوز کسی لاگین نکرده؛ به‌جاش NetworkManager::create_room()
-    // و join_room() خودشون موقع صدا زده‌شدن مستقیم از user_manager
-    // یوزرنیم واقعی رو می‌خونن.
 
     w.showFullScreen();
     return a.exec();

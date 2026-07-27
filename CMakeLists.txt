@@ -63,6 +63,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mainwindow.ui
         mainwindow.h
         mainwindow.cpp
+        combattype.h
     )
 else()
     if(ANDROID)

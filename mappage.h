@@ -19,8 +19,8 @@
 #include "audiomanager.h"
 #include "networkmanager.h"
 #include "mpcombatwindow.h"
-//#include "mainwindow.h"   // needed for CombatType
 #include "savemanager.h"
+#include "combattype.h"
 
 class MapPage : public QWidget
 {

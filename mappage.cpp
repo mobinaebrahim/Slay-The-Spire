@@ -1,5 +1,6 @@
 #include "mappage.h"
 #include "usermanager.h"
+#include "mainwindow.h"
 
 MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existingSaveId, const QJsonObject &savedMapData)
     : QWidget(parent)

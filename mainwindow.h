@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
+
 #include <QMainWindow>
 #include <QLabel>
 #include <QTimer>
@@ -29,6 +31,8 @@
 #include <QMouseEvent>
 #include <QPainterPath>
 #include "player.h"
+#include "combattype.h"
+#include "mappage.h"
 
 class Card;
 
@@ -43,14 +47,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    explicit MainWindow(QWidget *parent = nullptr, int initialHp = 80, int maxHp = 80);
+
+    explicit MainWindow(QWidget *parent = nullptr, int initialHp = 80, int maxHp = 80,
+                    int initialGold = 0, const std::vector<std::string>& deckNames = {},
+                    CombatType combatType = CombatType::Normal);
 
     ~MainWindow() override;
 
 signals:
-    void combatFinished(bool victory, int currentHp, int maxHp);
-
+    void combatFinished(bool victory, int currentHp, int maxHp, int gold, const std::vector<std::string>& deck);
 private slots:
     void on_EndTurnButton_clicked();
 
@@ -183,6 +188,10 @@ private:
     void unhighlightAttackingEnemy(Enemy* enemy);
     EnemyUISlot* findSlotFor(Enemy* enemy);
     QRect enemySpriteLabelRectFor(Enemy* enemy);
+
+    void spawnNormalEncounter();
+    void spawnEliteEncounter();
+    void spawnBossEncounter();
 
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;

@@ -1580,3 +1580,68 @@ void MainWindow::processNextEnemyInQueue() {
         });
     }
 }
+
+void MainWindow::spawnNormalEncounter()
+{
+    int roll = std::rand() % 6;
+
+    switch (roll) {
+    case 0:
+        battleManager->spawnEnemy(new JawWorm());
+        break;
+    case 1:
+        battleManager->spawnEnemy(new Cultist());
+        break;
+    case 2:
+        battleManager->spawnEnemy(new Louse());
+        battleManager->spawnEnemy(new Louse());
+        break;
+    case 3:
+        battleManager->spawnEnemy(new BlueSlaver());
+        break;
+    case 4:
+        battleManager->spawnEnemy(new Louse());
+        break;
+    case 5:
+        battleManager->spawnEnemy(new JawWorm());
+        battleManager->spawnEnemy(new Louse());
+        break;
+    }
+}
+
+void MainWindow::spawnEliteEncounter()
+{
+    int roll = std::rand() % 4;
+
+    switch (roll) {
+    case 0:
+        battleManager->spawnEnemy(new GremlinKnob());
+        break;
+    case 1:
+        battleManager->spawnEnemy(new SphericGuardian());
+        break;
+    case 2:
+        battleManager->spawnEnemy(new BookOfStabbing());
+        break;
+    case 3:
+        battleManager->spawnEnemy(new TheChamp());
+        break;
+    }
+}
+
+void MainWindow::spawnBossEncounter()
+{
+    int roll = std::rand() % 3;
+
+    switch (roll) {
+    case 0:
+        battleManager->spawnEnemy(new Hexaghost());
+        break;
+    //case 1:
+        //battleManager->spawnEnemy(new KingSlime());
+        //break;
+    case 2:
+        battleManager->spawnEnemy(new TheChamp());
+        break;
+    }
+}

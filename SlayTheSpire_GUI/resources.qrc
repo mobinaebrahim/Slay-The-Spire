@@ -75,5 +75,10 @@
         <file>images/icons/settings.png</file>
         <file>images/icons/settings_overlay.png</file>
         <file>images/not_enough_energy.png</file>
+        <file>images/potions/BlockPotion.png</file>
+        <file>images/potions/EnergyPotion.png</file>
+        <file>images/potions/FairyInaBottle.png</file>
+        <file>images/potions/FirePotion.png</file>
+        <file>images/potions/SwiftPotion.png</file>
     </qresource>
 </RCC>

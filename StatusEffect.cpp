@@ -27,8 +27,8 @@ int DexterityEffect::modifyBlock(int baseBlock) { return baseBlock + amount; }
 VulnerableEffect::VulnerableEffect(int turns) : StatusEffect("Vulnerable", turns) {}
 
 int VulnerableEffect::modifyIncomingDamage(int baseDamage) {
-    if (amount > 0) 
-        return baseDamage * 1.5; 
+    if (amount > 0)
+        return baseDamage * 1.5;
     return baseDamage;
 }
 
@@ -55,14 +55,14 @@ void WeakEffect::onTurnEnd(Character* owner) {
 FrailEffect::FrailEffect(int turns) : StatusEffect("Frail", turns) {}
 
 int FrailEffect::modifyBlock(int baseBlock) {
-    if (amount > 0) 
-        return baseBlock * 0.75; 
+    if (amount > 0)
+        return baseBlock * 0.75;
     return baseBlock;
 }
 
 void FrailEffect::onTurnEnd(Character* owner) {
-    if (amount > 0) 
-        amount--; 
+    if (amount > 0)
+        amount--;
 }
 
 //_____________________________________MetallicizeEffect____________________________________
@@ -77,7 +77,7 @@ void MetallicizeEffect::onTurnEnd(Character* owner) {
 EntangledEffect::EntangledEffect(int turns) : StatusEffect("Entangled", turns) {}
 
 void EntangledEffect:: onTurnEnd(Character* owner) {
-    if (amount > 0) 
+    if (amount > 0)
         amount--;
 }
 
@@ -96,4 +96,12 @@ void BrutalityEffect::onTurnStart(Character* owner) {
     Player* player = dynamic_cast<Player*>(owner);
     if (player)
         player->drawCards(1);
+}
+
+//______________________________________FeelNoPainEffect____________________________________
+FeelNoPainEffect::FeelNoPainEffect(int blockAmount) : StatusEffect("FeelNoPain", blockAmount) {}
+
+void FeelNoPainEffect::onCardExhausted(Character* owner) {
+    int finalBlock = owner->calculate_total_block(amount);
+    owner->addBlock(finalBlock);
 }

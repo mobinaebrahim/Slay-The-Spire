@@ -13,12 +13,13 @@
 #include "audiomanager.h"
 #include "networkmanager.h"
 #include "mpcombatwindow.h"
+#include "mainwindow.h"
 
 class MapPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MapPage(QWidget *parent = nullptr, bool isLeader = true);
+    explicit MapPage(QWidget *parent = nullptr, bool isLeader = true, bool isMultiplayer = true);
     ~MapPage();
 
 private slots:
@@ -28,6 +29,7 @@ private:
     MapView *m_mapView;
     GameMap *m_gameMap;
     bool m_isLeader = true;
+    bool m_isMultiplayer = true;
     bool m_combatOpen = false;
 
     void handleRoomEntered(MapNode *node);

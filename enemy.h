@@ -8,13 +8,14 @@ using namespace std;
 class BattleManager;
 class Card;
 
-enum class IntentType { Attack, Defend, Buff, Debuff, Combined, Special};
+enum class IntentType { Attack, Defend, Buff, Debuff, Combined, AttackDebuff, AttackAddCard, Special};
 
 class Enemy : public Character {
 protected:
     IntentType currentIntent;
     int intentValue;
     int intentBlock;
+    BattleManager* battleManagerPtr = nullptr;
 
 public:
     Enemy(std::string n, int h, int max);
@@ -22,12 +23,15 @@ public:
 
     virtual void chooseAction();
     virtual void executeAction(Character* target);
+    virtual void onPlayerPlayedCard(Card* card) {}
 
     IntentType getIntentType() const;
     int getIntentValue() const;
     string getIntentString() const;
 
-    virtual void onPlayerPlayedCard(Card* card) {}
+    void setBattleManager(BattleManager* bm) { battleManagerPtr = bm; }
+    void setHp(int newHp) { hp = newHp; }
+    void setMaxHp(int newMax) { maxHp = newMax; }
 };
 
 #endif

@@ -11,6 +11,8 @@
 using namespace std;
 class BattleManager;
 
+static const int MAX_HAND_SIZE = 10;
+
 class Player : public Character {
 private:
     int currentEnergy;
@@ -26,9 +28,6 @@ private:
 public:
     Player(string n, int h, int max, int en, int g, BattleManager* bm);
 
-    const vector<Card*>& getDrawPile() const { return drawPile; }
-    const vector<Card*>& getDiscardPile() const { return discardPile;}
-
     int getGold() const { return gold; }
     int getDrawPileSize() const { return drawPile.size(); }
     int getDiscardPileSize() const { return discardPile.size(); }
@@ -38,6 +37,9 @@ public:
     int getHandSize(){ return hand.size(); }
     const vector<Card*>& getHand() const { return hand; }
     const vector<Card*>& getExhaustPile() const { return exhaustPile; }
+    const vector<Card*>& getDrawPile() const { return drawPile; }
+    const vector<Card*>& getDiscardPile() const { return discardPile; }
+    vector<Card*> getFullDeck() const;
     void resetEnergy() { currentEnergy = maxEnergy; }
 
     void decreaseEnergy(int amount);
@@ -49,7 +51,7 @@ public:
     void moveCardFromExhaustToHand();
     void exhaustCard(Card* card);
     void exhaust_card_automatically(Card* card);
-    Card* chooseCardFromHand(); 
+    Card* chooseCardFromHand();
     void addCopiesToHand(Card* chosenCard, int count);
     void add_block_when_exhausted();
     void TurnStartEffect(string effect) override;

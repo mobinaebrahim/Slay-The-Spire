@@ -1,6 +1,6 @@
 #include "NormalEnemies.h"
-#include <cstdlib> 
-#include <ctime>   
+#include <cstdlib>
+#include <ctime>
 
 //_________________________________________Cultist_________________________________________
 Cultist::Cultist() : Enemy("Cultist", 50, 50), isFirstTurn(true) {
@@ -13,23 +13,24 @@ Cultist::Cultist() : Enemy("Cultist", 50, 50), isFirstTurn(true) {
 void Cultist::chooseAction() {
     if (isFirstTurn) {
         currentIntent = IntentType::Buff;
-        intentValue = 3; 
+        intentValue = 3;
     }
     else {
         currentIntent = IntentType::Attack;
-        intentValue = 6; 
+        intentValue = 6;
     }
 }
 
 void Cultist::executeAction(Character* target) {
     if (currentIntent == IntentType::Buff) {
         this->applyStatus(new StrengthEffect(intentValue));
-        isFirstTurn = false; 
+        isFirstTurn = false;
     }
     else if (currentIntent == IntentType::Attack) {
         if (target) {
             int finalDamage = calculateOutgoingDamage(intentValue);
             target->takeDamage(finalDamage);
+            this->applyStatus(new StrengthEffect(3));
         }
     }
     chooseAction();
@@ -59,13 +60,13 @@ void JawWorm::chooseAction() {
         }
         if (randomIntent >= 26 && randomIntent <= 55) {
             currentIntent = IntentType::Combined;
-            intentValue = 7;  
+            intentValue = 7;
             intentBlock = 5;
         }
         else if (randomIntent >= 56 && randomIntent <= 100) {
             currentIntent = IntentType::Buff;
-            intentValue = 3;   
-            intentBlock = 6; 
+            intentValue = 3;
+            intentBlock = 6;
         }
     }
 }
@@ -111,7 +112,7 @@ void Louse::chooseAction() {
     }
     else {
         currentIntent = IntentType::Buff;
-        intentValue = 3; 
+        intentValue = 3;
         intentBlock = 0;
     }
 }
@@ -123,19 +124,19 @@ void Louse::executeAction(Character* target) {
             target->takeDamage(finalDamage);
         }
     }
-    else if (currentIntent == IntentType::Buff) 
+    else if (currentIntent == IntentType::Buff)
         this->applyStatus(new StrengthEffect(intentValue));
     chooseAction();
 }
 
 int Louse::takeDamage(int incomingDamage) {
-    Enemy::takeDamage(incomingDamage);
-
+    int actualDamage = Character::takeDamage(incomingDamage);
     if (this->hp > 0 && !hasCurledUp) {
-        int randomBlock = 3 + (rand() % 5); 
+        int randomBlock = 3 + (rand() % 5);
         this->block += randomBlock;
-        hasCurledUp = true; 
+        hasCurledUp = true;
     }
+    return actualDamage;
 }
 
 //________________________________________SmallSlime_______________________________________
@@ -157,7 +158,7 @@ void SmallSlime::chooseAction() {
 
     else {
         currentIntent = IntentType::Debuff;
-        intentValue = 1; 
+        intentValue = 1;
         intentBlock = 0;
     }
 }
@@ -170,7 +171,7 @@ void SmallSlime::executeAction(Character* target) {
         }
     }
     else if (currentIntent == IntentType::Debuff) {
-        if (target) 
+        if (target)
             target->applyStatus(new WeakEffect(intentValue));
     }
     chooseAction();
@@ -188,35 +189,32 @@ void MediumSlime::chooseAction() {
     int randomIntent = 1 + (rand() % 100);
 
     if (randomIntent <= 30) {
-        currentIntent = IntentType::Debuff; 
-        intentValue = 7; 
+        currentIntent = IntentType::AttackAddCard;
+        intentValue = 7;
     }
     else if (randomIntent <= 70) {
-        currentIntent = IntentType::Attack; 
+        currentIntent = IntentType::Attack;
         intentValue = 10;
     }
     else {
-        currentIntent = IntentType::Debuff; 
-        intentValue = 1; 
+        currentIntent = IntentType::Debuff;
+        intentValue = 1;
     }
 }
 
 void MediumSlime::executeAction(Character* target) {
-    if (currentIntent == IntentType::Attack) { 
-        if (target) 
+    if (currentIntent == IntentType::Attack) {
+        if (target)
             target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else if (currentIntent == IntentType::Debuff) {
-        if (target) {
-            if (intentValue == 7) {
-                target->takeDamage(calculateOutgoingDamage(7));
-                Player* player = dynamic_cast<Player*>(target);
-                if (player) 
-                    player->addCardToDiscardPile(new SlimeCard());
-            }
-            else 
-                target->applyStatus(new WeakEffect(1));
-        }
+        target->applyStatus(new WeakEffect(1));
+    }
+    else if(currentIntent == IntentType::AttackAddCard){
+        target->takeDamage(calculateOutgoingDamage(7));
+        Player* player = dynamic_cast<Player*>(target);
+        if (player)
+            player->addCardToDiscardPile(new SlimeCard());
     }
     chooseAction();
 }
@@ -238,16 +236,16 @@ void LargeSlime::chooseAction() {
     else {
         int randomIntent = 1 + (rand() % 100);
         if (randomIntent <= 30) {
-            currentIntent = IntentType::Debuff; 
+            currentIntent = IntentType::AttackAddCard;
             intentValue = 7;
         }
         else if (randomIntent <= 70) {
-            currentIntent = IntentType::Attack; 
+            currentIntent = IntentType::Attack;
             intentValue = 10;
         }
         else {
-            currentIntent = IntentType::Debuff; 
-            intentValue = 1; 
+            currentIntent = IntentType::Debuff;
+            intentValue = 1;
         }
     }
 }
@@ -255,7 +253,21 @@ void LargeSlime::chooseAction() {
 void LargeSlime::executeAction(Character* target) {
     if (currentIntent == IntentType::Combined) {
         hasSplited = true;
-        //incomplete
+        int remainingHp = this->hp;
+
+        MediumSlime* slime1 = new MediumSlime();
+        MediumSlime* slime2 = new MediumSlime();
+        slime1->setMaxHp(remainingHp);
+        slime1->setHp(remainingHp);
+        slime2->setMaxHp(remainingHp);
+        slime2->setHp(remainingHp);
+
+        if (battleManagerPtr) {
+            battleManagerPtr->spawnEnemy(slime1);
+            battleManagerPtr->spawnEnemy(slime2);
+            battleManagerPtr->removeEnemy(this);
+        }
+        return;
     }
     else {
         if (currentIntent == IntentType::Attack) {
@@ -263,19 +275,28 @@ void LargeSlime::executeAction(Character* target) {
                 target->takeDamage(calculateOutgoingDamage(intentValue));
         }
         else if (currentIntent == IntentType::Debuff) {
+            target->applyStatus(new WeakEffect(1));
+        }
+        else if (currentIntent == IntentType::AttackAddCard) {
             if (target) {
-                if (intentValue == 7) {
-                    target->takeDamage(calculateOutgoingDamage(7));
-                    Player* p = dynamic_cast<Player*>(target);
-                    if (p)
-                        p->addCardToDiscardPile(new SlimeCard());
-                }
-                else 
-                    target->applyStatus(new WeakEffect(1));
+                target->takeDamage(calculateOutgoingDamage(7));
+                Player* p = dynamic_cast<Player*>(target);
+                if (p) p->addCardToDiscardPile(new SlimeCard());
             }
         }
     }
     chooseAction();
+}
+
+int LargeSlime::takeDamage(int incomingDamage) {
+    int actualDamage = Enemy::takeDamage(incomingDamage);
+
+    if (this->hp > 0 && this->hp <= (this->maxHp / 2) && !hasSplited) {
+        currentIntent = IntentType::Combined;
+        intentValue = 0;
+        intentBlock = 0;
+    }
+    return actualDamage;
 }
 
 //__________________________________________Thief__________________________________________
@@ -287,16 +308,16 @@ Thief::Thief(string name) : Enemy(name, 48, 48), turnCounter(1) {
 
 void Thief::chooseAction() {
     if (turnCounter == 1 || turnCounter == 2) {
-        currentIntent = IntentType::Attack; 
-        intentValue = 10;    
+        currentIntent = IntentType::Attack;
+        intentValue = 10;
     }
     else if (turnCounter == 3) {
-        currentIntent = IntentType::Defend; 
+        currentIntent = IntentType::Defend;
         intentValue = 0;
         intentBlock = 6;
     }
     else {
-        currentIntent = IntentType::Special; 
+        currentIntent = IntentType::Special;
         intentValue = 0;
     }
 }
@@ -310,26 +331,27 @@ void Thief::executeAction(Character* target) {
                 p->loseGold(15);
         }
     }
-    else if (currentIntent == IntentType::Defend) 
+    else if (currentIntent == IntentType::Defend)
         this->addBlock(intentBlock);
-    else if (currentIntent == IntentType::Special) 
+    else if (currentIntent == IntentType::Special)
         hasScaped = true;
 
-    turnCounter++; 
+    turnCounter++;
     chooseAction();
 }
 
 //_____________________________________SphericGuardian_____________________________________
 SphericGuardian:: SphericGuardian() : Enemy("SphericGuardian", 0, 0), isFirstTurn(true) {
     int randomHP = 20 + (rand() % 21);
-    this->hp = randomHP; 
+    this->hp = randomHP;
     this->maxHp = randomHP;
     chooseAction();
 }
 
 void SphericGuardian::chooseAction() {
     if (isFirstTurn) {
-        currentIntent = IntentType::Buff;
+        currentIntent = IntentType::Combined;
+        intentValue = 10;
         intentBlock = 25;
     }
     else {
@@ -340,7 +362,7 @@ void SphericGuardian::chooseAction() {
             intentBlock = 15;
         }
         else {
-            currentIntent = IntentType::Attack; // Slam (Attack twice)
+            currentIntent = IntentType::Attack;
             intentValue = 10;
             intentBlock = 0;
         }
@@ -350,13 +372,13 @@ void SphericGuardian::chooseAction() {
 void SphericGuardian::executeAction(Character* target){
     if (isFirstTurn) {
         this->addBlock(intentBlock);
-        target->takeDamage(calculateOutgoingDamage(10));
-        target->applyStatus(new FrailEffect(5)); 
+        target->takeDamage(calculateOutgoingDamage(intentValue));
+        target->applyStatus(new FrailEffect(5));
         isFirstTurn = false;
     }
     else if (currentIntent == IntentType::Combined) {
-            target->takeDamage(calculateOutgoingDamage(intentValue));
-            this->addBlock(intentBlock);
+        target->takeDamage(calculateOutgoingDamage(intentValue));
+        this->addBlock(intentBlock);
     }
     else {
         target->takeDamage(calculateOutgoingDamage(intentValue));
@@ -379,17 +401,17 @@ void BlueSlaver::chooseAction() {
         intentValue = 12;
     }
     else {
-        currentIntent = IntentType::Combined; 
-        intentValue = 7; 
+        currentIntent = IntentType::AttackDebuff;
+        intentValue = 7;
     }
 }
 
 void BlueSlaver::executeAction(Character* target) {
     if (currentIntent == IntentType::Attack)
         target->takeDamage(calculateOutgoingDamage(intentValue));
-    else if (currentIntent == IntentType::Combined) {
+    else if (currentIntent == IntentType::AttackDebuff) {
         target->takeDamage(calculateOutgoingDamage(intentValue));
-        target->applyStatus(new WeakEffect(1)); 
+        target->applyStatus(new WeakEffect(1));
     }
     chooseAction();
 }
@@ -403,7 +425,7 @@ RedSlaver:: RedSlaver() : Enemy("RedSlaver", 48, 48), isFirstTurn(true), hasEnta
 
 void RedSlaver::chooseAction() {
     if (isFirstTurn) {
-        currentIntent = IntentType::Attack; 
+        currentIntent = IntentType::Attack;
         intentValue = 13;
     }
     else {
@@ -411,15 +433,15 @@ void RedSlaver::chooseAction() {
 
         if (!hasEntangled && randVal < 25) {
             currentIntent = IntentType::Debuff;
-            intentValue = 0; 
+            intentValue = 0;
         }
-        else if (randVal < 75) { 
+        else if (randVal < 75) {
             currentIntent = IntentType::Attack;
             intentValue = 13;
         }
-        else { 
-            currentIntent = IntentType::Combined;
-            intentValue = 8; 
+        else {
+            currentIntent = IntentType::AttackDebuff;
+            intentValue = 8;
         }
     }
 }
@@ -432,8 +454,8 @@ void RedSlaver:: executeAction(Character* target) {
         target->takeDamage(calculateOutgoingDamage(intentValue));
     }
     else if (currentIntent == IntentType::Debuff) {
-            hasEntangled = true;
-            target->applyStatus(new EntangledEffect(1));
+        hasEntangled = true;
+        target->applyStatus(new EntangledEffect(1));
     }
     else {
         target->takeDamage(calculateOutgoingDamage(intentValue));

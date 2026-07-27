@@ -11,7 +11,7 @@ using namespace std;
 
 class Cultist : public Enemy {
 private:
-    bool isFirstTurn; 
+    bool isFirstTurn;
 
 public:
     Cultist();
@@ -31,14 +31,15 @@ public:
 
 class Louse : public Enemy {
 private:
-    bool hasCurledUp; 
-    int colorChance; 
+    bool hasCurledUp;
+    int colorChance;
 
 public:
     Louse();
     void chooseAction() override;
     void executeAction(Character* target) override;
     int takeDamage(int incomingDamage) override;
+    int getColorChance() const { return colorChance; }
 };
 
 class SmallSlime : public Enemy {
@@ -63,6 +64,7 @@ public:
     LargeSlime();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    int takeDamage(int incomingDamage) override;
 };
 
 class Thief : public Enemy {
@@ -96,7 +98,7 @@ public:
 class RedSlaver : public Enemy {
 private:
     bool isFirstTurn;
-    bool hasEntangled; 
+    bool hasEntangled;
 
 public:
     RedSlaver();

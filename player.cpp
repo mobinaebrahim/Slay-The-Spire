@@ -35,13 +35,16 @@ void Player::drawCards(int count) {
 
             unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
             std::default_random_engine motor(seed);
-
             std::shuffle(drawPile.begin(), drawPile.end(), motor);
         }
 
         Card* topCard = drawPile.back();
         drawPile.pop_back();
-        hand.push_back(topCard);
+
+        if ((int)hand.size() >= MAX_HAND_SIZE)
+            discardPile.push_back(topCard);
+        else
+            hand.push_back(topCard);
     }
 }
 
@@ -62,26 +65,28 @@ void Player::exhaustCard(Card* card) {
         if (*it == card) {
             exhaustPile.push_back(card);
             hand.erase(it);
-            add_block_when_exhausted(); 
+            add_block_when_exhausted();
+
+            for (auto* effect : effects)
+                effect->onCardExhausted(this);
+
             break;
         }
     }
 }
 
 void Player::exhaust_card_automatically(Card* card) {
-    exhaustCard(card); 
+    exhaustCard(card);
 }
 
 Card* Player::chooseCardFromHand() {
     if (hand.empty())
         return nullptr;
 
-    for (Card* c : hand) {
-        if (c->getType() == CardType::Attack || c->getType() == CardType::Power)
-            return c;
-    }
-    return nullptr;
+    int handSize = hand.size();
+    int randomCard = rand() % (handSize + 1);
 
+    return hand[randomCard];
 }
 
 void Player::addCopiesToHand(Card* chosenCard, int count) {
@@ -89,7 +94,12 @@ void Player::addCopiesToHand(Card* chosenCard, int count) {
         return;
     for (int i = 0; i < count; i++){
         Card* newCopy = createCardByName(chosenCard->getName());
-        if (newCopy)
+        if (!newCopy)
+            continue;
+
+        if ((int)hand.size() >= MAX_HAND_SIZE)
+            discardPile.push_back(newCopy);
+        else
             hand.push_back(newCopy);
     }
 }
@@ -105,8 +115,8 @@ void Player::add_block_when_exhausted() {
 void Player::addBurnToDiscard(int count) {
     for (int i = 0; i < count; i++) {
         Card* burnCard = createCardByName("Burn");
-        if (burnCard != nullptr) 
-            discardPile.push_back(burnCard); 
+        if (burnCard != nullptr)
+            discardPile.push_back(burnCard);
     }
 }
 
@@ -116,19 +126,19 @@ void Player::TurnStartEffect(string effect) {
         decreaseHp(1);
         drawCards(1);
     }
-        
+
 }
 
 void Player::endTurnCleanUp() {
     for (Card* card : hand) {
-        if (card) 
+        if (card)
             discardPile.push_back(card);
     }
-    hand.clear(); 
+    hand.clear();
 }
 
 void Player::addCardToDrawPile(Card* card) {
-    if (card != nullptr) 
+    if (card != nullptr)
         drawPile.push_back(card);
 }
 
@@ -137,18 +147,18 @@ void Player::addCardToDiscardPile(Card* card) {
         discardPile.push_back(card);
 }
 
-void Player::loseGold(int amount) { 
-    gold -= amount; 
-    if (gold < 0) 
-        gold = 0; 
+void Player::loseGold(int amount) {
+    gold -= amount;
+    if (gold < 0)
+        gold = 0;
 }
 
 void Player::playCard(Card* card, Character* target) {
 
-    if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
+    if (card->getType() == CardType::Attack && this->hasEffect("Entangled"))
         return;
 
-    int finalCost = card->getCost(this); 
+    int finalCost = card->getCost(this);
 
     if (this->getEnergy() >= finalCost) {
         this->decreaseEnergy(finalCost);
@@ -177,13 +187,13 @@ int Player::countCardsByName(string name) {
 }
 
 bool Player::isHandAllAttacks() {
-    if (hand.empty()) 
+    if (hand.empty())
         return false;
     for (Card* c : hand) {
-        if (c->getType() != CardType::Attack) 
-            return false; 
+        if (c->getType() != CardType::Attack)
+            return false;
     }
-    return true; 
+    return true;
 }
 
 void Character::applyTurnStartEffects() {
@@ -203,4 +213,13 @@ void Character::applyTurnEndEffects() {
             ++it;
         }
     }
+}
+
+vector<Card*> Player::getFullDeck() const {
+    vector<Card*> full;
+    full.insert(full.end(), drawPile.begin(), drawPile.end());
+    full.insert(full.end(), discardPile.begin(), discardPile.end());
+    full.insert(full.end(), hand.begin(), hand.end());
+    full.insert(full.end(), exhaustPile.begin(), exhaustPile.end());
+    return full;
 }

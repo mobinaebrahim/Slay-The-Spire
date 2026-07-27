@@ -1,9 +1,9 @@
-
 #include "mappage.h"
 
-MapPage::MapPage(QWidget *parent, bool isLeader)
+MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer)
     : QWidget(parent)
     , m_isLeader(isLeader)
+    , m_isMultiplayer(isMultiplayer)
     , m_combatOpen(false)
 {
     setWindowFlags(Qt::Window);
@@ -26,32 +26,38 @@ MapPage::MapPage(QWidget *parent, bool isLeader)
             m_mapView->buildScene(m_gameMap);
         });
 
-        QTimer::singleShot(300, this, [this](){
-            sendMapData();
-        });
+        if (m_isMultiplayer) {
+            QTimer::singleShot(300, this, [this](){
+                sendMapData();
+            });
+        }
     }
 
-    connect(&NetworkManager::instance(), &NetworkManager::game_action_received, this,
-            [this](const QJsonObject &obj){
-                QString type = obj["type"].toString();
-                qDebug() << "MapPage received:" << type << "isLeader=" << m_isLeader << "combatOpen=" << m_combatOpen;
+    if (!m_isMultiplayer) {
+        // بازی تک‌نفره: هیچ listener شبکه‌ای لازم نیست.
+    } else {
+        connect(&NetworkManager::instance(), &NetworkManager::game_action_received, this,
+                [this](const QJsonObject &obj){
+                    QString type = obj["type"].toString();
+                    qDebug() << "MapPage received:" << type << "isLeader=" << m_isLeader << "combatOpen=" << m_combatOpen;
 
-                if (type == "map_data" && !m_isLeader) {
-                    handleIncomingMapData(obj["map"].toObject());
-                }
-                else if (type == "room_selected" && !m_isLeader) {
-                    handleIncomingRoomSelected(obj["floor"].toInt(), obj["index"].toInt());
-                }
-                else if (type == "combat_started") {
-                    qDebug() << "combat_started received! combatOpen=" << m_combatOpen;
-                    if (!m_combatOpen) {
-                        qDebug() << "Opening CombatPage for" << (m_isLeader ? "Leader" : "Teammate");
-                        onCombatStarted();
-                    } else {
-                        qDebug() << "Combat already open, ignoring.";
+                    if (type == "map_data" && !m_isLeader) {
+                        handleIncomingMapData(obj["map"].toObject());
                     }
-                }
-            });
+                    else if (type == "room_selected" && !m_isLeader) {
+                        handleIncomingRoomSelected(obj["floor"].toInt(), obj["index"].toInt());
+                    }
+                    else if (type == "combat_started") {
+                        qDebug() << "combat_started received! combatOpen=" << m_combatOpen;
+                        if (!m_combatOpen) {
+                            qDebug() << "Opening CombatPage for" << (m_isLeader ? "Leader" : "Teammate");
+                            onCombatStarted();
+                        } else {
+                            qDebug() << "Combat already open, ignoring.";
+                        }
+                    }
+                });
+    }
 
     connect(m_mapView, &MapView::roomClicked, this, [this](MapNode *node){
         if (!m_isLeader) return;
@@ -63,11 +69,13 @@ MapPage::MapPage(QWidget *parent, bool isLeader)
                 m_mapView->buildScene(m_gameMap);
                 handleRoomEntered(node);
 
-                QJsonObject msg;
-                msg["type"] = "room_selected";
-                msg["floor"] = node->floor();
-                msg["index"] = node->index();
-                NetworkManager::instance().send_game_action(msg);
+                if (m_isMultiplayer) {
+                    QJsonObject msg;
+                    msg["type"] = "room_selected";
+                    msg["floor"] = node->floor();
+                    msg["index"] = node->index();
+                    NetworkManager::instance().send_game_action(msg);
+                }
             }
         });
     });
@@ -133,8 +141,7 @@ void MapPage::onCombatStarted()
     m_combatOpen = true;
 
     qDebug() << "Creating CombatPage for" << (m_isLeader ? "Leader" : "Teammate");
-    //MPCombatWindow *combat = new MPCombatWindow(this, m_isLeader);    combat->setAttribute(Qt::WA_DeleteOnClose);
-    MPCombatWindow *combat = new MPCombatWindow(nullptr, m_isLeader);
+    MPCombatWindow *combat = new MPCombatWindow(nullptr, m_isLeader);    combat->setAttribute(Qt::WA_DeleteOnClose);
 
     this->hide();
 
@@ -184,14 +191,31 @@ void MapPage::resizeEvent(QResizeEvent *event)
 
 void MapPage::openCombat(MapNode *node)
 {
-    qDebug() << "openCombat called, isLeader=" << m_isLeader;
+    qDebug() << "openCombat called, isLeader=" << m_isLeader << "isMultiplayer=" << m_isMultiplayer;
+
+    if (!m_isMultiplayer) {
+        // بازی تک‌نفره: صفحه‌ی نبرد محلی دوستمون (MainWindow) رو مستقیم
+        // باز می‌کنیم — هیچ پیامی به سرور فرستاده نمی‌شه.
+        MainWindow *combatWindow = new MainWindow(nullptr);
+        combatWindow->setAttribute(Qt::WA_DeleteOnClose);
+
+        this->hide();
+
+        connect(combatWindow, &QObject::destroyed, this, [this](){
+            this->show();
+        });
+
+        combatWindow->showFullScreen();
+        return;
+    }
+
     if (m_isLeader) {
         // Leader sends start_combat to server
         QJsonObject msg;
         msg["type"] = "start_combat";
         msg["enemy_name"] = "JawWorm"; // TODO: based on node
         NetworkManager::instance().send_game_action(msg);
-        // CombatPage will be opened when combat_started is received
+        // MPCombatWindow will be opened when combat_started is received
     }
     // Teammate waits for combat_started from server
 }

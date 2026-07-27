@@ -60,6 +60,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         assets/icons/deck.png assets/icons/discard_pile.png assets/icons/draw_pile.png assets/icons/end_turn.png assets/icons/energy.png assets/icons/gold.png assets/icons/hp.png assets/icons/map.png assets/icons/settings.png
         assets/audio/Card.mp3 assets/audio/DrawPile&DiscardPile.mp3 "assets/audio/End Turn.mp3" assets/audio/Exordium.mp3 assets/audio/hit.mp3 assets/audio/Potion.mp3
         mpcombatwindow.h mpcombatwindow.cpp mpcombatwindow.ui
+        mainwindow.ui
+        mainwindow.h
+        mainwindow.cpp
     )
 else()
     if(ANDROID)

@@ -102,3 +102,37 @@ void SlaversCollar::onTurnStart(Player* owner, BattleManager* bm) {
     //if (owner && bm && bm->isBossOrEliteCombat())
     //    owner->increaseEnergy(1);
 }
+
+//_________________________________ WarpedTongs __________________________________
+WarpedTongs::WarpedTongs() : Relic("Warped Tongs", "At the start of combat, upgrade a random card for the rest of combat.") {}
+void WarpedTongs::onCombatStart(Player* owner, BattleManager* bm) {
+    if (!owner)
+        return;
+    const auto& pile = owner->getDrawPile();
+    if (!pile.empty()) {
+        int idx = rand() % pile.size();
+        pile[idx]->upgrade();
+        // incomplete
+    }
+}
+
+//_______________________________ MutagenicStrength ______________________________
+MutagenicStrength::MutagenicStrength() : Relic("Mutagenic Strength", "At the start of combat, gain 3 Strength. Lose it at the end of that turn.") {}
+void MutagenicStrength::onCombatStart(Player* owner, BattleManager* bm) {
+    if (owner)
+        //owner->applyStatus(new TempStrengthEffect(3));
+}
+
+//_______________________________ CultistHeadpiece _______________________________
+CultistHeadpiece::CultistHeadpiece() : Relic("Cultist Headpiece", "At the start of combat, play a crow sound.") {}
+void CultistHeadpiece::onCombatStart(Player* owner, BattleManager* bm) {
+    //if (bm && bm->onCombatStartSoundCallback)
+    //    bm->onCombatStartSoundCallback();
+}
+
+//________________________________ FaceOfTheCleric _______________________________
+FaceOfTheCleric::FaceOfTheCleric() : Relic("Face of the Cleric", "Increase your max HP by 1 after every combat.") {}
+void FaceOfTheCleric::onCombatEnd(Player* owner, BattleManager* bm) {
+    if (owner)
+        owner->increaseMaxHP(1);
+}

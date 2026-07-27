@@ -100,4 +100,29 @@ public:
     void onTurnStart(Player* owner, BattleManager* bm) override;
 };
 
+//__________________________________ Event __________________________________
+class WarpedTongs : public Relic {
+public:
+    WarpedTongs();
+    void onCombatStart(Player* owner, BattleManager* bm) override;
+};
+
+class MutagenicStrength : public Relic {
+public:
+    MutagenicStrength();
+    void onCombatStart(Player* owner, BattleManager* bm) override;
+};
+
+class CultistHeadpiece : public Relic {
+public:
+    CultistHeadpiece();
+    void onCombatStart(Player* owner, BattleManager* bm) override;
+};
+
+class FaceOfTheCleric : public Relic {
+public:
+    FaceOfTheCleric();
+    void onCombatEnd(Player* owner, BattleManager* bm) override;
+};
+
 #endif

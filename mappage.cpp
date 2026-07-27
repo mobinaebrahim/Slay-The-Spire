@@ -174,7 +174,6 @@ void MapPage::onCombatStarted()
         this->show();
 
         if (victory && m_isLeader) {
-            // TODO: برو طبقه بعدی
         }
     });
 
@@ -206,6 +205,19 @@ void MapPage::handleIncomingMapData(const QJsonObject &mapJson)
     });
 }
 
+void MapPage::updateHud()
+{
+    m_hpBar->setMaximum(m_playerMaxHp);
+    m_hpBar->setValue(m_playerHp);
+    m_hpBar->setFormat(QString("%1 / %2").arg(m_playerHp).arg(m_playerMaxHp));
+    m_hpLabel->setText(QString("%1/%2").arg(m_playerHp).arg(m_playerMaxHp));
+
+    m_goldLabel->setText(QString::number(m_playerGold));
+
+    int deckCount = m_deckNames.empty() ? 15 : static_cast<int>(m_deckNames.size());
+    m_deckLabel->setText(QString::number(deckCount));
+}
+
 void MapPage::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
@@ -216,7 +228,10 @@ void MapPage::openCombat(MapNode *node)
     qDebug() << "openCombat called, isLeader=" << m_isLeader << "isMultiplayer=" << m_isMultiplayer;
 
     if (!m_isMultiplayer) {
+
+
         m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
+        updateHud();
 
         MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
                                                   m_playerGold, m_deckNames);
@@ -231,6 +246,7 @@ void MapPage::openCombat(MapNode *node)
                         m_playerMaxHp= maxHp;
                         m_playerGold = finalGold;
                         m_deckNames  = finalDeck;
+                        updateHud();
                     } else {
                         m_playerHp = 0;
                     }

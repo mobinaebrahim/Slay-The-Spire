@@ -7,6 +7,12 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QJsonObject>
+#include <vector>
+#include <string>
+#include <QLabel>
+#include <QProgressBar>
+#include <QHBoxLayout>
+
 
 #include "mapview.h"
 #include "gamemap.h"
@@ -37,6 +43,13 @@ private:
     int m_playerHp = 80;
     int m_playerMaxHp = 80;
     std::vector<std::string> m_deckNames;
+    QWidget* m_topHud = nullptr;
+    QProgressBar* m_hpBar = nullptr;
+    QLabel* m_hpLabel = nullptr;
+    QLabel* m_goldLabel = nullptr;
+    QLabel* m_deckLabel = nullptr;
+
+    void updateHud();
 
     void persistProgress();
 

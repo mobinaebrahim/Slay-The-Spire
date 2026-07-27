@@ -888,8 +888,11 @@ void MainWindow::checkGameOver() {
         disableAllCards();
         enemyTurnQueue.clear();
         enemyTurnQueueIndex = 0;
-        if (battleManager->getAnyEnemyDied())
+        if (battleManager->getAnyEnemyDied()) {
+            for (auto* relic : playerObject->getRelics())
+                relic->onCombatEnd(playerObject, battleManager);
             showGameOverText("VICTORY", QColor("#f5c518"));
+        }
         else
             showGameOverText("ESCAPED", QColor("#8a8a8a"));
         return;

@@ -80,5 +80,19 @@
         <file>images/potions/FairyInaBottle.png</file>
         <file>images/potions/FirePotion.png</file>
         <file>images/potions/SwiftPotion.png</file>
+        <file>images/relics/BurningBlood.png</file>
+        <file>images/relics/CallingBell.png</file>
+        <file>images/relics/CultistHeadpiece.png</file>
+        <file>images/relics/FaceOfTheCleric.png</file>
+        <file>images/relics/Girya.png</file>
+        <file>images/relics/IceCream.png</file>
+        <file>images/relics/Kunai.png</file>
+        <file>images/relics/MarkOfPain.png</file>
+        <file>images/relics/MutagenicStrength.png</file>
+        <file>images/relics/PreservedInsect.png</file>
+        <file>images/relics/Shuriken.png</file>
+        <file>images/relics/SlaversCollar.png</file>
+        <file>images/relics/VelvetChoker.png</file>
+        <file>images/relics/WarpedTongs.png</file>
     </qresource>
 </RCC>

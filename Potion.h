@@ -47,6 +47,7 @@ class FairyInABottle : public Potion {
 public:
     FairyInABottle();
     void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+    bool isPlayable() const override;
 };
 
 #endif

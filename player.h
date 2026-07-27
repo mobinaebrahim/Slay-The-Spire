@@ -43,7 +43,7 @@ public:
     const vector<Card*>& getDrawPile() const { return drawPile; }
     const vector<Card*>& getDiscardPile() const { return discardPile; }
     vector<Card*> getFullDeck() const;
-    void resetEnergy() { currentEnergy = maxEnergy; }
+    void resetEnergy();
 
     void decreaseEnergy(int amount);
     void increaseEnergy(int amount);

@@ -14,6 +14,7 @@ SOURCES += \
     ../CurseCard.cpp \
     ../EliteEnemies.cpp \
     ../NormalEnemies.cpp \
+    ../Potion.cpp \
     ../PowerCard.cpp \
     ../SkillCard.cpp \
     ../StatusCard.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     ../CurseCard.h \
     ../EliteEnemies.h \
     ../NormalEnemies.h \
+    ../Potion.h \
     ../PowerCard.h \
     ../SkillCard.h \
     ../StatusCard.h \

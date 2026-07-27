@@ -46,8 +46,6 @@ void SwiftPotion::applyEffect(Character* caster, Character* target, BattleManage
 //___________________________________FairyInABottle___________________________________
 FairyInABottle::FairyInABottle() : Potion("FairyInABottle", "When you would die, heal to 30% instead") {}
 
-void FairyInABottle::applyEffect(Character* caster, Character* target, BattleManager* bm) {
-    // incomplete
-}
+void FairyInABottle::applyEffect(Character* caster, Character* target, BattleManager* bm) {}
 
 bool FairyInABottle::isPlayable() const { return false; }

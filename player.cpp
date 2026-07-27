@@ -241,3 +241,40 @@ void Player::upgradeAllBurns() {
     upgradeBurnsIn(discardPile);
     upgradeBurnsIn(exhaustPile);
 }
+
+void Player::addPotion(Potion* potion) {
+    if (potion)
+        potions.push_back(potion);
+}
+
+void Player::removePotion(Potion* potion) {
+    auto it = std::find(potions.begin(), potions.end(), potion);
+    if (it != potions.end()) {
+        delete *it;
+        potions.erase(it);
+    }
+}
+
+void Player::usePotion(Potion* potion, Character* target) {
+    if (!potion || !potion->isPlayable())
+        return;
+    potion->applyEffect(this, target, battleManagerPtr);
+    removePotion(potion);
+}
+
+int Player::takeDamage(int incomingDamage) {
+    int damageToHp = Character::takeDamage(incomingDamage);
+
+    if (hp <= 0) {
+        for (auto it = potions.begin(); it != potions.end(); ++it) {
+            FairyInABottle* fairy = dynamic_cast<FairyInABottle*>(*it);
+            if (fairy) {
+                hp = static_cast<int>(maxHp * 0.3);
+                delete *it;
+                potions.erase(it);
+                break;
+            }
+        }
+    }
+    return damageToHp;
+}

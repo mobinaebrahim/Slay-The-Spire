@@ -163,6 +163,9 @@ void Player::playCard(Card* card, Character* target) {
     if (card->getType() == CardType::Attack && this->hasEffect("Entangled")) 
         return;
 
+    if (hasRelic("VelvetChoker") && cardsPlayedThisTurn >= 6)
+        return;
+
     int finalCost = card->getCost(this); 
 
     if (this->getEnergy() >= finalCost) {
@@ -291,4 +294,11 @@ int Player::takeDamage(int incomingDamage) {
         }
     }
     return damageToHp;
+}
+
+void Player::resetEnergy() {
+    if (hasRelic("Ice Cream"))
+        currentEnergy += maxEnergy;
+    else
+        currentEnergy = maxEnergy;
 }

@@ -30,7 +30,6 @@ void Girya::onCampsite(Player* owner) {
 
 //___________________________________ IceCream ___________________________________
 IceCream::IceCream() : Relic("Ice Cream", "Energy is now conserved between turns.") {}
-// will complete in Player::resetEnergy 
 
 //___________________________________ Shuriken ___________________________________
 Shuriken::Shuriken() : Relic("Shuriken", "Every time you play 3 attacks in a turn, gain 1 Strength.") {}
@@ -93,7 +92,6 @@ VelvetChoker::VelvetChoker() : Relic("Velvet Choker", "Gain 1 extra energy per t
 void VelvetChoker::onTurnStart(Player* owner, BattleManager* bm) {
     if (owner)
         owner->increaseEnergy(1);
-    //incomplete
 }
 
 //_________________________________ SlaversCollar ________________________________

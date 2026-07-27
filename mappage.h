@@ -36,6 +36,7 @@ private:
     int m_saveId = -1;
     int m_playerHp = 80;
     int m_playerMaxHp = 80;
+    std::vector<std::string> m_deckNames;
 
     void persistProgress();
 

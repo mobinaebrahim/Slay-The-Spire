@@ -218,15 +218,19 @@ void MapPage::openCombat(MapNode *node)
     if (!m_isMultiplayer) {
         m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
 
-        MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp);
+        MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
+                                                  m_playerGold, m_deckNames);
         combatWindow->setAttribute(Qt::WA_DeleteOnClose);
         this->hide();
 
         connect(combatWindow, &MainWindow::combatFinished, this,
-                [this](bool victory, int finalHp, int maxHp) {
+                [this](bool victory, int finalHp, int maxHp,
+                       int finalGold, const std::vector<std::string>& finalDeck) {
                     if (victory) {
-                        m_playerHp = finalHp;
-                        m_playerMaxHp = maxHp;
+                        m_playerHp   = finalHp;
+                        m_playerMaxHp= maxHp;
+                        m_playerGold = finalGold;
+                        m_deckNames  = finalDeck;
                     } else {
                         m_playerHp = 0;
                     }
@@ -251,7 +255,6 @@ void MapPage::openCombat(MapNode *node)
         msg["enemy_name"] = "JawWorm";
         NetworkManager::instance().send_game_action(msg);
     }
-
 }
 
 void MapPage::openElite(MapNode *node)

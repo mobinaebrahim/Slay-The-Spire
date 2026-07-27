@@ -530,7 +530,9 @@ void MainWindow::checkGameOver() {
         showGameOverText("DEFEAT", QColor("#c0392b"));
 
         QTimer::singleShot(2500, this, [this]() {
-            emit combatFinished(false, playerObject->getHp(), playerObject->getMaxHp());
+            std::vector<std::string> emptyDeck;
+            emit combatFinished(false, 0, playerObject->getMaxHp(),
+                                playerObject->getGold(), emptyDeck);
             close();
         });
         return;
@@ -549,7 +551,12 @@ void MainWindow::checkGameOver() {
             showGameOverText("ESCAPED", QColor("#8a8a8a"));
 
         QTimer::singleShot(2500, this, [this, won]() {
-            emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp());
+            std::vector<std::string> finalDeck;
+            for (Card* c : playerObject->getFullDeck()) {
+                if (c) finalDeck.push_back(c->getName());
+            }
+            emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp(),
+                                playerObject->getGold(), finalDeck);
             close();
         });
         return;

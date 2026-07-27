@@ -37,4 +37,41 @@ public:
     void onCombatEnd(Player* owner, BattleManager* bm) override;
 };
 
+//_________________________________ Normal __________________________________
+class Girya : public Relic {
+private:
+    int liftsRemaining = 3;
+public:
+    Girya();
+    void onCampsite(Player* owner) override;
+};
+
+class IceCream : public Relic {
+public:
+    IceCream();
+};
+
+class Shuriken : public Relic {
+private:
+    int attacksPlayedThisTurn = 0;
+public:
+    Shuriken();
+    void onCardPlayed(Player* owner, Card* card) override;
+    void onTurnStart(Player* owner, BattleManager* bm) override;
+};
+
+class Kunai : public Relic {
+private:
+    int attacksPlayedThisTurn = 0;
+public:
+    Kunai();
+    void onCardPlayed(Player* owner, Card* card) override;
+    void onTurnStart(Player* owner, BattleManager* bm) override;
+};
+
+class PreservedInsect : public Relic {
+public:
+    PreservedInsect();
+};
+
 #endif

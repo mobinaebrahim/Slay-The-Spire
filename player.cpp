@@ -262,6 +262,20 @@ void Player::usePotion(Potion* potion, Character* target) {
     removePotion(potion);
 }
 
+void Player::addRelic(Relic* relic) {
+    if (relic) {
+        relics.push_back(relic);
+        relic->onObtain(this);
+    }
+}
+
+bool Player::hasRelic(string relicName) const {
+    for (auto* r : relics)
+        if (r->getName() == relicName)
+            return true;
+    return false;
+}
+
 int Player::takeDamage(int incomingDamage) {
     int damageToHp = Character::takeDamage(incomingDamage);
 

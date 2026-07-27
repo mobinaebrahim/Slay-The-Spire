@@ -26,6 +26,7 @@ private:
     vector<Card*> discardPile;
     vector<Card*> exhaustPile;
     vector<Potion*> potions;
+    vector<Relic*> relics;
 
 public:
     Player(string n, int h, int max, int en, int g, BattleManager* bm);
@@ -71,6 +72,12 @@ public:
     void usePotion(Potion* potion, Character* target);
     void removePotion(Potion* potion);
     const vector<Potion*>& getPotions() const { return potions; }
+
+    void addRelic(Relic* relic);
+    bool hasRelic(string relicName) const;
+    const vector<Relic*>& getRelics() const { return relics; }
+    int cardsPlayedThisTurn = 0;
+
     int takeDamage(int incomingDamage) override;
 };
 

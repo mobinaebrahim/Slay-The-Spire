@@ -327,8 +327,10 @@ void Thief::executeAction(Character* target) {
         if (target) {
             target->takeDamage(calculateOutgoingDamage(intentValue));
             Player* p = dynamic_cast<Player*>(target);
-            if (p)
+            if (p){
                 p->loseGold(15);
+                stolenGold += 15;
+            }
         }
     }
     else if (currentIntent == IntentType::Defend)

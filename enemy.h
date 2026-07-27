@@ -24,6 +24,7 @@ public:
     virtual void chooseAction();
     virtual void executeAction(Character* target);
     virtual void onPlayerPlayedCard(Card* card) {}
+    virtual bool wantsToFlee() const { return false; }
 
     IntentType getIntentType() const;
     int getIntentValue() const;

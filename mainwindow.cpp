@@ -33,6 +33,7 @@
 #include "enemy.h"
 #include "cardfactory.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -90,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
     settingsOverlayImage = new QLabel(this);
     settingsOverlayImage->setAlignment(Qt::AlignCenter);
     settingsOverlayImage->setStyleSheet("background-color: rgba(0,0,0,220);");
-    settingsOverlayImage->setPixmap(QPixmap(":/images/icons/settings_overlay.png").scaled(
+    settingsOverlayImage->setPixmap(QPixmap(":/assets/icons/settings_overlay.png").scaled(
         this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
     settingsOverlayImage->hide();
@@ -98,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mapLabel = new QLabel(this);
     mapLabel->setFixedSize(46, 46);
-    mapLabel->setPixmap(QPixmap(":/images/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    mapLabel->setPixmap(QPixmap(":/assets/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     mapLabel->move(this->width() - 172, 3);
     mapLabel->installEventFilter(this);
 
@@ -383,7 +384,8 @@ MainWindow::MainWindow(QWidget *parent)
     battleManager = new BattleManager();
     playerObject = new Player("Dina", 80, 80, 3, 99, battleManager);
     battleManager->setPlayer(playerObject);
-    battleManager->spawnEnemy(new LargeSlime());
+    battleManager->spawnEnemy(new TheChamp());
+    //Taskmaster::spawnGroup(battleManager);
     initializePlayerDeck(15);
     setupShortcuts();
     playerObject->drawCards(5);
@@ -461,7 +463,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     playerHitOverlay->setGeometry(currentStartX + 30, basePlayerY, playerW, playerH);
 
     int playerSpriteCenterY = basePlayerY + playerH / 2;
-    int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 70;
+    int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 75;
 
     int enemyAreaH = 320;
     int enemyContainerTop = playerSpriteCenterY - spriteCenterOffsetInWrapper;
@@ -482,7 +484,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     if (settingsOverlayImage && settingsOverlayImage->isVisible()) {
         settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
-        settingsOverlayImage->setPixmap(QPixmap(":/images/settings_overlay.png").scaled(
+        settingsOverlayImage->setPixmap(QPixmap(":/assets/settings_overlay.png").scaled(
             this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }
 
@@ -496,8 +498,10 @@ void MainWindow::on_EndTurnButton_clicked()
 
     const auto& hand = playerObject->getHand();
     for (Card* card : hand) {
-        if (card && card->getName() == "Burn")
-            playerObject->decreaseHp(2);
+        if (card && card->getName() == "Burn") {
+            int dmg = card->getIsUpgraded() ? 4 : 2;
+            playerObject->decreaseHp(dmg);
+        }
     }
 
     checkGameOver();
@@ -604,6 +608,11 @@ void MainWindow::initializePlayerDeck(int totalCards) {
 }
 
 static QString intentToShortText(Enemy* enemy) {
+
+    Hexaghost* hexa = dynamic_cast<Hexaghost*>(enemy);
+    if (hexa && hexa->isDividerTurn())
+        return "🔥 Divider";
+
     switch (enemy->getIntentType()) {
     case IntentType::Attack:   return "⚔ " + QString::number(enemy->getIntentValue());
     case IntentType::Defend:   return "🛡 Block";
@@ -658,7 +667,7 @@ void MainWindow::updateCharacterUI() {
         Enemy* enemy = slot.enemy;
         QString enemyName = QString::fromStdString(enemy->getName());
 
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(220, 195, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         slot.nameLabel->setText(enemyName);
 
         slot.hpBar->setMaximum(enemy->getMaxHp());
@@ -706,6 +715,7 @@ QPixmap MainWindow::getEnemyPixmap(Enemy* enemy) {
 
     return QPixmap(":/assets/enemy_default.png");
 }
+
 void MainWindow::rebuildEnemyUI() {
     for (auto& slot : enemySlots) {
         slot.wrapper->hide();
@@ -720,7 +730,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.enemy = enemy;
 
         slot.wrapper = new QWidget(enemyAreaContainer);
-        slot.wrapper->setFixedWidth(200);
+        slot.wrapper->setFixedWidth(220);
         QVBoxLayout* vbox = new QVBoxLayout(slot.wrapper);
         vbox->setContentsMargins(6, 0, 6, 0);
         vbox->setSpacing(4);
@@ -728,7 +738,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.nameLabel = new QLabel(slot.wrapper);
         slot.nameLabel->setAlignment(Qt::AlignCenter);
         slot.nameLabel->setFixedHeight(20);
-        slot.nameLabel->setFixedWidth(150);
+        slot.nameLabel->setFixedWidth(205);
         slot.nameLabel->setStyleSheet(
             "color: white; font-weight: bold; font-size: 13px; "
             "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
@@ -736,16 +746,16 @@ void MainWindow::rebuildEnemyUI() {
         slot.intentLabel = new QLabel(slot.wrapper);
         slot.intentLabel->setAlignment(Qt::AlignCenter);
         slot.intentLabel->setFixedHeight(26);
-        slot.intentLabel->setFixedWidth(150);
+        slot.intentLabel->setFixedWidth(205);
         slot.intentLabel->setStyleSheet(
             "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
             "padding: 3px; font-weight: bold;");
 
         slot.sprite = new QLabel(slot.wrapper);
-        slot.sprite->setFixedSize(180, 180);
+        slot.sprite->setFixedSize(220, 195);
         slot.sprite->setAlignment(Qt::AlignCenter);
         slot.sprite->setScaledContents(true);
-        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(enemy).scaled(220, 195, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         slot.blockBadge = new QLabel(slot.sprite);
         slot.blockBadge->setFixedSize(28, 28);
@@ -759,7 +769,7 @@ void MainWindow::rebuildEnemyUI() {
         slot.hpBar = new QProgressBar(slot.wrapper);
         slot.hpBar->setTextVisible(true);
         slot.hpBar->setFixedHeight(20);
-        slot.hpBar->setFixedWidth(150);
+        slot.hpBar->setFixedWidth(205);
         slot.hpBar->setStyleSheet(playerHpBar->styleSheet());
 
         slot.statusRow = new QWidget(slot.wrapper);
@@ -842,7 +852,10 @@ void MainWindow::checkGameOver() {
         disableAllCards();
         enemyTurnQueue.clear();
         enemyTurnQueueIndex = 0;
-        showGameOverText("VICTORY", QColor("#f5c518"));
+        if (battleManager->getAnyEnemyDied())
+            showGameOverText("VICTORY", QColor("#f5c518"));
+        else
+            showGameOverText("ESCAPED", QColor("#8a8a8a"));
         return;
     }
 }
@@ -884,6 +897,20 @@ void MainWindow::showGameOverText(const QString& text, const QColor& color) {
 void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
     if (!enemy) { customTooltipBox->hide(); return; }
 
+    Hexaghost* hexa = dynamic_cast<Hexaghost*>(enemy);
+    if (hexa && hexa->isDividerTurn()) {
+        customTooltipBox->setText(
+            "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>Divider</div>"
+            "<div>This enemy intends to unleash the <b>Divider</b> attack.</div>");
+        customTooltipBox->adjustSize();
+        QWidget* anchor = anchorWidget ? anchorWidget : this;
+        QPoint anchorPos = anchor->mapTo(this, QPoint(0, 0));
+        customTooltipBox->move(anchorPos.x() - customTooltipBox->width() - 20, anchorPos.y() + 40);
+        customTooltipBox->show();
+        customTooltipBox->raise();
+        return;
+    }
+
     QString title, desc;
     switch (enemy->getIntentType()) {
     case IntentType::Attack:
@@ -907,6 +934,7 @@ void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
         desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
                        "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.").arg(enemy->getIntentValue());
         break;
+
     case IntentType::Special:
         title = "Special";
         desc = "This enemy intends to do something special.";
@@ -919,7 +947,7 @@ void MainWindow::showEnemyTooltip(Enemy* enemy, QWidget* anchorWidget) {
     case IntentType::AttackDebuff:
         title = "Attack + Add a card";
         desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> for <b>%1</b> damage "
-                       "and <b><span style='color:#c07af0;'>weaken</span></b> you.");
+                       "and <b><span style='color:#c07af0;'>weaken</span></b> you.").arg(enemy->getIntentValue());
         break;
     }
 
@@ -1189,7 +1217,7 @@ void MainWindow::updateStatusEffectRow(QWidget* rowWidget, Character* character)
         int amount = effect->getAmount();
 
         QLabel* badge = new QLabel(rowWidget);
-        badge->setFixedSize(90, 26);
+        badge->setFixedSize(60, 26);
         badge->setAlignment(Qt::AlignCenter);
         badge->setText(QString("%1 %2").arg(name).arg(amount));
         badge->setStyleSheet(QString("background-color: %1; color: white; border-radius: 6px; "

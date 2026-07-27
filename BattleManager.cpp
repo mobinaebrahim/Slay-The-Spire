@@ -50,8 +50,11 @@ int BattleManager::GetTotalDamageToAllEnemies(int damage) {
 void BattleManager::playerTurn() {
     isPlayerTurn = true;
     player->resetEnergy();
+    player->cardsPlayedThisTurn = 0;
     player->applyTurnStartEffects();
     player->drawCards(5);
+    for (auto* relic : player->getRelics())
+        relic->onTurnStart(player, this);
 }
 
 void BattleManager::enemyTurn() {
@@ -85,6 +88,8 @@ void BattleManager::playCardAction(Card* card, Enemy* target) {
 }
 
 void BattleManager::startCombat() {
+    for (auto* relic : player->getRelics())
+        relic->onCombatStart(player, this);
     playerTurn();
 }
 

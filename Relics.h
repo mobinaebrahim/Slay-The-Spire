@@ -1,0 +1,33 @@
+#ifndef RELICS_H
+#define RELICS_H
+
+#include <string>
+using namespace std;
+
+class Character;
+class Player;
+class BattleManager;
+class Card;
+
+class Relic {
+protected:
+    string name;
+    string description;
+
+public:
+    Relic(string n, string d);
+    virtual ~Relic() = default;
+
+    string getName() const;
+    string getDescription() const;
+
+    virtual void onCombatStart(Player* owner, BattleManager* bm) {}
+    virtual void onCombatEnd(Player* owner, BattleManager* bm) {}
+    virtual void onCardPlayed(Player* owner, Card* card) {}
+    virtual void onTurnStart(Player* owner, BattleManager* bm) {}
+    virtual void onTurnEnd(Player* owner) {}
+    virtual void onCampsite(Player* owner) {}
+    virtual void onObtain(Player* owner) {}
+};
+
+#endif

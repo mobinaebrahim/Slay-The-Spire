@@ -1,6 +1,5 @@
 #include "gameserver.h"
 
-
 GameServer::GameServer(QObject *parent)
     : QObject(parent)
 {
@@ -162,7 +161,7 @@ QJsonObject GameServer::buildCombatOver(bool victory)
     return state;
 }
 
-//--- State building UPDATED: block, effects, piles ---
+//--- State building ---
 
 QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode)
 {
@@ -340,7 +339,7 @@ void GameServer::spawn_enemy_for_room(RoomGame &game, const QString &enemyName)
     }
 }
 
-// ---Combat: check game over---
+// ---Combat: check game over (with persistent state save) ---
 
 void GameServer::check_combat_over(const QString &roomCode)
 {
@@ -534,7 +533,7 @@ void GameServer::handle_join_room(QTcpSocket *senderSocket, const QJsonObject &m
     qDebug() << "Client joined room:" << roomCode << "- Room size:" << rooms[roomCode].size();
 }
 
-// ---Combat: start---
+// ---Combat: start (with persistent state loading) ---
 
 void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject &message)
 {

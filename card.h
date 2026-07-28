@@ -9,6 +9,9 @@ class character;
 
 enum class CardType{ Attack, Skill, Power, Status, Curse};
 
+// NEW: Rarity system for Revive and general card classification
+enum class CardRarity { Basic, Common, Uncommon, Rare };
+
 class Card {
 protected:
     CardType type;
@@ -16,6 +19,7 @@ protected:
     string description;
     int energyCost;
     bool isUpgraded = false;
+    CardRarity rarity = CardRarity::Common; // NEW
 public:
     Card(CardType t, string n, string d, int e);
     virtual ~Card();
@@ -24,6 +28,8 @@ public:
     string getDescription() const;
     virtual int getCost(Character* caster);
     CardType getType() const;
+    CardRarity getRarity() const;        // NEW
+    void setRarity(CardRarity r);        // NEW - for factory use
     virtual bool isPlayable() const;
     virtual void upgrade();
     virtual string getUnplayableReason(Character* caster) const { return ""; }

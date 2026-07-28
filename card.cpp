@@ -15,3 +15,8 @@ CardType Card::getType() const { return type; }
 bool Card::isPlayable() const { return true; }
 
 void Card::upgrade() { isUpgraded = true; }
+
+// NEW
+CardRarity Card::getRarity() const { return rarity; }
+
+void Card::setRarity(CardRarity r) { rarity = r; }

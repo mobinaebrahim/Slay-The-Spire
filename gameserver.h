@@ -87,7 +87,6 @@ private:
     void process_enemy_turn(const QString &roomCode);
     void check_combat_over(const QString &roomCode);
     void transfer_leader_if_needed(const QString &roomCode, QTcpSocket *deadSocket);
-    void start_next_player_turn(const QString &roomCode);
 
     // Broadcast
     void send_to_client(QTcpSocket *client, const QJsonObject &message);

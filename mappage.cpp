@@ -52,6 +52,11 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
             QJsonArray deckArr = playerJson["deck"].toArray();
             for (const QJsonValue &v : deckArr)
                 m_deckNames.push_back(v.toString().toStdString());
+
+            // FIX: if the app was closed mid-combat, resume that fight
+            // fresh (full pre-combat HP) instead of silently treating the
+            // room as skipped.
+            m_pendingCombatType = playerJson["pendingCombatType"].toString();
         } else {
             m_gameMap->generate();
             m_gameMap->startRun();
@@ -78,6 +83,15 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
         QTimer::singleShot(0, this, [this](){
             m_mapView->buildScene(m_gameMap);
         });
+
+        // FIX: resume the interrupted fight (if any) once the map is ready.
+        if (!m_isMultiplayer && !m_pendingCombatType.isEmpty() && m_gameMap->currentNode()) {
+            CombatType resumeType = combatTypeFromString(m_pendingCombatType);
+            MapNode *resumeNode = m_gameMap->currentNode();
+            QTimer::singleShot(0, this, [this, resumeNode, resumeType](){
+                openSinglePlayerCombat(resumeNode, resumeType, true);
+            });
+        }
 
         if (m_isMultiplayer) {
             QTimer::singleShot(300, this, [this](){
@@ -244,10 +258,45 @@ void MapPage::persistProgress()
         deckArr.append(QString::fromStdString(name));
     playerObj["deck"] = deckArr;
 
+    // FIX: remember whether a fight was in progress when this was written,
+    // so a reload can resume it instead of silently skipping the room.
+    playerObj["pendingCombatType"] = m_pendingCombatType;
+
     fullSave["player"] = playerObj;
 
     // FIX: used to always save score=0 here. Now uses the real current score.
     SaveManager::instance().update_save(m_saveId, currentScore(floor), floor, fullSave);
+}
+
+// FIX: called right before a single-player combat opens, so that if the app
+// closes mid-fight, the save on disk records which fight needs resuming.
+void MapPage::markCombatInProgress(CombatType type)
+{
+    m_pendingCombatType = combatTypeToString(type);
+    persistProgress();
+}
+
+// FIX: called once a fight is fully resolved (won), so the save no longer
+// thinks a combat is still pending.
+void MapPage::clearCombatInProgress()
+{
+    m_pendingCombatType.clear();
+}
+
+QString MapPage::combatTypeToString(CombatType type)
+{
+    switch (type) {
+    case CombatType::Elite: return "elite";
+    case CombatType::Boss:  return "boss";
+    default:                return "normal";
+    }
+}
+
+CombatType MapPage::combatTypeFromString(const QString &s)
+{
+    if (s == "elite") return CombatType::Elite;
+    if (s == "boss")  return CombatType::Boss;
+    return CombatType::Normal;
 }
 
 // Score formula based on the actual run stats the design doc asks for:
@@ -383,13 +432,20 @@ void MapPage::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 }
 
-void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
+void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type, bool isResume)
 {
     Q_UNUSED(node); // later you can pick a different enemy set based on room/floor
 
-    // entering a new room -> +5 HP (capped at max)
-    m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
-    updateHud();
+    if (!isResume) {
+        // entering a new room -> +5 HP (capped at max). Skipped on resume so
+        // reopening the same interrupted fight doesn't grant a free heal.
+        m_playerHp = qMin(m_playerHp + 5, m_playerMaxHp);
+        updateHud();
+    }
+
+    // FIX: record that this fight is now in progress, so if the app closes
+    // before it resolves, reopening the save will resume this same fight.
+    markCombatInProgress(type);
 
     MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
                                               m_playerGold, m_deckNames, type);
@@ -406,6 +462,8 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
                 }
 
                 if (victory) {
+                    // FIX: fight resolved — no longer pending.
+                    clearCombatInProgress();
                     m_playerHp    = finalHp;
                     m_playerMaxHp = maxHp;
                     m_playerGold  = finalGold;
@@ -426,6 +484,16 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
         if (m_playerHp <= 0) {
             // FIX: dying ends the run — save the score (as a loss) before leaving.
             saveRunScore(false);
+
+            // FIX: the save still has "pendingCombatType" set from this fight.
+            // If we left it on disk, hitting Continue later would resume and
+            // re-fight (and could win) the exact battle that just killed the
+            // player, undoing their death. Delete the save instead, same as
+            // the explicit Abandon button does.
+            if (!m_isMultiplayer && m_saveId >= 0) {
+                SaveManager::instance().delete_save(m_saveId);
+            }
+
             emit runAbandoned();
             this->close(); // defeat -> back to main menu
         } else {

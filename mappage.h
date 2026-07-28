@@ -66,6 +66,11 @@ private:
     // Tracks how long the current run has been going, used for play_duration
     QElapsedTimer m_runTimer;
 
+    // If the app closes while a single-player combat is open, this holds
+    // which type of fight was in progress ("" = none) so we can resume it
+    // fresh (full pre-combat HP) instead of silently skipping that room.
+    QString m_pendingCombatType;
+
     void buildHud();
     void updateHud();
 
@@ -74,7 +79,11 @@ private:
     void saveRunScore(bool victory);
     void handleRoomEntered(MapNode *node);
 
-    void openSinglePlayerCombat(MapNode *node, CombatType type);
+    void openSinglePlayerCombat(MapNode *node, CombatType type, bool isResume = false);
+    void markCombatInProgress(CombatType type);
+    void clearCombatInProgress();
+    static QString combatTypeToString(CombatType type);
+    static CombatType combatTypeFromString(const QString &s);
 
     void openCombat(MapNode *node);
     void openElite(MapNode *node);

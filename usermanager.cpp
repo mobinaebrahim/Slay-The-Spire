@@ -23,7 +23,11 @@ user_manager:: ~user_manager(){
 }
 
 bool user_manager :: open_database(){
-    data_base = QSqlDatabase::addDatabase("QSQLITE");
+    if (QSqlDatabase::contains("qt_sql_default_connection")) {
+        data_base = QSqlDatabase::database("qt_sql_default_connection");
+    } else {
+        data_base = QSqlDatabase::addDatabase("QSQLITE");
+    }
     data_base.setDatabaseName("users.db");
 
     if(!data_base.open()){
@@ -55,7 +59,12 @@ bool user_manager::usernmae_exist(const QString &username){
     QSqlQuery query;
     query.prepare("SELECT id FROM users WHERE username = :username");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error checking username existence:" << query.lastError().text();
+        return false;
+    }
+
     return query.next();
 }
 
@@ -84,7 +93,11 @@ bool user_manager::register_user(const QString &username, const QString &passwor
         QSqlQuery deleteQuery;
         deleteQuery.prepare("DELETE FROM users WHERE username = :username");
         deleteQuery.bindValue(":username", username);
-        deleteQuery.exec();
+
+        if (!deleteQuery.exec()) {
+            qDebug() << "Error deleting unverified user:" << deleteQuery.lastError().text();
+            return false;
+        }
     }
 
     QString hashedPassword = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
@@ -106,7 +119,11 @@ bool user_manager::verify_password(const QString &username, const QString &hashe
     query.prepare("SELECT id FROM users WHERE username = :username AND password = :password");
     query.bindValue(":username", username);
     query.bindValue(":password", hashedPassword);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error verifying password:" << query.lastError().text();
+        return false;
+    }
 
     return query.next();
 }
@@ -114,6 +131,11 @@ bool user_manager::verify_password(const QString &username, const QString &hashe
 bool user_manager::login_user(const QString &username, const QString &password){
     if (!usernmae_exist(username)) {
         qDebug() << "Username does not exist!";
+        return false;
+    }
+
+    if (!is_account_verified(username)) {
+        qDebug() << "Account is not verified!";
         return false;
     }
 
@@ -185,7 +207,11 @@ bool user_manager::verify_email(const QString &username, const QString &code)
     query.prepare("SELECT id FROM users WHERE username = :username AND verification_code = :code");
     query.bindValue(":username", username);
     query.bindValue(":code", code);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error verifying email (select):" << query.lastError().text();
+        return false;
+    }
 
     if (!query.next()) {
         qDebug() << "Incorrect verification code!";
@@ -209,7 +235,11 @@ bool user_manager::is_account_verified(const QString &username)
     QSqlQuery query;
     query.prepare("SELECT is_verified FROM users WHERE username = :username");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error checking verification status:" << query.lastError().text();
+        return false;
+    }
 
     if (query.next()) {
         return query.value("is_verified").toInt() == 1;
@@ -239,7 +269,11 @@ bool user_manager::send_password_reset_code(const QString &username)
     QSqlQuery emailQuery;
     emailQuery.prepare("SELECT email FROM users WHERE username = :username");
     emailQuery.bindValue(":username", username);
-    emailQuery.exec();
+
+    if (!emailQuery.exec()) {
+        qDebug() << "Error fetching email for reset:" << emailQuery.lastError().text();
+        return false;
+    }
 
     if (!emailQuery.next()) {
         return false;
@@ -255,7 +289,11 @@ bool user_manager::verify_reset_code(const QString &username, const QString &cod
     query.prepare("SELECT id FROM users WHERE username = :username AND verification_code = :code");
     query.bindValue(":username", username);
     query.bindValue(":code", code);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error verifying reset code:" << query.lastError().text();
+        return false;
+    }
 
     return query.next();
 }
@@ -276,4 +314,3 @@ bool user_manager::reset_password(const QString &username, const QString &new_pa
 
     return true;
 }
-

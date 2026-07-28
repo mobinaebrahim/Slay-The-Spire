@@ -53,8 +53,6 @@ SettingPage::SettingPage(QWidget *parent)
     });
 
     // --- Audio page: back/confirm - both just return to "no tab selected" ---
-    // (audio settings already apply live via the sliders above, so there's
-    // nothing extra to "confirm" here)
     connect(ui->btnback2_2, &QPushButton::clicked, this, [this](){
         AudioManager::instance().playEffect(":/assets/music/menu_button.mp3");
         ui->stackedWidget->setCurrentIndex(-1);
@@ -84,8 +82,10 @@ SettingPage::SettingPage(QWidget *parent)
 
 void SettingPage::handleChangePassword()
 {
+    ui->label_passwordChangeError->clear();
+
     QString currentInput = ui->lineEdit_currentPassword->text();
-    QString newPassword = ui->lineEdit_currentPassword->text();
+    QString newPassword = ui->lineEdit_newPassword->text();  // FIX: was reading from lineEdit_currentPassword
     QString confirmNewPassword = ui->lineEdit_confirmNewPassword->text();
 
     QString realCurrentPassword = user_manager::instance().get_current_password();
@@ -116,6 +116,11 @@ void SettingPage::handleChangePassword()
 
         ui->label_passwordChangeError->setText("Password changed successfully!");
         AudioManager::instance().playEffect(":/assets/music/success.mp3");
+
+        // Clear fields after successful change
+        ui->lineEdit_currentPassword->clear();
+        ui->lineEdit_newPassword->clear();
+        ui->lineEdit_confirmNewPassword->clear();
     } else {
         ui->label_passwordChangeError->setText("Something went wrong. Try again!");
         AudioManager::instance().playEffect(":/assets/music/error.mp3");

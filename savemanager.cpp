@@ -106,7 +106,11 @@ QJsonObject SaveManager::load_save(int save_id)
     QSqlQuery query;
     query.prepare("SELECT game_data FROM game_saves WHERE id = :id");
     query.bindValue(":id", save_id);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error loading save:" << query.lastError().text();
+        return QJsonObject();
+    }
 
     if (query.next()) {
         QString jsonString = query.value("game_data").toString();
@@ -125,7 +129,11 @@ QList<save_entry> SaveManager::get_save_list(const QString &username)
     query.prepare("SELECT id, save_name, character, score, floor, save_date "
                   "FROM game_saves WHERE username = :username ORDER BY save_date DESC");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching save list:" << query.lastError().text();
+        return results;
+    }
 
     while (query.next()) {
         save_entry entry;

@@ -88,7 +88,7 @@ bool FriendManager::rejectFriendRequest(const QString &username, const QString &
         return false;
     }
 
-    return true;
+    return query.numRowsAffected() > 0;
 }
 
 bool FriendManager::removeFriend(const QString &username, const QString &friendUsername)
@@ -105,7 +105,7 @@ bool FriendManager::removeFriend(const QString &username, const QString &friendU
         return false;
     }
 
-    return true;
+    return query.numRowsAffected() > 0;
 }
 
 bool FriendManager::areFriends(const QString &username1, const QString &username2)
@@ -115,7 +115,11 @@ bool FriendManager::areFriends(const QString &username1, const QString &username
                   "WHERE (user_a = :user1 AND user_b = :user2) OR (user_a = :user2 AND user_b = :user1)");
     query.bindValue(":user1", username1);
     query.bindValue(":user2", username2);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error checking friendship:" << query.lastError().text();
+        return false;
+    }
 
     return query.next();
 }
@@ -128,7 +132,11 @@ QStringList FriendManager::getFriendsList(const QString &username)
     query.prepare("SELECT user_a, user_b FROM friendships "
                   "WHERE (user_a = :username OR user_b = :username) AND status = 'accepted'");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching friends list:" << query.lastError().text();
+        return friends;
+    }
 
     while (query.next()) {
         QString userA = query.value("user_a").toString();
@@ -147,7 +155,11 @@ QStringList FriendManager::getPendingRequests(const QString &username)
     query.prepare("SELECT user_a FROM friendships "
                   "WHERE user_b = :username AND status = 'pending'");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching pending requests:" << query.lastError().text();
+        return requesters;
+    }
 
     while (query.next()) {
         requesters.append(query.value("user_a").toString());
@@ -202,7 +214,7 @@ bool FriendManager::rejectGameInvite(const QString &username, const QString &fro
         qDebug() << "Error rejecting game invite:" << query.lastError().text();
         return false;
     }
-    return true;
+    return query.numRowsAffected() > 0;
 }
 
 QStringList FriendManager::getPendingGameInvites(const QString &username)
@@ -212,7 +224,11 @@ QStringList FriendManager::getPendingGameInvites(const QString &username)
     QSqlQuery query;
     query.prepare("SELECT from_user FROM game_invites WHERE to_user = :username AND status = 'pending'");
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching pending game invites:" << query.lastError().text();
+        return inviters;
+    }
 
     while (query.next()) {
         inviters.append(query.value("from_user").toString());
@@ -227,7 +243,11 @@ bool FriendManager::acceptGameInvite(const QString &username, const QString &fro
                   "WHERE from_user = :fromUser AND to_user = :username AND status = 'pending'");
     query.bindValue(":fromUser", fromUsername);
     query.bindValue(":username", username);
-    query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Error fetching game invite:" << query.lastError().text();
+        return false;
+    }
 
     if (!query.next()) {
         return false;
@@ -239,7 +259,11 @@ bool FriendManager::acceptGameInvite(const QString &username, const QString &fro
     deleteQuery.prepare("DELETE FROM game_invites WHERE from_user = :fromUser AND to_user = :username");
     deleteQuery.bindValue(":fromUser", fromUsername);
     deleteQuery.bindValue(":username", username);
-    deleteQuery.exec();
+
+    if (!deleteQuery.exec()) {
+        qDebug() << "Error deleting accepted game invite:" << deleteQuery.lastError().text();
+        return false;
+    }
 
     return true;
 }

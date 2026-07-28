@@ -69,13 +69,11 @@ class Thief : public Enemy {
 private:
     int turnCounter;
     bool hasScaped = false;
-    int stolenGold = 0;
 
 public:
     Thief(string name);
     void chooseAction() override;
     void executeAction(Character* target) override;
-    int getStolenGold() const { return stolenGold; }
 };
 
 class SphericGuardian : public Enemy {

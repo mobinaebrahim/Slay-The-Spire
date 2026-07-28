@@ -5,17 +5,14 @@
 #include "enemy.h"
 #include "player.h"
 #include "StatusCard.h"
-#include "NormalEnemies.h"
 #include <string>
 #include <vector>
 using namespace std;
 
-class BattleManager;
-
 class GremlinKnob : public Enemy {
 public:
     GremlinKnob();
-    void chooseAction() override;
+    void chooseAction() override; 
     void executeAction(Character* target) override;
     void onPlayerPlayedCard(Card* card);
 };
@@ -27,7 +24,6 @@ public:
     ThreeSentries(string name, int minHp, int maxHp);
     void chooseAction() override;
     void executeAction(Character* target) override;
-    static void spawnGroup(BattleManager* bm);
 };
 
 class MiddleSentry : public ThreeSentries {
@@ -42,7 +38,7 @@ public:
 
 class BookOfStabbing : public Enemy {
 private:
-    int stabCount;
+    int stabCount; 
 public:
     BookOfStabbing();
     void chooseAction() override;
@@ -54,7 +50,6 @@ public:
     Taskmaster();
     void chooseAction() override;
     void executeAction(Character* target) override;
-    static void spawnGroup(BattleManager* bm);
 };
 
 #endif

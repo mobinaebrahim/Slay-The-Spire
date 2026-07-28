@@ -12,14 +12,14 @@ using namespace std;
 
 class KingSlime : public Enemy {
 private:
-    int moveIndex;
-    bool hasSplit;
+    int moveIndex; 
+    bool hasSplit; 
     BattleManager* myManager;
 public:
     KingSlime(BattleManager* manager);
     void chooseAction() override;
     void executeAction(Character* target) override;
-    int takeDamage(int amount) override;
+    int takeDamage(int amount) override; 
 };
 
 class Hexaghost : public Enemy {
@@ -30,7 +30,6 @@ public:
     Hexaghost();
     void chooseAction() override;
     void executeAction(Character* target) override;
-    bool isDividerTurn() const { return turnCount == 2; }
 };
 
 class TheChamp : public Enemy {

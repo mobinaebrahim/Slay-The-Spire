@@ -74,9 +74,6 @@ private:
     int m_teammateHp = 0, m_teammateMaxHp = 0, m_teammateBlock = 0;
     bool m_teammateAlive = true;
 
-    // ------------------------------------------------------------
-    // Multi-enemy support (mirrors MainWindow::EnemyUISlot)
-    // ------------------------------------------------------------
     struct EnemyData {
         QString name;
         int hp = 0, maxHp = 0, block = 0;
@@ -125,11 +122,9 @@ private:
     QLabel *playerHitOverlay;
     QGraphicsOpacityEffect *playerHitOpacity;
 
-    // Compact heart+HP readout in the top HUD bar (visual parity with single-player MainWindow)
     QLabel *playerHeartIcon;
     QLabel *playerHpTopLabel;
 
-    // Gold / deck / map / settings — top HUD parity with single-player MainWindow
     QLabel *goldIconLabel;
     QLabel *goldCountLabel;
     QLabel *deckIconLabel;
@@ -188,7 +183,7 @@ private:
     QPropertyAnimation *hoverGeomAnim = nullptr;
     QRect hoverOriginalRect;
 
-    // Drag-to-target (mirrors MainWindow attack-card drag flow)
+    // Drag-to-target
     bool isDraggingCard = false;
     int draggedCardIndex = -1;
     QLabel *dragArrowLabel;

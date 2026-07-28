@@ -522,9 +522,9 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
     int playerW = 180, playerH = 260;
     int teammateW = 160, teammateH = 230;
 
-    currentStartX = 60;
+    currentStartX = 110;
     m_playerX = currentStartX;
-    m_teammateX = currentStartX;
+    m_teammateX = currentStartX + 60;
 
     m_basePlayerY = this->height() / 2 - playerH / 2;
     m_baseTeammateY = m_basePlayerY - teammateH - 20;
@@ -1034,7 +1034,6 @@ void MPCombatWindow::updateHandUI()
         btn->setFixedSize(140, 180);
         btn->setIcon(QIcon(":/images/cards/" + cardName + ".png"));
         btn->setIconSize(btn->size());
-        btn->setStyleSheet("QPushButton { border: none; background: transparent; }");
         btn->setProperty("cardName", cardName);
         btn->setProperty("cardImagePath", ":/images/cards/" + cardName + ".png");
         btn->setProperty("cardIndex", i);
@@ -1527,7 +1526,7 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
             dragArrowLabel->hide();
             hidePlayerTargetFrame();
             hoverCardLabel->hide();
-            cardBtn->setStyleSheet("QPushButton { border: none; background: transparent; }");
+            cardBtn->setStyleSheet("border: none;");
 
             bool isAttack = cardBtn->property("cardIsAttack").toBool();
             QString cardName = cardBtn->property("cardName").toString();

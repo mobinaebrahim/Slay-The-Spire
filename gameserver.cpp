@@ -175,6 +175,7 @@ QJsonObject GameServer::buildStateUpdate(RoomGame &game, const QString &roomCode
         pObj["energy"] = p->getEnergy();
         pObj["max_energy"] = p->getMaxEnergy();
         pObj["block"] = p->getBlock();
+        pObj["gold"] = p->getGold();
         pObj["is_alive"] = game.playerAlive.value(socket, false);
         pObj["username"] = QString::fromStdString(p->getName());
 
@@ -581,7 +582,13 @@ void GameServer::handle_play_card(QTcpSocket *senderSocket, const QJsonObject &m
     const auto& enemies = game.battleManager->getEnemies();
     if (enemies.empty()) return;
 
-    Enemy* target = enemies[0];
+    int targetIndex = message.contains("target_enemy_index")
+                          ? message["target_enemy_index"].toInt(0)
+                          : 0;
+    if (targetIndex < 0 || targetIndex >= (int)enemies.size())
+        targetIndex = 0;
+
+    Enemy* target = enemies[targetIndex];
 
     game.battleManager->playCardAction(actingPlayer, cardToPlay, target);
     game.battleManager->cleanupDeadEnemies();

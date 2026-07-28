@@ -160,7 +160,7 @@ void MapPage::buildHud()
     hudLayout->setSpacing(8);
 
     QLabel* hpIcon = new QLabel(m_topHud);
-    hpIcon->setPixmap(QPixmap(":/assets/icons/hp.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    hpIcon->setPixmap(QPixmap(":/images/icons/hp.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     hpIcon->setFixedSize(32, 32);
 
     m_hpBar = new QProgressBar(m_topHud);
@@ -184,7 +184,7 @@ void MapPage::buildHud()
     hudLayout->addStretch();
 
     QLabel* goldIcon = new QLabel(m_topHud);
-    goldIcon->setPixmap(QPixmap(":/assets/icons/gold.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    goldIcon->setPixmap(QPixmap(":/images/icons/gold.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     goldIcon->setFixedSize(32, 32);
 
     m_goldLabel = new QLabel(m_topHud);
@@ -195,7 +195,7 @@ void MapPage::buildHud()
     hudLayout->addSpacing(12);
 
     QLabel* deckIcon = new QLabel(m_topHud);
-    deckIcon->setPixmap(QPixmap(":/assets/icons/deck.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    deckIcon->setPixmap(QPixmap(":/images/icons/deck.png").scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     deckIcon->setFixedSize(32, 32);
 
     m_deckLabel = new QLabel(m_topHud);

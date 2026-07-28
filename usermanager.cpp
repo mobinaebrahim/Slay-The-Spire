@@ -3,9 +3,8 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QRegularExpression>
 
-
-//console output just help me to debug it easier :)
 user_manager& user_manager::instance()
 {
     static user_manager instance;
@@ -16,13 +15,11 @@ user_manager::user_manager() {
     open_database();
 }
 
-user_manager:: ~user_manager(){
-    if(data_base.isOpen()){
-        data_base.close();
-    }
+user_manager::~user_manager(){
+    // FIX: removed data_base.close() — singleton, other managers depend on this connection
 }
 
-bool user_manager :: open_database(){
+bool user_manager::open_database(){
     if (QSqlDatabase::contains("qt_sql_default_connection")) {
         data_base = QSqlDatabase::database("qt_sql_default_connection");
     } else {
@@ -52,10 +49,25 @@ bool user_manager :: open_database(){
     }
 
     return true;
-
 }
 
-bool user_manager::usernmae_exist(const QString &username){
+bool user_manager::validateUsername(const QString &username) {
+    if (username.isEmpty() || username.length() < 3) return false;
+    if (username.contains(' ') || username.contains('\t')) return false;
+    return true;
+}
+
+bool user_manager::validatePassword(const QString &password) {
+    return password.length() >= 8;
+}
+
+bool user_manager::validateEmail(const QString &email) {
+    if (email.isEmpty()) return false;
+    QRegularExpression regex(R"((^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$))");
+    return regex.match(email).hasMatch();
+}
+
+bool user_manager::username_exist(const QString &username){
     QSqlQuery query;
     query.prepare("SELECT id FROM users WHERE username = :username");
     query.bindValue(":username", username);
@@ -85,9 +97,18 @@ bool user_manager::insert_user(const QString &username, const QString &hashedPas
 }
 
 bool user_manager::register_user(const QString &username, const QString &password, const QString &email){
-    if(usernmae_exist(username)){
+    if (!validateUsername(username) || !validatePassword(password) || !validateEmail(email)) {
+        qDebug() << "Registration failed: invalid input data";
+        return false;
+    }
+
+    QSqlDatabase db = QSqlDatabase::database();
+    db.transaction();
+
+    if(username_exist(username)){
         if(is_account_verified(username)) {
             qDebug() << "Username exists and is verified!";
+            db.rollback();
             return false;
         }
         QSqlQuery deleteQuery;
@@ -96,6 +117,7 @@ bool user_manager::register_user(const QString &username, const QString &passwor
 
         if (!deleteQuery.exec()) {
             qDebug() << "Error deleting unverified user:" << deleteQuery.lastError().text();
+            db.rollback();
             return false;
         }
     }
@@ -103,8 +125,12 @@ bool user_manager::register_user(const QString &username, const QString &passwor
     QString hashedPassword = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
     QString verificationCode = generate_verification_code();
 
-    if(!insert_user(username, hashedPassword, email, verificationCode))
+    if(!insert_user(username, hashedPassword, email, verificationCode)) {
+        db.rollback();
         return false;
+    }
+
+    db.commit();
 
     if(!send_verification_email(email, verificationCode)) {
         qDebug() << "Failed to send verification email!";
@@ -129,7 +155,12 @@ bool user_manager::verify_password(const QString &username, const QString &hashe
 }
 
 bool user_manager::login_user(const QString &username, const QString &password){
-    if (!usernmae_exist(username)) {
+    if (!validateUsername(username) || !validatePassword(password)) {
+        qDebug() << "Login failed: invalid input";
+        return false;
+    }
+
+    if (!username_exist(username)) {
         qDebug() << "Username does not exist!";
         return false;
     }
@@ -144,9 +175,10 @@ bool user_manager::login_user(const QString &username, const QString &password){
     return verify_password(username, hashedPassword);
 }
 
-void user_manager::set_current_user(const QString &username,const QString &password){
+void user_manager::set_current_user(const QString &username, const QString &password){
     current_username = username;
-    current_password = password;
+    // FIX: store hash in memory, not plaintext
+    current_password = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
 }
 
 QString user_manager::get_current_username() const{
@@ -250,7 +282,7 @@ bool user_manager::is_account_verified(const QString &username)
 
 bool user_manager::send_password_reset_code(const QString &username)
 {
-    if (!usernmae_exist(username)) {
+    if (!username_exist(username)) {
         return false;
     }
 
@@ -300,6 +332,11 @@ bool user_manager::verify_reset_code(const QString &username, const QString &cod
 
 bool user_manager::reset_password(const QString &username, const QString &new_password)
 {
+    if (!validatePassword(new_password)) {
+        qDebug() << "Reset password failed: password too short";
+        return false;
+    }
+
     QString hashedPassword = QString(QCryptographicHash::hash(new_password.toUtf8(), QCryptographicHash::Sha256).toHex());
 
     QSqlQuery query;

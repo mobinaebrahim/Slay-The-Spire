@@ -5,11 +5,16 @@
 #include <QLabel>
 #include <QTimer>
 #include <cmath>
+#include <vector>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QProgressBar>
 #include <QGraphicsOpacityEffect>
+#include <QGraphicsDropShadowEffect>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPen>
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QSequentialAnimationGroup>
@@ -18,9 +23,13 @@
 #include <QEasingCurve>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QShortcut>
+#include <QMouseEvent>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QStringList>
+#include <QListWidget>
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,14 +37,7 @@ class MPCombatWindow;
 }
 QT_END_NAMESPACE
 
-// ============================================================
-// MPCombatWindow
-// ------------------------------------------------------------
-// نسخه‌ی چندنفره‌ی صفحه‌ی Combat، از نظر بصری هم‌سطح MainWindow
-// تک‌نفره (اسپرایت، انیمیشن شناور، جلوه‌ی Hit، Hover Card،
-// Floating Damage، صدا)، ولی هیچ منطق بازی‌ای رو خودش اجرا
-// نمی‌کنه — همه‌چیز از state_update سرور میاد.
-// ============================================================
+
 class MPCombatWindow : public QWidget
 {
     Q_OBJECT
@@ -50,6 +52,7 @@ signals:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
     Ui::MPCombatWindow *ui;
@@ -59,6 +62,7 @@ private:
     QString m_teammateUsername;
 
     int m_myHp = 0, m_myMaxHp = 0, m_myEnergy = 0, m_myMaxEnergy = 0, m_myBlock = 0;
+    int m_myGold = 0;
     bool m_iAmAlive = true;
     bool m_isPlayerTurn = false;
     bool m_hasEndedTurnLocally = false;
@@ -70,17 +74,46 @@ private:
     int m_teammateHp = 0, m_teammateMaxHp = 0, m_teammateBlock = 0;
     bool m_teammateAlive = true;
 
-    QString m_enemyName;
-    int m_enemyHp = 0, m_enemyMaxHp = 0, m_enemyBlock = 0;
-    QString m_enemyIntent;
-    QJsonArray m_enemyEffects;
+    // ------------------------------------------------------------
+    // Multi-enemy support (mirrors MainWindow::EnemyUISlot)
+    // ------------------------------------------------------------
+    struct EnemyData {
+        QString name;
+        int hp = 0, maxHp = 0, block = 0;
+        QString intent;
+        QJsonArray effects;
+    };
+    std::vector<EnemyData> m_enemies;
+    std::vector<int> m_lastEnemyHps;   // parallel to m_enemies, for hit-flash detection
 
-    int m_lastMyHp = -1, m_lastTeammateHp = -1, m_lastEnemyHp = -1;
+    struct EnemyUISlot {
+        QWidget *wrapper = nullptr;
+        QLabel *sprite = nullptr;
+        QProgressBar *hpBar = nullptr;
+        QLabel *blockBadge = nullptr;
+        QLabel *intentLabel = nullptr;
+        QLabel *nameLabel = nullptr;
+        QWidget *statusRow = nullptr;
+        QLabel *hitOverlay = nullptr;
+        QGraphicsOpacityEffect *hitOpacity = nullptr;
+    };
+    QWidget *enemyAreaContainer;
+    QHBoxLayout *enemyAreaLayout;
+    std::vector<EnemyUISlot> enemySlots;
+    int targetedEnemyIndex = 0;
+    int dragHoverEnemyIndex = -1;
+
+    void rebuildEnemyUI();
+    QRect enemySpriteRectFor(int enemyIndex);
+    void retargetEnemy(int enemyIndex);
+
+    int m_lastMyHp = -1, m_lastTeammateHp = -1;
 
     bool m_isGameOver = false;
     float m_angle = 0;
     int m_basePlayerY = 0, m_baseTeammateY = 0, m_baseEnemyY = 0;
-    int m_playerX = 0, m_teammateX = 0, m_enemyX = 0;
+    int m_playerX = 0, m_teammateX = 0;
+    int currentStartX = 0;
 
     QLabel *backgroundLabel;
     QLabel *playerSpriteLabel;
@@ -92,6 +125,19 @@ private:
     QLabel *playerHitOverlay;
     QGraphicsOpacityEffect *playerHitOpacity;
 
+    // Compact heart+HP readout in the top HUD bar (visual parity with single-player MainWindow)
+    QLabel *playerHeartIcon;
+    QLabel *playerHpTopLabel;
+
+    // Gold / deck / map / settings — top HUD parity with single-player MainWindow
+    QLabel *goldIconLabel;
+    QLabel *goldCountLabel;
+    QLabel *deckIconLabel;
+    QLabel *deckCountLabel;
+    QLabel *mapLabel;
+    QLabel *settingLabel;
+    QLabel *settingsOverlayImage;
+
     QLabel *teammateSpriteLabel;
     QProgressBar *teammateHpBar;
     QLabel *teammateNameLabel;
@@ -100,15 +146,6 @@ private:
     QWidget *teammateStatusRow;
     QLabel *teammateHitOverlay;
     QGraphicsOpacityEffect *teammateHitOpacity;
-
-    QLabel *enemySpriteLabel;
-    QProgressBar *enemyHpBar;
-    QLabel *enemyBlockBadge;
-    QLabel *enemyIntentLabel;
-    QLabel *enemyNameLabel;
-    QWidget *enemyStatusRow;
-    QLabel *enemyHitOverlay;
-    QGraphicsOpacityEffect *enemyHitOpacity;
 
     QLabel *drawPileIconLabel, *drawPileCountLabel;
     QLabel *discardPileIconLabel, *discardPileCountLabel;
@@ -127,6 +164,20 @@ private:
     QWidget *m_cardsContainer;
     QPushButton *m_endTurnBtn;
 
+    // --- In-combat team chat ---
+    QLabel *chatIconLabel;
+    QLabel *chatUnreadBadge;
+    QWidget *chatPanel;
+    QListWidget *chatMessagesList;
+    QLineEdit *chatInputField;
+    QPushButton *chatSendButton;
+    bool m_chatOpen = false;
+    int m_unreadChatCount = 0;
+    void toggleChatPanel();
+    void sendChatMessage();
+    void handleChatMessage(const QJsonObject &obj);
+    void appendChatMessage(const QString &username, const QString &text, bool isMe);
+
     QLabel *gameOverLabel;
     QGraphicsOpacityEffect *gameOverOpacityEffect;
 
@@ -136,6 +187,17 @@ private:
     QLabel *hoverCardLabel;
     QPropertyAnimation *hoverGeomAnim = nullptr;
     QRect hoverOriginalRect;
+
+    // Drag-to-target (mirrors MainWindow attack-card drag flow)
+    bool isDraggingCard = false;
+    int draggedCardIndex = -1;
+    QLabel *dragArrowLabel;
+    QLabel *playerTargetFrame;
+    void updateDragArrow(QPoint fromPoint, QPoint toPoint, bool isOverEnemy);
+    void showPlayerTargetFrame();
+    void hidePlayerTargetFrame();
+    void showNotEnoughEnergy();
+    void setupShortcuts();
 
     // ============================================================
     // Audio
@@ -155,7 +217,7 @@ private:
     void handleStateUpdate(const QJsonObject &obj);
     void handleCombatOver(const QJsonObject &obj);
     void handleLeaderChanged(const QJsonObject &obj);
-    void sendPlayCard(const QString &cardName);
+    void sendPlayCard(const QString &cardName, int targetEnemyIndex = -1);
     void sendEndTurn();
 
     void updateHandUI();
@@ -169,7 +231,7 @@ private:
     void showToastMessage(const QString &text);
     void showGameOverText(const QString &text, const QColor &color);
     void playHitEffect(QLabel *overlay, QGraphicsOpacityEffect *opacityEffect);
-    void showEnemyTooltip();
+    void showEnemyTooltip(int enemyIndex, QWidget *anchorWidget = nullptr);
     void showStatusEffectTooltip(QLabel *badge);
     void updateAnimations();
 

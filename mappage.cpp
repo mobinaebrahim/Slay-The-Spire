@@ -372,6 +372,7 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
 
     connect(combatWindow, &QObject::destroyed, this, [this]() {
         if (m_playerHp <= 0) {
+            emit runAbandoned();
             this->close(); // defeat -> back to main menu
         } else {
             this->show();

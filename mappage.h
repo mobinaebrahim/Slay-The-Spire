@@ -29,9 +29,12 @@ public:
     explicit MapPage(QWidget *parent = nullptr, bool isLeader = true, bool isMultiplayer = true,
                      int existingSaveId = -1, const QJsonObject &savedMapData = QJsonObject());
     ~MapPage();
+signals:
+    void runAbandoned();
 
 private slots:
     void onCombatStarted();
+
 
 private:
     MapView *m_mapView;

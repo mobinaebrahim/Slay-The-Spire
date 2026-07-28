@@ -122,7 +122,6 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
             return;
         }
 
-        // لیست بر اساس save_date DESC مرتبه، پس اولی جدیدترینه.
         int saveId = saves[0].id;
         QJsonObject mapData = SaveManager::instance().load_save(saveId);
 
@@ -138,7 +137,6 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
         }
 
         QMessageBox::information(this, "New Game", "Old save deleted. Starting a new game!");
-        // TODO: add actual new game start logic here
 
         ui->btnContinue->hide();
         ui->btnAbandon->hide();
@@ -161,8 +159,6 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     connect(&NetworkManager::instance(), &NetworkManager::room_joined, this, [this](const QString &roomCode){
         Q_UNUSED(roomCode);
 
-        // اگه یه دیالوگ مودال بازه (مثلاً friendspage که کاربر داخلش
-        // منتظر مونده تا دوستش قبول کنه)، ببندش تا زیرش گم نشه.
         if (QWidget *activeModal = QApplication::activeModalWidget()) {
             activeModal->close();
         }
@@ -212,9 +208,6 @@ void MainMenuWindow::handle_play_button()
         return;
     }
 
-    // ============================================================
-    // انتخاب بین Single Player و Multiplayer
-    // ============================================================
     QMessageBox modeBox(this);
     modeBox.setWindowTitle("Choose Mode");
     modeBox.setText("How do you want to play?");
@@ -224,18 +217,14 @@ void MainMenuWindow::handle_play_button()
     modeBox.exec();
 
     if (modeBox.clickedButton() == singleBtn) {
-        // تک‌نفره: مستقیم نقشه رو با isMultiplayer=false باز می‌کنیم.
         open_map_page(true, false);
     }
     else if (modeBox.clickedButton() == multiBtn) {
-        // چندنفره: بریم صفحه‌ی دوستان تا Invite بفرستیم/بگیریم.
-        // نقشه اینجا باز نمی‌شه — طبق طراحی، فقط room_joined
-        // (تو constructor همین کلاس وصل شده) نقشه رو باز می‌کنه.
+
         friendspage *friendsDlg = new friendspage(this);
         friendsDlg->setAttribute(Qt::WA_DeleteOnClose);
         friendsDlg->exec();
     }
-    // اگه Cancel زد، هیچ کاری نمی‌کنیم.
 }
 
 
@@ -245,6 +234,12 @@ void MainMenuWindow::open_map_page(bool isLeader, bool isMultiplayer, int existi
     mapDlg->setAttribute(Qt::WA_DeleteOnClose);
 
     this->hide();
+
+    connect(mapDlg, &MapPage::runAbandoned, this, [this](){
+        this->show();
+        this->raise();
+        this->activateWindow();
+    });
 
     connect(mapDlg, &QObject::destroyed, this, [this](){
         this->show();

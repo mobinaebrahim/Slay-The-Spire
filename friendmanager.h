@@ -4,7 +4,6 @@
 #include <QStringList>
 #include <QList>
 
-// FIX: struct now carries room_code so UI can show which room
 struct GameInviteEntry {
     QString from_user;
     QString room_code;
@@ -35,7 +34,11 @@ public:
     bool sendGameInvite(const QString &fromUsername, const QString &toUsername, const QString &roomCode);
     bool acceptGameInvite(const QString &username, const QString &fromUsername, QString &outRoomCode);
     bool rejectGameInvite(const QString &username, const QString &fromUsername);
-    QList<GameInviteEntry> getPendingGameInvites(const QString &username);  // FIX: returns room_code too
+    QList<GameInviteEntry> getPendingGameInvites(const QString &username);
+
+    // NEW: non-destructive peek + explicit delete
+    bool peekGameInviteRoomCode(const QString &username, const QString &fromUsername, QString &outRoomCode);
+    bool deleteGameInvite(const QString &username, const QString &fromUsername);
 
 private:
     bool createGameInvitesTable();

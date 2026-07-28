@@ -21,6 +21,17 @@ friendspage::friendspage(QWidget *parent)
         populate_friends_list();
         populate_game_invites();
     });
+
+    // FIX: handle server responses for room join
+    connect(&NetworkManager::instance(), &NetworkManager::room_joined, this, [this](const QString &roomCode){
+        QMessageBox::information(this, "Joined", "Successfully joined room: " + roomCode);
+        // TODO: switch to multiplayer game screen here
+        // this->close();
+    });
+
+    connect(&NetworkManager::instance(), &NetworkManager::room_error, this, [this](const QString &error){
+        QMessageBox::critical(this, "Join Failed", error);
+    });
 }
 
 void friendspage::populate_pending_requests()
@@ -238,7 +249,7 @@ void friendspage::populate_friends_list()
 
 void friendspage::populate_game_invites()
 {
-    ui->listGameInvites->clear();  // FIX: correct widget name
+    ui->listGameInvites->clear();
 
     QListWidgetItem *spacerItem = new QListWidgetItem();
     spacerItem->setSizeHint(QSize(0, 10));
@@ -302,16 +313,46 @@ void friendspage::populate_game_invites()
         ui->listGameInvites->setItemWidget(listItem, itemWidget);
 
         connect(acceptBtn, &QPushButton::clicked, this, [this, invite](){
-            QString roomCode;
-            bool ok = FriendManager::instance().acceptGameInvite(
-                user_manager::instance().get_current_username(),
-                invite.from_user,
-                roomCode);
-            if (ok) {
-                QMessageBox::information(this, "Invite Accepted", "Joining room: " + roomCode);
-                // TODO: call your network join-room logic here if needed
+            // FIX: check connection first
+            if (!NetworkManager::instance().is_connected()) {
+                QMessageBox::warning(this, "Not Connected", "Please connect to server first!");
+                return;
             }
-            populate_game_invites();
+
+            QString roomCode;
+            // FIX: peek first — don't delete invite until server confirms join
+            if (!FriendManager::instance().peekGameInviteRoomCode(
+                    user_manager::instance().get_current_username(),
+                    invite.from_user,
+                    roomCode)) {
+                QMessageBox::warning(this, "Expired", "This invite is no longer valid.");
+                populate_game_invites();
+                return;
+            }
+
+            // FIX: actually send join request to server!
+            NetworkManager::instance().join_room(roomCode);
+
+            // FIX: wait for server confirmation, then delete invite from DB
+            QMetaObject::Connection *conn = new QMetaObject::Connection();
+            QString currentUser = user_manager::instance().get_current_username();
+            QString fromUser = invite.from_user;
+
+            *conn = connect(&NetworkManager::instance(), &NetworkManager::room_joined, this,
+                            [this, currentUser, fromUser, conn](const QString &joinedRoomCode){
+                                FriendManager::instance().deleteGameInvite(currentUser, fromUser);
+                                populate_game_invites();
+                                QObject::disconnect(*conn);
+                                delete conn;
+                            });
+
+            // Also clean up connection on error so we don't leak it
+            connect(&NetworkManager::instance(), &NetworkManager::room_error, this,
+                    [this, conn](const QString &){
+                        populate_game_invites();
+                        QObject::disconnect(*conn);
+                        delete conn;
+                    });
         });
 
         connect(rejectBtn, &QPushButton::clicked, this, [this, invite](){

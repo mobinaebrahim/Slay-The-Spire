@@ -331,3 +331,40 @@ bool FriendManager::acceptGameInvite(const QString &username, const QString &fro
     db.commit();
     return true;
 }
+
+// ... (کد قبلی تا قبل acceptGameInvite همونه) ...
+
+bool FriendManager::peekGameInviteRoomCode(const QString &username, const QString &fromUsername, QString &outRoomCode)
+{
+    QSqlQuery query;
+    query.prepare("SELECT room_code FROM game_invites "
+                  "WHERE from_user = :fromUser AND to_user = :username AND status = 'pending'");
+    query.bindValue(":fromUser", fromUsername);
+    query.bindValue(":username", username);
+
+    if (!query.exec()) {
+        qDebug() << "Error peeking game invite:" << query.lastError().text();
+        return false;
+    }
+
+    if (!query.next()) {
+        return false;
+    }
+
+    outRoomCode = query.value("room_code").toString();
+    return true;
+}
+
+bool FriendManager::deleteGameInvite(const QString &username, const QString &fromUsername)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM game_invites WHERE from_user = :fromUser AND to_user = :username");
+    query.bindValue(":fromUser", fromUsername);
+    query.bindValue(":username", username);
+
+    if (!query.exec()) {
+        qDebug() << "Error deleting game invite:" << query.lastError().text();
+        return false;
+    }
+    return query.numRowsAffected() > 0;
+}

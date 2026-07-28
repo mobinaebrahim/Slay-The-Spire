@@ -81,7 +81,7 @@ private:
         QJsonArray effects;
     };
     std::vector<EnemyData> m_enemies;
-    std::vector<int> m_lastEnemyHps;   // parallel to m_enemies, for hit-flash detection
+    std::vector<int> m_lastEnemyHps;
 
     struct EnemyUISlot {
         QWidget *wrapper = nullptr;
@@ -195,6 +195,12 @@ private:
     void setupShortcuts();
 
     // ============================================================
+    // Keyboard highlight navigation (parity with MainWindow)
+    // ============================================================
+    int highlightedCardIndex = -1;
+    void updateCardHighlight();
+
+    // ============================================================
     // Audio
     // ============================================================
     QMediaPlayer *bgMusicPlayer; QAudioOutput *bgAudioOutput;
@@ -233,7 +239,5 @@ private:
     void showCardPileOverlay(const QString &title, const QStringList &cards, const QString &titleColor);
     void hidePileOverlay();
 };
-
-
 
 #endif // MPCOMBATWINDOW_H

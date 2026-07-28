@@ -6,6 +6,57 @@
 #include <QMessageBox>
 #include <QDebug>
 
+// ================================================================
+// Helper: determine if a card name is an Attack (client-side)
+// ================================================================
+static bool isAttackCard(const QString &name)
+{
+    static const QStringList attacks = {
+        "Strike", "Bash", "Blood for Blood", "Clash", "Feed", "Immolate",
+        "PerfectedStrike", "Reaper", "Bludgeon", "TwinStrike", "Whirlwind",
+        "Disarm", "Uppercut", "Carnage", "Pummel", "Sever Soul", "Dropkick",
+        "Hemokinesis", "Rampage", "Searing Blow", "Thunderclap", "Pommel Strike",
+        "Headbutt", "Clothesline", "Iron Wave", "Sword Boomerang", "Anger",
+        "Body Slam", "Cleave", "Heavy Blade", "Fiend Fire", "Twin Strike",
+        "Bloodletting", "Offering"
+    };
+    return attacks.contains(name);
+}
+
+// ================================================================
+// Helper: status-effect colours (parity with MainWindow)
+// ================================================================
+static QString effectColor(const QString& name)
+{
+    if (name == "Strength")    return "#e07b39";
+    if (name == "Dexterity")   return "#4ea8de";
+    if (name == "Vulnerable")  return "#e35d5d";
+    if (name == "Weak")        return "#b98fda";
+    if (name == "Frail")       return "#c9a24a";
+    if (name == "Metallicize") return "#7d8fa3";
+    if (name == "Entangled")   return "#6fae6f";
+    if (name == "DemonForm")   return "#c0392b";
+    if (name == "Brutality")   return "#8b0000";
+    return "#666666";
+}
+
+// ================================================================
+// Helper: status-effect descriptions (parity with MainWindow)
+// ================================================================
+static QString effectDescription(const QString& name, int amount)
+{
+    if (name == "Strength")    return QString("Increases damage dealt by Attack cards by %1.").arg(amount);
+    if (name == "Dexterity")   return QString("Increases Block gained by %1.").arg(amount);
+    if (name == "Vulnerable")  return "Take 50% more damage from attacks while this is active.";
+    if (name == "Weak")        return "Deal 50% less damage while this is active.";
+    if (name == "Frail")       return "Gain 25% less Block from cards while this is active.";
+    if (name == "Metallicize") return QString("Gain %1 Block at the end of your turn.").arg(amount);
+    if (name == "Entangled")   return "Cannot play Attack cards this turn.";
+    if (name == "DemonForm")   return QString("Gain %1 Strength at the start of each turn.").arg(amount);
+    if (name == "Brutality")   return "Lose 1 HP and draw 1 card at the start of each turn.";
+    return "";
+}
+
 MPCombatWindow::MPCombatWindow(QWidget *parent, bool isLeader)
     : QWidget(parent)
     , ui(new Ui::MPCombatWindow)
@@ -47,9 +98,6 @@ void MPCombatWindow::buildUI()
     backgroundLabel->setGeometry(0, 0, this->width(), this->height());
     backgroundLabel->lower();
 
-    // ------------------------------------------------------------
-    // Top HUD — parity with single-player MainWindow
-    // ------------------------------------------------------------
     topHudBar = new QWidget(this);
     topHudBar->setStyleSheet(
         "background-color: rgba(20, 20, 25, 180); border-bottom: 2px solid rgba(255, 215, 130, 60);");
@@ -89,6 +137,7 @@ void MPCombatWindow::buildUI()
         this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
     settingsOverlayImage->hide();
+    settingsOverlayImage->installEventFilter(this);
 
     mapLabel = new QLabel(this);
     mapLabel->setFixedSize(46, 46);
@@ -112,7 +161,6 @@ void MPCombatWindow::buildUI()
         "font-size: 14px; border-radius: 6px; padding: 6px;");
     spectatorLabel->hide();
 
-    // --- Player ---
     playerSpriteLabel = new QLabel(this);
     playerSpriteLabel->setPixmap(QPixmap(":/images/characters/IronClad.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     playerSpriteLabel->setAlignment(Qt::AlignCenter);
@@ -172,7 +220,6 @@ void MPCombatWindow::buildUI()
     playerHitOverlay->setGraphicsEffect(playerHitOpacity);
     playerHitOpacity->setOpacity(0.0);
 
-    // --- Teammate ---
     teammateSpriteLabel = new QLabel(this);
     teammateSpriteLabel->setPixmap(QPixmap(":/images/characters/teammate.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     teammateSpriteLabel->setScaledContents(true);
@@ -216,9 +263,6 @@ void MPCombatWindow::buildUI()
     teammateHitOverlay->setGraphicsEffect(teammateHitOpacity);
     teammateHitOpacity->setOpacity(0.0);
 
-    // ------------------------------------------------------------
-    // Enemy area — multi-enemy container, parity with MainWindow
-    // ------------------------------------------------------------
     enemyAreaContainer = new QWidget(this);
     enemyAreaLayout = new QHBoxLayout(enemyAreaContainer);
     enemyAreaLayout->setContentsMargins(0, 0, 0, 0);
@@ -234,7 +278,6 @@ void MPCombatWindow::buildUI()
     customTooltipBox->hide();
     customTooltipBox->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    // --- Piles ---
     drawPileIconLabel = new QLabel(this);
     drawPileIconLabel->setFixedSize(84, 84);
     drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -270,7 +313,6 @@ void MPCombatWindow::buildUI()
     exhaustPileBadge->hide();
     exhaustPileBadge->installEventFilter(this);
 
-    // --- Pile overlay ---
     pileOverlay = new QWidget(this);
     pileOverlay->setStyleSheet("background-color: rgba(0,0,0,190);");
     pileOverlay->hide();
@@ -304,7 +346,6 @@ void MPCombatWindow::buildUI()
     overlayLayout->addWidget(closePileOverlayButton, 0, Qt::AlignCenter);
     connect(closePileOverlayButton, &QPushButton::clicked, this, &MPCombatWindow::hidePileOverlay);
 
-    // --- Cards + End Turn ---
     m_cardsContainer = ui->CardsContainer;
     QHBoxLayout *cardLayout = new QHBoxLayout(m_cardsContainer);
 
@@ -318,7 +359,6 @@ void MPCombatWindow::buildUI()
     m_endTurnBtn->installEventFilter(this);
     connect(m_endTurnBtn, &QPushButton::clicked, this, &MPCombatWindow::sendEndTurn);
 
-    // --- Team chat ---
     chatIconLabel = new QLabel(this);
     chatIconLabel->setFixedSize(46, 46);
     chatIconLabel->setPixmap(QPixmap(":/images/icons/chatbox.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -372,7 +412,6 @@ void MPCombatWindow::buildUI()
 
     chatLayout->addLayout(chatInputRow);
 
-    // --- Drag-to-target visuals ---
     dragArrowLabel = new QLabel(this);
     dragArrowLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     dragArrowLabel->hide();
@@ -381,7 +420,6 @@ void MPCombatWindow::buildUI()
     playerTargetFrame->setAttribute(Qt::WA_TransparentForMouseEvents);
     playerTargetFrame->hide();
 
-    // --- Game over text ---
     gameOverLabel = new QLabel(this);
     gameOverLabel->setAlignment(Qt::AlignCenter);
     gameOverLabel->hide();
@@ -389,7 +427,6 @@ void MPCombatWindow::buildUI()
     gameOverLabel->setGraphicsEffect(gameOverOpacityEffect);
     gameOverOpacityEffect->setOpacity(0.0);
 
-    // --- Toast / hover card ---
     toastLabel = new QLabel(this);
     toastLabel->setAlignment(Qt::AlignCenter);
     toastLabel->setStyleSheet(
@@ -408,7 +445,6 @@ void MPCombatWindow::buildUI()
     hoverShadow->setColor(QColor(0, 0, 0, 210));
     hoverCardLabel->setGraphicsEffect(hoverShadow);
 
-    // z-order
     topHudBar->raise();
     playerHeartIcon->raise();
     playerHpTopLabel->raise();
@@ -463,7 +499,7 @@ void MPCombatWindow::setupAudio()
 }
 
 // ================================================================
-// Keyboard shortcuts — parity with single-player MainWindow
+// Keyboard shortcuts — full parity with single-player MainWindow
 // ================================================================
 void MPCombatWindow::setupShortcuts()
 {
@@ -487,11 +523,74 @@ void MPCombatWindow::setupShortcuts()
         showCardPileOverlay("Exhaust Pile", m_exhaustPile, "#c07af0");
     });
 
+    QShortcut *deckKey = new QShortcut(QKeySequence(Qt::Key_D), this);
+    connect(deckKey, &QShortcut::activated, this, [=]() {
+        QStringList fullDeck = m_drawPile + m_discardPile + m_exhaustPile + m_myHand;
+        showCardPileOverlay("Deck", fullDeck, "#66ccff");
+    });
+
     QShortcut *escKey = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(escKey, &QShortcut::activated, this, [=]() {
+        highlightedCardIndex = -1;
+        updateCardHighlight();
         hidePileOverlay();
+        hideHoverCard();
         if (settingsOverlayImage && settingsOverlayImage->isVisible())
             settingsOverlayImage->hide();
+    });
+
+    for (int i = 1; i <= 9; ++i) {
+        QShortcut *numKey = new QShortcut(QKeySequence(QString::number(i)), this);
+        int handIndex = i - 1;
+        connect(numKey, &QShortcut::activated, this, [=]() {
+            if (handIndex < m_myHand.size()) {
+                highlightedCardIndex = handIndex;
+                updateCardHighlight();
+            }
+        });
+    }
+    QShortcut *zeroKey = new QShortcut(QKeySequence(Qt::Key_0), this);
+    connect(zeroKey, &QShortcut::activated, this, [=]() {
+        if (9 < m_myHand.size()) {
+            highlightedCardIndex = 9;
+            updateCardHighlight();
+        }
+    });
+
+    QShortcut *leftKey = new QShortcut(QKeySequence(Qt::Key_Left), this);
+    connect(leftKey, &QShortcut::activated, this, [=]() {
+        int handSize = m_myHand.size();
+        if (handSize == 0) return;
+        highlightedCardIndex = (highlightedCardIndex <= 0) ? handSize - 1 : highlightedCardIndex - 1;
+        updateCardHighlight();
+    });
+
+    QShortcut *rightKey = new QShortcut(QKeySequence(Qt::Key_Right), this);
+    connect(rightKey, &QShortcut::activated, this, [=]() {
+        int handSize = m_myHand.size();
+        if (handSize == 0) return;
+        highlightedCardIndex = (highlightedCardIndex + 1) % handSize;
+        updateCardHighlight();
+    });
+
+    QShortcut *enterKey = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(enterKey, &QShortcut::activated, this, [=]() {
+        if (highlightedCardIndex >= 0 && highlightedCardIndex < m_myHand.size()) {
+            QString cardName = m_myHand[highlightedCardIndex];
+            if (isAttackCard(cardName))
+                sendPlayCard(cardName, targetedEnemyIndex);
+            else
+                sendPlayCard(cardName, -1);
+        }
+    });
+
+    QShortcut *peekKey = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    connect(peekKey, &QShortcut::activated, this, [=]() {
+        QLayout *layout = m_cardsContainer->layout();
+        if (highlightedCardIndex >= 0 && highlightedCardIndex < layout->count()) {
+            QPushButton *btn = qobject_cast<QPushButton*>(layout->itemAt(highlightedCardIndex)->widget());
+            if (btn) showHoverCard(btn);
+        }
     });
 }
 
@@ -544,7 +643,6 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
     teammateStatusRow->setGeometry(m_teammateX, m_baseTeammateY + teammateH + 4, 200, 26);
     teammateHitOverlay->setGeometry(m_teammateX, m_baseTeammateY, teammateW, teammateH);
 
-    // Enemy area — mirrors MainWindow's vertical centering against the player sprite
     int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 75;
     int playerSpriteCenterY = m_basePlayerY + playerH / 2;
     int enemyAreaH = 320;
@@ -607,7 +705,7 @@ void MPCombatWindow::handleStateUpdate(const QJsonObject &obj)
             m_myEnergy = p["energy"].toInt();
             m_myMaxEnergy = p["max_energy"].toInt();
             m_myBlock = p["block"].toInt();
-            m_myGold = p["gold"].toInt(m_myGold); // server may not send gold yet; keeps last known value
+            m_myGold = p["gold"].toInt(m_myGold);
             m_iAmAlive = p["is_alive"].toBool();
             m_myEffects = p["effects"].toArray();
 
@@ -632,7 +730,6 @@ void MPCombatWindow::handleStateUpdate(const QJsonObject &obj)
         }
     }
 
-    // --- Enemies: full array now (multi-enemy support) ---
     QJsonArray enemiesJson = obj["enemies"].toArray();
     std::vector<EnemyData> newEnemies;
     newEnemies.reserve(enemiesJson.size());
@@ -664,7 +761,6 @@ void MPCombatWindow::handleStateUpdate(const QJsonObject &obj)
         playHitEffect(teammateHitOverlay, teammateHitOpacity);
     }
 
-    // Per-enemy hit-flash detection (matched by index; good enough since server sends a stable order)
     bool needsRebuild = (newEnemies.size() != m_enemies.size());
     if (!needsRebuild) {
         for (size_t i = 0; i < newEnemies.size(); ++i) {
@@ -765,7 +861,7 @@ void MPCombatWindow::handleChatMessage(const QJsonObject &obj)
 {
     QString username = obj["username"].toString();
     QString text = obj["text"].toString();
-    if (username == m_myUsername) return; // already echoed locally when we sent it
+    if (username == m_myUsername) return;
 
     appendChatMessage(username, text, false);
 
@@ -833,7 +929,6 @@ void MPCombatWindow::updateCharacterUI()
         teammateDownOverlay->setVisible(!m_teammateAlive);
     }
 
-    // --- Enemies (multi-slot) ---
     if (enemySlots.size() == m_enemies.size()) {
         for (size_t i = 0; i < m_enemies.size(); ++i) {
             const EnemyData &d = m_enemies[i];
@@ -1004,15 +1099,14 @@ void MPCombatWindow::updateStatusEffectRow(QWidget *rowWidget, const QJsonArray 
         int amount = eff["amount"].toInt();
 
         QLabel *badge = new QLabel(rowWidget);
-        badge->setFixedSize(90, 26);
+        badge->setFixedSize(60, 26);
         badge->setAlignment(Qt::AlignCenter);
         badge->setText(QString("%1 %2").arg(name).arg(amount));
-        badge->setStyleSheet(
-            "background-color: #4a4a4a; color: white; border-radius: 6px; font-weight: bold; font-size: 10px;");
+        badge->setStyleSheet(QString("background-color: %1; color: white; border-radius: 6px; "
+                                     "font-weight: bold; font-size: 10px;").arg(effectColor(name)));
         badge->setProperty("effectName", name);
         badge->setProperty("effectAmount", amount);
         badge->installEventFilter(this);
-
         layout->addWidget(badge);
     }
 }
@@ -1020,6 +1114,7 @@ void MPCombatWindow::updateStatusEffectRow(QWidget *rowWidget, const QJsonArray 
 void MPCombatWindow::updateHandUI()
 {
     hideHoverCard();
+    highlightedCardIndex = -1;
 
     QLayout *layout = m_cardsContainer->layout();
     QLayoutItem *child;
@@ -1037,9 +1132,7 @@ void MPCombatWindow::updateHandUI()
         btn->setProperty("cardName", cardName);
         btn->setProperty("cardImagePath", ":/images/cards/" + cardName + ".png");
         btn->setProperty("cardIndex", i);
-        // NOTE: attack/skill distinction isn't in the hand payload yet — treated as a
-        // targeted (drag-to-enemy) card whenever there is at least one enemy on the field.
-        btn->setProperty("cardIsAttack", !m_enemies.empty());
+        btn->setProperty("cardIsAttack", isAttackCard(cardName));
         btn->installEventFilter(this);
 
         layout->addWidget(btn);
@@ -1048,7 +1141,7 @@ void MPCombatWindow::updateHandUI()
         btn->setGraphicsEffect(fadeEffect);
         fadeEffect->setOpacity(0.0);
         QPropertyAnimation *fadeIn = new QPropertyAnimation(fadeEffect, "opacity", this);
-        fadeIn->setDuration(500);
+        fadeIn->setDuration(800);
         fadeIn->setStartValue(0.0);
         fadeIn->setEndValue(1.0);
         fadeIn->start(QAbstractAnimation::DeleteWhenStopped);
@@ -1078,7 +1171,7 @@ void MPCombatWindow::sendPlayCard(const QString &cardName, int targetEnemyIndex)
     msg["type"] = "play_card";
     msg["card_name"] = cardName;
     if (targetEnemyIndex >= 0)
-        msg["target_enemy_index"] = targetEnemyIndex; // requires server support for multi-enemy targeting
+        msg["target_enemy_index"] = targetEnemyIndex;
     NetworkManager::instance().send_game_action(msg);
 }
 
@@ -1184,7 +1277,9 @@ void MPCombatWindow::showGameOverText(const QString &text, const QColor &color)
 
     int labelW = 600, labelH = 120;
     QRect endRect((this->width() - labelW) / 2, (this->height() - labelH) / 2, labelW, labelH);
-    gameOverLabel->setGeometry(endRect);
+    QRect startRect(endRect.x() - 40, endRect.y() - 20, labelW + 80, labelH + 40);
+
+    gameOverLabel->setGeometry(startRect);
     gameOverLabel->show();
     gameOverLabel->raise();
     gameOverOpacityEffect->setOpacity(0.0);
@@ -1195,6 +1290,13 @@ void MPCombatWindow::showGameOverText(const QString &text, const QColor &color)
     fadeAnim->setEndValue(1.0);
     fadeAnim->setEasingCurve(QEasingCurve::OutCubic);
     fadeAnim->start(QAbstractAnimation::DeleteWhenStopped);
+
+    QPropertyAnimation *geomAnim = new QPropertyAnimation(gameOverLabel, "geometry", this);
+    geomAnim->setDuration(900);
+    geomAnim->setStartValue(startRect);
+    geomAnim->setEndValue(endRect);
+    geomAnim->setEasingCurve(QEasingCurve::OutBack);
+    geomAnim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void MPCombatWindow::showHoverCard(QPushButton *originalBtn)
@@ -1208,7 +1310,7 @@ void MPCombatWindow::showHoverCard(QPushButton *originalBtn)
     QRect smallRect(globalPos.x(), globalPos.y(), originalBtn->width(), originalBtn->height());
     hoverOriginalRect = smallRect;
 
-    double scale = 1.5;
+    double scale = 1.55;
     int bigW = int(originalBtn->width() * scale);
     int bigH = int(originalBtn->height() * scale);
     int bigX = globalPos.x() - (bigW - originalBtn->width()) / 2;
@@ -1225,7 +1327,7 @@ void MPCombatWindow::showHoverCard(QPushButton *originalBtn)
 
     if (hoverGeomAnim) { hoverGeomAnim->stop(); delete hoverGeomAnim; hoverGeomAnim = nullptr; }
     hoverGeomAnim = new QPropertyAnimation(hoverCardLabel, "geometry", this);
-    hoverGeomAnim->setDuration(150);
+    hoverGeomAnim->setDuration(180);
     hoverGeomAnim->setStartValue(hoverCardLabel->geometry());
     hoverGeomAnim->setEndValue(bigRect);
     hoverGeomAnim->setEasingCurve(QEasingCurve::OutCubic);
@@ -1238,7 +1340,7 @@ void MPCombatWindow::hideHoverCard()
     if (hoverGeomAnim) { hoverGeomAnim->stop(); delete hoverGeomAnim; hoverGeomAnim = nullptr; }
 
     hoverGeomAnim = new QPropertyAnimation(hoverCardLabel, "geometry", this);
-    hoverGeomAnim->setDuration(120);
+    hoverGeomAnim->setDuration(130);
     hoverGeomAnim->setStartValue(hoverCardLabel->geometry());
     hoverGeomAnim->setEndValue(hoverOriginalRect);
     hoverGeomAnim->setEasingCurve(QEasingCurve::InCubic);
@@ -1250,12 +1352,54 @@ void MPCombatWindow::hideHoverCard()
 
 void MPCombatWindow::showEnemyTooltip(int enemyIndex, QWidget *anchorWidget)
 {
-    if (enemyIndex < 0 || enemyIndex >= (int)m_enemies.size()) { customTooltipBox->hide(); return; }
+    if (enemyIndex < 0 || enemyIndex >= (int)m_enemies.size()) {
+        customTooltipBox->hide();
+        return;
+    }
 
     const EnemyData &d = m_enemies[enemyIndex];
+
+    QString title, desc;
+    QString intent = d.intent;
+
+    if (intent.contains("Divider")) {
+        title = "Divider";
+        desc = "This enemy intends to unleash the <b>Divider</b> attack.";
+    } else if (intent.contains("Attack") && intent.contains("Block")) {
+        title = "Attack + Defend";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> "
+                       "and <b><span style='color:#5ec8ff;'>Defend</span></b> itself.");
+    } else if (intent.contains("Attack") && intent.contains("Debuff")) {
+        title = "Attack + Debuff";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> "
+                       "and <b><span style='color:#c07af0;'>weaken</span></b> you.");
+    } else if (intent.contains("Attack") && intent.contains("Add")) {
+        title = "Attack + Add Card";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b> "
+                       "and <b><span style='color:#f5c518;'>add a card to your discard pile</span></b>.");
+    } else if (intent.contains("Attack")) {
+        title = "Attack";
+        desc = QString("This enemy intends to <b><span style='color:#ff6b6b;'>Attack</span></b>.");
+    } else if (intent.contains("Defend") || intent.contains("Block")) {
+        title = "Defend";
+        desc = "This enemy intends to <b><span style='color:#5ec8ff;'>Defend</span></b> itself.";
+    } else if (intent.contains("Buff")) {
+        title = "Buff";
+        desc = "This enemy intends to <b><span style='color:#ffd76a;'>strengthen</span></b> itself.";
+    } else if (intent.contains("Debuff")) {
+        title = "Debuff";
+        desc = "This enemy intends to <b><span style='color:#c07af0;'>weaken</span></b> you.";
+    } else if (intent.contains("Special")) {
+        title = "Special";
+        desc = "This enemy intends to do something special.";
+    } else {
+        title = d.name;
+        desc = d.intent;
+    }
+
     customTooltipBox->setText(QString(
                                   "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1</div>"
-                                  "<div>%2</div>").arg(d.name, d.intent));
+                                  "<div>%2</div>").arg(title, desc));
     customTooltipBox->adjustSize();
 
     QWidget *anchor = anchorWidget ? anchorWidget : this;
@@ -1271,10 +1415,11 @@ void MPCombatWindow::showStatusEffectTooltip(QLabel *badge)
 {
     QString name = badge->property("effectName").toString();
     int amount = badge->property("effectAmount").toInt();
+    QString desc = effectDescription(name, amount);
 
     customTooltipBox->setText(QString(
-                                  "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1 (%2)</div>")
-                                  .arg(name).arg(amount));
+                                  "<div style='font-weight:bold; font-size:14px; color:#f5c518; margin-bottom:6px;'>%1 (%2)</div>"
+                                  "<div>%3</div>").arg(name).arg(amount).arg(desc));
     customTooltipBox->adjustSize();
 
     QPoint globalPos = badge->mapTo(this, QPoint(0, 0));
@@ -1283,9 +1428,6 @@ void MPCombatWindow::showStatusEffectTooltip(QLabel *badge)
     customTooltipBox->raise();
 }
 
-// ================================================================
-// Drag-to-target visuals — parity with MainWindow
-// ================================================================
 void MPCombatWindow::updateDragArrow(QPoint fromPoint, QPoint toPoint, bool isOverEnemy)
 {
     int padding = 40;
@@ -1396,7 +1538,37 @@ void MPCombatWindow::hidePlayerTargetFrame()
 
 void MPCombatWindow::showNotEnoughEnergy()
 {
-    showToastMessage("Not enough energy");
+    QLabel *bubble = new QLabel(this);
+    QPixmap pix(":/images/not_enough_energy.png");
+    bubble->setPixmap(pix.scaled(260, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    bubble->adjustSize();
+
+    QRect playerRect = playerSpriteLabel->geometry();
+    int startX = playerRect.center().x() - bubble->width()/2 + 150;
+    int startY = playerRect.top() - bubble->height() + 70;
+    bubble->move(startX, startY);
+    bubble->show();
+    bubble->raise();
+
+    auto *effect = new QGraphicsOpacityEffect(bubble);
+    bubble->setGraphicsEffect(effect);
+
+    auto *fade = new QPropertyAnimation(effect, "opacity");
+    fade->setDuration(2100);
+    fade->setStartValue(1.0);
+    fade->setEndValue(0.0);
+
+    auto *move = new QPropertyAnimation(bubble, "pos");
+    move->setDuration(2100);
+    move->setStartValue(QPoint(startX, startY));
+    move->setEndValue(QPoint(startX, startY - 45));
+    move->setEasingCurve(QEasingCurve::OutQuad);
+
+    auto *group = new QParallelAnimationGroup(this);
+    group->addAnimation(move);
+    group->addAnimation(fade);
+    connect(group, &QParallelAnimationGroup::finished, bubble, &QLabel::deleteLater);
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void MPCombatWindow::mouseMoveEvent(QMouseEvent *event)
@@ -1404,7 +1576,7 @@ void MPCombatWindow::mouseMoveEvent(QMouseEvent *event)
     if (isDraggingCard && draggedCardIndex >= 0) {
         QPoint mousePos = event->pos();
 
-        bool isAttack = (draggedCardIndex < m_myHand.size()) && !m_enemies.empty();
+        bool isAttack = (draggedCardIndex < m_myHand.size()) && isAttackCard(m_myHand[draggedCardIndex]);
 
         if (isAttack) {
             QLayout *layout = m_cardsContainer->layout();
@@ -1434,9 +1606,6 @@ void MPCombatWindow::mouseMoveEvent(QMouseEvent *event)
     QWidget::mouseMoveEvent(event);
 }
 
-// ================================================================
-// Pile overlay
-// ================================================================
 void MPCombatWindow::showCardPileOverlay(const QString &title, const QStringList &cards, const QString &titleColor)
 {
     pileOpenSoundPlayer->setPosition(0);
@@ -1473,6 +1642,29 @@ void MPCombatWindow::hidePileOverlay()
     pileOverlay->hide();
 }
 
+void MPCombatWindow::updateCardHighlight()
+{
+    QLayout *layout = m_cardsContainer->layout();
+    if (!layout) return;
+    QPushButton *highlightedBtn = nullptr;
+
+    for (int i = 0; i < layout->count(); ++i) {
+        QPushButton *btn = qobject_cast<QPushButton*>(layout->itemAt(i)->widget());
+        if (!btn) continue;
+        if (i == highlightedCardIndex) {
+            btn->setStyleSheet("border: 3px solid #f5c518; border-radius: 6px;");
+            highlightedBtn = btn;
+        } else {
+            btn->setStyleSheet("border: none;");
+        }
+    }
+
+    if (highlightedBtn)
+        showHoverCard(highlightedBtn);
+    else
+        hideHoverCard();
+}
+
 // ================================================================
 // Event filter — hover states, drag-to-target, pile clicks, tooltips, HUD buttons
 // ================================================================
@@ -1480,12 +1672,13 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
 {
     QPushButton *cardBtn = qobject_cast<QPushButton *>(obj);
     if (cardBtn && cardBtn->property("cardImagePath").isValid()) {
-        if (event->type() == QEvent::Enter && !isDraggingCard) {
+        if (event->type() == QEvent::Enter && !isDraggingCard && highlightedCardIndex < 0) {
             showHoverCard(cardBtn);
             return true;
         }
         if (event->type() == QEvent::Leave && !isDraggingCard) {
-            hideHoverCard();
+            if (highlightedCardIndex < 0)
+                hideHoverCard();
             return true;
         }
         if (event->type() == QEvent::MouseButtonPress) {
@@ -1541,7 +1734,7 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
             } else {
                 QRect playerRect = playerSpriteLabel->geometry().adjusted(-60, -60, 60, 60);
                 if (playerRect.contains(localRelease))
-                    sendPlayCard(cardName, targetedEnemyIndex);
+                    sendPlayCard(cardName, -1);
             }
             dragHoverEnemyIndex = -1;
             return true;
@@ -1587,11 +1780,14 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
         return true;
     }
 
-    if (obj == mapLabel && event->type() == QEvent::MouseButtonRelease) {
-        // Leaving the map mid-combat would desync the match for the teammate, so this
-        // stays a no-op notice rather than an actual scene switch.
-        showToastMessage("Map isn't available during multiplayer combat");
+    if (obj == settingsOverlayImage && event->type() == QEvent::MouseButtonRelease) {
+        settingsOverlayImage->hide();
         return true;
+    }
+
+    if (obj == mapLabel && event->type() == QEvent::MouseButtonRelease) {
+        // No-op — parity with MainWindow (MainWindow does not handle mapLabel click)
+        return false;
     }
 
     if (obj == chatIconLabel && event->type() == QEvent::MouseButtonRelease) {
@@ -1599,7 +1795,7 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
         return true;
     }
 
-    // Enemy click-to-target + hover tooltip
+    // Enemy click-to-target + hover tooltip + hover glow
     for (size_t i = 0; i < enemySlots.size(); ++i) {
         EnemyUISlot &s = enemySlots[i];
         if (obj == s.sprite || obj == s.hpBar || obj == s.intentLabel) {
@@ -1609,10 +1805,25 @@ bool MPCombatWindow::eventFilter(QObject *obj, QEvent *event)
             }
             if (event->type() == QEvent::Enter) {
                 showEnemyTooltip((int)i, qobject_cast<QWidget *>(obj));
+                if ((int)i != targetedEnemyIndex && s.sprite) {
+                    QGraphicsDropShadowEffect *glow = new QGraphicsDropShadowEffect(s.sprite);
+                    glow->setBlurRadius(25);
+                    glow->setColor(QColor(200, 200, 200, 150));
+                    glow->setOffset(0, 0);
+                    s.sprite->setGraphicsEffect(glow);
+                }
                 return false;
             }
             if (event->type() == QEvent::Leave) {
                 customTooltipBox->hide();
+                if ((int)i != targetedEnemyIndex) {
+                    if (s.sprite && s.sprite->graphicsEffect()) {
+                        s.sprite->graphicsEffect()->deleteLater();
+                        s.sprite->setGraphicsEffect(nullptr);
+                    }
+                } else {
+                    retargetEnemy(targetedEnemyIndex);
+                }
                 return false;
             }
         }

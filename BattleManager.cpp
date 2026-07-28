@@ -91,9 +91,14 @@ void BattleManager::enemyTurn() {
     std::vector<Enemy*> enemiesSnapshot = enemies;
     for (Enemy* enemy : enemiesSnapshot) {
         if (enemy->getHp() > 0) {
-            Player* target = pickEnemyTarget();
-            if (!target) break;
-            enemy->executeAction(target);
+            // NEW: AOE support
+            if (enemy->isAOE()) {
+                enemy->executeActionOnAllPlayers(players);
+            } else {
+                Player* target = pickEnemyTarget();
+                if (!target) break;
+                enemy->executeAction(target);
+            }
             enemy->applyTurnEndEffects();
             if (enemy->wantsToFlee())
                 removeEnemy(enemy);

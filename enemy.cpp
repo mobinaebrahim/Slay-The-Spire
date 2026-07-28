@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "BattleManager.h"
+#include "player.h" // NEW: for Player in AOE fallback
 #include <cstdlib>
 
 Enemy::Enemy(string n, int h, int max)
@@ -8,6 +9,16 @@ Enemy::Enemy(string n, int h, int max)
 void Enemy::chooseAction() {}
 
 void Enemy::executeAction(Character* target) {}
+
+// NEW: default single-target fallback
+void Enemy::executeActionOnAllPlayers(const std::vector<Player*>& players) {
+    for (Player* p : players) {
+        if (p && p->getHp() > 0) {
+            executeAction(p);
+            break;
+        }
+    }
+}
 
 IntentType Enemy::getIntentType() const { return currentIntent; }
 int Enemy::getIntentValue() const { return intentValue; }

@@ -141,6 +141,25 @@ void Hexaghost::executeAction(Character* target) {
     chooseAction();
 }
 
+// NEW: AOE implementation for Divider turn
+void Hexaghost::executeActionOnAllPlayers(const std::vector<Player*>& players) {
+    if (turnCount == 2) {
+        // Divider: hit ALL alive players 6 times each
+        for (Player* p : players) {
+            if (p && p->getHp() > 0) {
+                int dmgPerHit = p->getHp() / 12 + 1;
+                for (int i = 0; i < 6; i++)
+                    p->takeDamage(calculateOutgoingDamage(dmgPerHit));
+            }
+        }
+        turnCount++;
+        chooseAction();
+    } else {
+        // Non-AOE turns: fallback to single target
+        Enemy::executeActionOnAllPlayers(players);
+    }
+}
+
 //__________________________________________TheChamp___________________________________________
 TheChamp::TheChamp() : Enemy("TheChamp", 150, 150), isTauntTurn(false) {
     int randomHp = 150 + (rand() % 101);

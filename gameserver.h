@@ -21,6 +21,14 @@
 #include "BossStruggles.h"
 #include "CardFactory.h"
 
+struct PlayerRunState {
+    int hp = 80;
+    int maxHp = 80;
+    int gold = 99;
+    QStringList deckCardNames;
+    bool wasAlive = true;
+};
+
 struct RoomGame {
     BattleManager* battleManager = nullptr;
     QMap<QTcpSocket*, Player*> socketToPlayer;
@@ -31,6 +39,10 @@ struct RoomGame {
     int currentPlayerIndex = 0;
     QString currentEnemyName;
     bool isMultiplayer = false;
+
+    // Persistent run data
+    QMap<QTcpSocket*, PlayerRunState> playerRunStates;
+    QJsonObject mapData;
 };
 
 class GameServer : public QObject
@@ -64,6 +76,10 @@ private:
     void handle_start_combat(QTcpSocket *sender, const QJsonObject &message);
     void handle_play_card(QTcpSocket *sender, const QJsonObject &message);
     void handle_end_turn(QTcpSocket *sender, const QJsonObject &message);
+
+    // Map / Room sync
+    void handle_map_data(QTcpSocket *sender, const QJsonObject &message);
+    void handle_room_selected(QTcpSocket *sender, const QJsonObject &message);
 
     // Game logic
     void initialize_player_deck(Player* player);

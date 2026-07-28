@@ -71,6 +71,12 @@ void GameServer::handle_message(QTcpSocket *senderSocket, const QJsonObject &mes
     else if (type == "end_turn") {
         handle_end_turn(senderSocket, message);
     }
+    else if (type == "map_data") {
+        handle_map_data(senderSocket, message);
+    }
+    else if (type == "room_selected") {
+        handle_room_selected(senderSocket, message);
+    }
     else {
         QString roomCode = client_room.value(senderSocket);
         if (roomCode.isEmpty()) {
@@ -343,6 +349,23 @@ void GameServer::check_combat_over(const QString &roomCode)
     if (!game.combatActive || !game.battleManager) return;
 
     if (game.battleManager->getEnemies().empty()) {
+        // VICTORY: save persistent state before ending
+        for (QTcpSocket *socket : rooms[roomCode]) {
+            Player* p = game.socketToPlayer.value(socket, nullptr);
+            if (!p) continue;
+
+            PlayerRunState &rs = game.playerRunStates[socket];
+            rs.hp = p->getHp();
+            rs.maxHp = p->getMaxHp();
+            rs.gold = p->getGold();
+            rs.wasAlive = (p->getHp() > 0);
+
+            rs.deckCardNames.clear();
+            for (Card* c : p->getFullDeck()) {
+                if (c) rs.deckCardNames.append(QString::fromStdString(c->getName()));
+            }
+        }
+
         game.combatActive = false;
         QJsonObject msg = buildCombatOver(true);
         broadcast_to_room(roomCode, msg);
@@ -438,6 +461,34 @@ void GameServer::process_enemy_turn(const QString &roomCode)
     }
 }
 
+// ---Map / Room sync---
+
+void GameServer::handle_map_data(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = client_room.value(senderSocket);
+    if (roomCode.isEmpty()) return;
+
+    // Only leader may broadcast map data
+    if (rooms[roomCode].indexOf(senderSocket) != 0) return;
+
+    RoomGame &game = roomGames[roomCode];
+    game.mapData = message["data"].toObject();
+
+    broadcast_to_room(roomCode, message);
+}
+
+void GameServer::handle_room_selected(QTcpSocket *senderSocket, const QJsonObject &message)
+{
+    QString roomCode = client_room.value(senderSocket);
+    if (roomCode.isEmpty()) return;
+
+    // Only leader may select the next room
+    if (rooms[roomCode].indexOf(senderSocket) != 0) return;
+
+    // Forward to all clients (non-leaders auto-enter the room)
+    broadcast_to_room(roomCode, message);
+}
+
 // ---Room management---
 
 void GameServer::handle_create_room(QTcpSocket *senderSocket, const QJsonObject &message)
@@ -502,6 +553,7 @@ void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject
         game.socketToPlayer.clear();
         game.playerAlive.clear();
         game.endedTurn.clear();
+        // NOTE: intentionally keep playerRunStates and mapData
     }
 
     game.battleManager = new BattleManager();
@@ -515,12 +567,29 @@ void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject
         QString username = socketUsernames.value(clientSocket, "Player");
         if (username.isEmpty()) username = "Player";
 
-        Player* p = new Player(username.toStdString(), 80, 80, 3, 99, game.battleManager);
+        // Load persistent run state (or init defaults on first combat)
+        PlayerRunState runState;
+        if (game.playerRunStates.contains(clientSocket)) {
+            runState = game.playerRunStates[clientSocket];
+        } else {
+            for (int i = 0; i < 5; ++i) runState.deckCardNames.append("Strike");
+            for (int i = 0; i < 4; ++i) runState.deckCardNames.append("Defend");
+            game.playerRunStates[clientSocket] = runState;
+        }
+
+        Player* p = new Player(username.toStdString(),
+                               runState.hp, runState.maxHp,
+                               3, runState.gold,
+                               game.battleManager);
         game.battleManager->addPlayer(p);
         game.socketToPlayer[clientSocket] = p;
-        game.playerAlive[clientSocket] = true;
+        game.playerAlive[clientSocket] = (runState.hp > 0);
 
-        initialize_player_deck(p);
+        // Build deck from saved run state
+        for (const QString &cardName : runState.deckCardNames) {
+            Card* c = createCardByName(cardName.toStdString());
+            if (c) p->addCardToDrawPile(c);
+        }
     }
 
     QString enemyName = message["enemy_name"].toString("JawWorm");

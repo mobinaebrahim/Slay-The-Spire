@@ -31,6 +31,10 @@ public:
     void chooseAction() override;
     void executeAction(Character* target) override;
     bool isDividerTurn() const { return turnCount == 2; }
+
+    // NEW: AOE support for Divider turn
+    bool isAOE() const override { return turnCount == 2; }
+    void executeActionOnAllPlayers(const std::vector<Player*>& players) override;
 };
 
 class TheChamp : public Enemy {

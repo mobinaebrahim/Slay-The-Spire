@@ -44,6 +44,7 @@ private:
 public:
     Girya();
     void onCampsite(Player* owner) override;
+    int getLiftsRemaining() const { return liftsRemaining; }
 };
 
 class IceCream : public Relic {

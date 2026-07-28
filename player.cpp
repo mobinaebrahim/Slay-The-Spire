@@ -307,3 +307,18 @@ void Player::resetEnergy() {
     else
         currentEnergy = maxEnergy;
 }
+
+void Player::removeCardFromDeck(Card* card) {
+    auto removeFrom = [&](std::vector<Card*>& pile) -> bool {
+        auto it = std::find(pile.begin(), pile.end(), card);
+        if (it != pile.end()) {
+            pile.erase(it);
+            return true;
+        }
+        return false;
+    };
+    if (removeFrom(hand)) return;
+    if (removeFrom(drawPile)) return;
+    if (removeFrom(discardPile)) return;
+    if (removeFrom(exhaustPile)) return;
+}

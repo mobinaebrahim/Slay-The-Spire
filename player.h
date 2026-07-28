@@ -81,6 +81,7 @@ public:
     const vector<Relic*>& getRelics() const { return relics; }
 
     int takeDamage(int incomingDamage) override;
+    void removeCardFromDeck(Card* card);
 };
 
 #endif

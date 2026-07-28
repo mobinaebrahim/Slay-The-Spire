@@ -95,5 +95,10 @@
         <file>images/relics/VelvetChoker.png</file>
         <file>images/relics/WarpedTongs.png</file>
         <file>audio/crow.mp3</file>
+        <file>images/campfire/campfire_bg.png</file>
+        <file>images/campfire/lift_icon.png</file>
+        <file>images/campfire/rest_bg.png</file>
+        <file>images/campfire/rest_icon.png</file>
+        <file>images/campfire/smith_icon.png</file>
     </qresource>
 </RCC>

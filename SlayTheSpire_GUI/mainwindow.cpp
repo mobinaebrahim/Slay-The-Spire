@@ -402,6 +402,28 @@ MainWindow::MainWindow(QWidget *parent)
     updateHandUI();
     updateCharacterUI();
 
+    QWidget* oldCentral = this->centralWidget();  // این همین MainWindow/Ui هست
+
+    stackedWidget = new QStackedWidget(this);
+    stackedWidget->addWidget(oldCentral);         // index 0 = combat (همین صفحه فعلی)
+
+    campfire = new CampfireScreen(playerObject, this);
+    stackedWidget->addWidget(campfire);           // index 1
+
+    setCentralWidget(stackedWidget);
+
+    connect(campfire, &CampfireScreen::finished, this, [this]() {
+        stackedWidget->setCurrentIndex(0);
+    });
+
+    // دکمه تست:
+    QPushButton* btnCampfire = new QPushButton("Test Campfire", oldCentral);
+    btnCampfire->setGeometry(10, 60, 120, 30);
+    btnCampfire->setStyleSheet("background: #333; color: white;");
+    connect(btnCampfire, &QPushButton::clicked, this, [this]() {
+        stackedWidget->setCurrentIndex(1);
+    });
+
     animationTimer = new QTimer(this);
     connect(animationTimer, &QTimer::timeout, this, &MainWindow::updateAnimations);
     animationTimer->start(50);

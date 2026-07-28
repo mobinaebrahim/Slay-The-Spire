@@ -3,8 +3,9 @@
 
 #include <string>
 #include "character.h"
-#include "BattleManager.h"
 using namespace std;
+
+class BattleManager;
 
 class Potion {
 protected:

@@ -11,6 +11,7 @@ SOURCES += \
     ../AttackCard.cpp \
     ../BattleManager.cpp \
     ../BossStruggles.cpp \
+    ../CampfireScreen.cpp \
     ../CurseCard.cpp \
     ../EliteEnemies.cpp \
     ../NormalEnemies.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     ../AttackCard.h \
     ../BattleManager.h \
     ../BossStruggles.h \
+    ../CampfireScreen.h \
     ../CurseCard.h \
     ../EliteEnemies.h \
     ../NormalEnemies.h \

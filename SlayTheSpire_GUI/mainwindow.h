@@ -29,6 +29,9 @@
 #include <QMouseEvent>
 #include <QPainterPath>
 #include "../Player.h"
+#include <QStackedWidget>
+#include "CampfireScreen.h"
+//#include "ShopScreen.h"
 
 class Card;
 
@@ -181,6 +184,10 @@ private:
 
     QMediaPlayer* crowSoundPlayer;
     QAudioOutput* crowSoundOutput;
+
+    QStackedWidget* stackedWidget;
+    CampfireScreen* campfire;
+    //ShopScreen* shop;
 
 protected:
     void mouseMoveEvent(QMouseEvent* event) override;

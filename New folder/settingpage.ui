@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingPage</class>
+ <widget class="QWidget" name="SettingPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>707</width>
+    <height>503</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>200</y>
+     <width>581</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="audio">
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>60</y>
+       <width>63</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="sliderEffects">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>140</y>
+       <width>251</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCusor2">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>210</y>
+       <width>90</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="sliderMusic">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>110</y>
+       <width>251</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCusor3">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>210</y>
+       <width>90</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCusor1">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>210</y>
+       <width>90</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnConfirm_2">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>320</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QPushButton#btnConfirm {&lt;/p&gt;&lt;p&gt;    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;&lt;/p&gt;&lt;p&gt;    border: none;&lt;/p&gt;&lt;p&gt;    background: transparent;&lt;/p&gt;&lt;p&gt;}&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnConfirm {
+    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>confrim</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnback2_2">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>310</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnBack {
+    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>back</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="changepass">
+    <widget class="QLineEdit" name="lineEdit_currentPassword">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>90</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
+}
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
+</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_newPassword">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>160</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
+}
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
+</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_confirmNewPassword">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>230</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+    border-image: url(:/assets/authpage/lineedit.png) 0 0 0 0 strech strech;   
+}
+QLineEdit
+{
+    font-family: &quot;IM FELL English&quot;;
+    font-size: 16px;
+
+    color: #E8DFC4;
+    border: none;
+
+    padding-left: 12px;
+    padding-right: 12px;
+    selection-background-color: #9A6A1E;
+    selection-color: white;
+}
+
+</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnback2">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>320</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnBack {
+    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>back</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnConfirm">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>310</y>
+       <width>180</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QPushButton#btnConfirm {&lt;/p&gt;&lt;p&gt;    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;&lt;/p&gt;&lt;p&gt;    border: none;&lt;/p&gt;&lt;p&gt;    background: transparent;&lt;/p&gt;&lt;p&gt;}&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btnConfirm {
+    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+}
+QPushButton
+{
+    font-family: &quot;Marcellus&quot;;
+    font-size: 16px;
+	font-weight:Bold;
+
+    color: rgb(245,240,225);
+
+    background: transparent;
+    border: none;
+}</string>
+     </property>
+     <property name="text">
+      <string>confrim</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_passwordChangeError">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>280</y>
+       <width>251</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: gold; 
+font-weight: bold;
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnTabAudio">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>190</y>
+     <width>90</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnTabPassword">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>190</y>
+     <width>90</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnReturn">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>130</y>
+     <width>90</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

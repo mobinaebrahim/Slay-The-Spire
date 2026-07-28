@@ -11,7 +11,6 @@
 #include <QProgressBar>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QElapsedTimer>
 #include <vector>
 #include <string>
 
@@ -21,7 +20,6 @@
 #include "networkmanager.h"
 #include "mpcombatwindow.h"
 #include "savemanager.h"
-#include "scoremanager.h"
 #include "combattype.h"
 
 class MapPage : public QWidget
@@ -59,19 +57,10 @@ private:
     QLabel *m_goldLabel = nullptr;
     QLabel *m_deckLabel = nullptr;
 
-    // Cumulative stats for the whole run — used to build the final score.
-    int m_totalDamageDealt = 0;
-    int m_elitesKilled = 0;
-
-    // Tracks how long the current run has been going, used for play_duration
-    QElapsedTimer m_runTimer;
-
     void buildHud();
     void updateHud();
 
     void persistProgress();
-    int currentScore(int floor) const;
-    void saveRunScore(bool victory);
     void handleRoomEntered(MapNode *node);
 
     void openSinglePlayerCombat(MapNode *node, CombatType type);

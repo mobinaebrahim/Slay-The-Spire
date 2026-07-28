@@ -49,14 +49,13 @@ class MainWindow : public QMainWindow
 public:
 
     explicit MainWindow(QWidget *parent = nullptr, int initialHp = 80, int maxHp = 80,
-                        int initialGold = 0, const std::vector<std::string>& deckNames = {},
-                        CombatType combatType = CombatType::Normal);
+                    int initialGold = 0, const std::vector<std::string>& deckNames = {},
+                    CombatType combatType = CombatType::Normal);
 
     ~MainWindow() override;
 
 signals:
-    void combatFinished(bool victory, int currentHp, int maxHp, int gold, const std::vector<std::string>& deck,
-                        int damageDealt, bool wasElite);
+    void combatFinished(bool victory, int currentHp, int maxHp, int gold, const std::vector<std::string>& deck);
 private slots:
     void on_EndTurnButton_clicked();
 
@@ -82,11 +81,6 @@ private:
     void initializePlayerDeck(int totalCards);
     bool isGameOver = false;
     void checkGameOver();
-
-    // Stats tracked for this single fight, reported to MapPage via combatFinished
-    // so it can build the run's final score (damage dealt + elites killed + floor).
-    int m_damageDealtThisFight = 0;
-    CombatType m_combatType = CombatType::Normal;
 
     QLabel* backgroundLabel;
     QLabel* enemyLabel;

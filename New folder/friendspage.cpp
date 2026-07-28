@@ -125,7 +125,7 @@ void friendspage::on_btnAddFriend_clicked()
         return;
     }
 
-    if (!user_manager::instance().username_exist(targetUsername)) {
+    if (!user_manager::instance().usernmae_exist(targetUsername)) {
         showAddFriendError("User not found.");
         return;
     }
@@ -238,17 +238,12 @@ void friendspage::populate_friends_list()
 
 void friendspage::populate_game_invites()
 {
-    ui->listGameInvites->clear();  // FIX: correct widget name
-
-    QListWidgetItem *spacerItem = new QListWidgetItem();
-    spacerItem->setSizeHint(QSize(0, 10));
-    spacerItem->setFlags(Qt::NoItemFlags);
-    ui->listGameInvites->addItem(spacerItem);
+    ui->listGameInvites->clear();
 
     QString currentUser = user_manager::instance().get_current_username();
-    QList<GameInviteEntry> invites = FriendManager::instance().getPendingGameInvites(currentUser);
+    QStringList inviters = FriendManager::instance().getPendingGameInvites(currentUser);
 
-    for (const GameInviteEntry &invite : invites) {
+    for (const QString &inviter : inviters) {
         QWidget *itemWidget = new QWidget();
         itemWidget->setFixedHeight(50);
 
@@ -256,13 +251,9 @@ void friendspage::populate_game_invites()
         layout->setContentsMargins(15, 5, 25, 5);
         layout->setSpacing(10);
 
-        QLabel *nameLabel = new QLabel(invite.from_user + "  |  Room: " + invite.room_code);
-        nameLabel->setContentsMargins(20, 0, 0, 0);
+        QLabel *nameLabel = new QLabel(inviter);
         nameLabel->setStyleSheet(
-            "color: #E8D2A0;"
-            "font-size: 14px;"
-            "font-weight: bold;"
-            "background: transparent;"
+            "color: #E8D2A0; font-size: 14px; font-weight: bold; background: transparent;"
             );
         nameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -270,23 +261,13 @@ void friendspage::populate_game_invites()
         acceptBtn->setIcon(QIcon(":/assets/mainmenu/friend/accept.png"));
         acceptBtn->setIconSize(QSize(40, 40));
         acceptBtn->setFixedSize(48, 48);
-        acceptBtn->setStyleSheet(
-            "QPushButton{"
-            "border:none;"
-            "background:transparent;"
-            "}"
-            );
+        acceptBtn->setStyleSheet("QPushButton{border:none; background:transparent;}");
 
         QPushButton *rejectBtn = new QPushButton();
         rejectBtn->setIcon(QIcon(":/assets/mainmenu/friend/reject.png"));
         rejectBtn->setIconSize(QSize(40, 40));
         rejectBtn->setFixedSize(48, 48);
-        rejectBtn->setStyleSheet(
-            "QPushButton{"
-            "border:none;"
-            "background:transparent;"
-            "}"
-            );
+        rejectBtn->setStyleSheet("QPushButton{border:none; background:transparent;}");
 
         layout->addWidget(nameLabel);
         layout->addWidget(acceptBtn);
@@ -301,23 +282,20 @@ void friendspage::populate_game_invites()
         ui->listGameInvites->addItem(listItem);
         ui->listGameInvites->setItemWidget(listItem, itemWidget);
 
-        connect(acceptBtn, &QPushButton::clicked, this, [this, invite](){
+        connect(acceptBtn, &QPushButton::clicked, this, [this, inviter](){
+            QString currentUser = user_manager::instance().get_current_username();
             QString roomCode;
-            bool ok = FriendManager::instance().acceptGameInvite(
-                user_manager::instance().get_current_username(),
-                invite.from_user,
-                roomCode);
-            if (ok) {
-                QMessageBox::information(this, "Invite Accepted", "Joining room: " + roomCode);
-                // TODO: call your network join-room logic here if needed
+
+            if (FriendManager::instance().acceptGameInvite(currentUser, inviter, roomCode)) {
+                NetworkManager::instance().setIsLeader(false);
+                NetworkManager::instance().join_room(roomCode);
+                QMessageBox::information(this, "Joining Game", "Joining " + inviter + "'s game...");
+                populate_game_invites();
             }
-            populate_game_invites();
         });
 
-        connect(rejectBtn, &QPushButton::clicked, this, [this, invite](){
-            FriendManager::instance().rejectGameInvite(
-                user_manager::instance().get_current_username(),
-                invite.from_user);
+        connect(rejectBtn, &QPushButton::clicked, this, [this, inviter](){
+            FriendManager::instance().rejectGameInvite(user_manager::instance().get_current_username(), inviter);
             populate_game_invites();
         });
     }

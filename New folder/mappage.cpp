@@ -12,8 +12,6 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
     setWindowFlags(Qt::Window);
     setWindowTitle("Map");
 
-    m_runTimer.start();
-
     m_gameMap = new GameMap();
     m_mapView = new MapView(this);
 
@@ -246,37 +244,7 @@ void MapPage::persistProgress()
 
     fullSave["player"] = playerObj;
 
-    // FIX: used to always save score=0 here. Now uses the real current score.
-    SaveManager::instance().update_save(m_saveId, currentScore(floor), floor, fullSave);
-}
-
-// Score formula based on the actual run stats the design doc asks for:
-// damage dealt + elites killed + floor reached. Weights are a reasonable
-// default — tune them if you want kills/floor to matter more than damage.
-int MapPage::currentScore(int floor) const
-{
-    return m_totalDamageDealt + m_elitesKilled * 100 + floor * 50;
-}
-
-// FIX: this was the missing piece — ScoreManager::add_score() was defined
-// but never called anywhere in the game, so the scoreboard/leaderboard
-// stayed empty. This writes one row per finished run (win or loss).
-void MapPage::saveRunScore(bool victory)
-{
-    QString currentUser = user_manager::instance().get_current_username();
-    if (currentUser.isEmpty()) {
-        qDebug() << "saveRunScore: no current user, skipping";
-        return;
-    }
-
-    int floor = m_gameMap->currentNode() ? m_gameMap->currentNode()->floor() : 0;
-    int score = currentScore(floor);
-    int durationSecs = m_runTimer.isValid() ? static_cast<int>(m_runTimer.elapsed() / 1000) : 0;
-
-    bool ok = ScoreManager::instance().add_score(currentUser, score, floor, durationSecs, victory);
-    if (!ok) {
-        qDebug() << "saveRunScore: failed to save score for" << currentUser;
-    }
+    SaveManager::instance().update_save(m_saveId, 0, floor, fullSave);
 }
 
 void MapPage::handleIncomingRoomSelected(int floor, int index)
@@ -334,19 +302,13 @@ void MapPage::onCombatStarted()
 
     this->hide();
 
-    connect(combat, &MPCombatWindow::combatFinished, this, [this, combat](bool victory, int damageDealt) {
+    connect(combat, &MPCombatWindow::combatFinished, this, [this, combat](bool victory) {
         qDebug() << "Combat finished, victory=" << victory;
         combat->close();
         m_combatOpen = false;
         this->show();
 
-        m_totalDamageDealt += damageDealt;
-
-        // FIX: this block used to be empty, so multiplayer wins were never
-        // saved to the scoreboard. Only the leader saves, to avoid duplicate
-        // rows for the same match (teammate would report the same result).
         if (victory && m_isLeader) {
-            saveRunScore(true);
         }
     });
 
@@ -397,14 +359,8 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
     this->hide();
 
     connect(combatWindow, &MainWindow::combatFinished, this,
-            [this, type](bool victory, int finalHp, int maxHp,
-                         int finalGold, const std::vector<std::string>& finalDeck,
-                         int damageDealt, bool wasElite) {
-                m_totalDamageDealt += damageDealt;
-                if (wasElite) {
-                    m_elitesKilled++;
-                }
-
+            [this](bool victory, int finalHp, int maxHp,
+                   int finalGold, const std::vector<std::string>& finalDeck) {
                 if (victory) {
                     m_playerHp    = finalHp;
                     m_playerMaxHp = maxHp;
@@ -412,11 +368,6 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
                     m_deckNames   = finalDeck;
                     updateHud();
                     persistProgress(); // auto-save after every victory
-
-                    // FIX: beating the boss finishes the run — save the score now.
-                    if (type == CombatType::Boss) {
-                        saveRunScore(true);
-                    }
                 } else {
                     m_playerHp = 0; // dead
                 }
@@ -424,8 +375,6 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type)
 
     connect(combatWindow, &QObject::destroyed, this, [this]() {
         if (m_playerHp <= 0) {
-            // FIX: dying ends the run — save the score (as a loss) before leaving.
-            saveRunScore(false);
             emit runAbandoned();
             this->close(); // defeat -> back to main menu
         } else {

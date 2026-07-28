@@ -47,7 +47,7 @@ public:
     ~MPCombatWindow() override;
 
 signals:
-    void combatFinished(bool victory, int damageDealt);
+    void combatFinished(bool victory);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -82,7 +82,6 @@ private:
     };
     std::vector<EnemyData> m_enemies;
     std::vector<int> m_lastEnemyHps;
-    int m_totalDamageDealtToEnemies = 0;
 
     struct EnemyUISlot {
         QWidget *wrapper = nullptr;

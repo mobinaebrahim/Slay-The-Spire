@@ -393,8 +393,6 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
     playerObject = new Player(playerName.toStdString(), maxHp, initialHp, 3, initialGold, battleManager);
     battleManager->setPlayer(playerObject);
 
-    m_combatType = combatType;
-
     switch (combatType) {
     case CombatType::Normal:
         spawnNormalEncounter();
@@ -657,8 +655,7 @@ void MainWindow::checkGameOver() {
         QTimer::singleShot(2500, this, [this]() {
             std::vector<std::string> emptyDeck;
             emit combatFinished(false, 0, playerObject->getMaxHp(),
-                                playerObject->getGold(), emptyDeck,
-                                m_damageDealtThisFight, false);
+                                playerObject->getGold(), emptyDeck);
             close();
         });
         return;
@@ -681,10 +678,8 @@ void MainWindow::checkGameOver() {
             for (Card* c : playerObject->getFullDeck()) {
                 if (c) finalDeck.push_back(c->getName());
             }
-            bool wasEliteKill = won && (m_combatType == CombatType::Elite);
             emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp(),
-                                playerObject->getGold(), finalDeck,
-                                m_damageDealtThisFight, wasEliteKill);
+                                playerObject->getGold(), finalDeck);
             close();
         });
         return;
@@ -1506,9 +1501,6 @@ void MainWindow::playCardAtIndex(int index, Enemy* explicitTarget) {
         if (e == targetEnemy) { enemyStillAlive = true; break; }
 
     int damageDealt = enemyStillAlive ? (enemyHpBefore - targetEnemy->getHp()) : enemyHpBefore;
-    if (damageDealt > 0) {
-        m_damageDealtThisFight += damageDealt;
-    }
 
     battleManager->cleanupDeadEnemies();
     checkGameOver();

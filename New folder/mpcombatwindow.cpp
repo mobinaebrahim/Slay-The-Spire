@@ -771,7 +771,6 @@ void MPCombatWindow::handleStateUpdate(const QJsonObject &obj)
     for (size_t i = 0; i < newEnemies.size() && i < m_lastEnemyHps.size(); ++i) {
         if (m_lastEnemyHps[i] >= 0 && newEnemies[i].hp < m_lastEnemyHps[i]) {
             int dmg = m_lastEnemyHps[i] - newEnemies[i].hp;
-            m_totalDamageDealtToEnemies += dmg;
             QRect r = enemySpriteRectFor((int)i);
             if (!r.isNull()) {
                 showFloatingDamage(r, dmg, QColor(255, 221, 85));
@@ -814,7 +813,7 @@ void MPCombatWindow::handleCombatOver(const QJsonObject &obj)
     showGameOverText(victory ? "VICTORY" : "DEFEAT", victory ? QColor(245, 197, 24) : QColor(192, 57, 43));
 
     QTimer::singleShot(2200, this, [this, victory]() {
-        emit combatFinished(victory, m_totalDamageDealtToEnemies);
+        emit combatFinished(victory);
     });
 }
 

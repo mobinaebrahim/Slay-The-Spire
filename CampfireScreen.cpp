@@ -15,7 +15,7 @@ void CampfireScreen::setupUI() {
     setMinimumSize(1280, 720);
 
     backgroundLabel = new QLabel(this);
-    backgroundLabel->setPixmap(QPixmap(":/images/campfire_bg.png").scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    backgroundLabel->setPixmap(QPixmap(":/images/campfire/campfire_bg.png").scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     backgroundLabel->setGeometry(0, 0, width(), height());
 
     menuWidget = new QWidget(this);
@@ -125,10 +125,18 @@ void CampfireScreen::setupUI() {
 
 void CampfireScreen::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
+
     backgroundLabel->setGeometry(0, 0, width(), height());
+    backgroundLabel->setPixmap(QPixmap(":/images/campfire/campfire_bg.png").scaled(
+        size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
     menuWidget->setGeometry(0, 0, width(), height());
     restWidget->setGeometry(0, 0, width(), height());
+
     restBgLabel->setGeometry(0, 0, width(), height());
+    restBgLabel->setPixmap(QPixmap(":/images/campfire/rest_bg.png").scaled(
+        size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
     smithWidget->setGeometry(0, 0, width(), height());
 }
 

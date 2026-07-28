@@ -19,7 +19,8 @@ public:
     KingSlime(BattleManager* manager);
     void chooseAction() override;
     void executeAction(Character* target) override;
-    int takeDamage(int amount) override; 
+    int takeDamage(int amount) override;
+    bool isBoss() const override { return true; }
 };
 
 class Hexaghost : public Enemy {
@@ -31,6 +32,7 @@ public:
     void chooseAction() override;
     void executeAction(Character* target) override;
     bool isDividerTurn() const { return turnCount == 2; }
+    bool isBoss() const override { return true; }
 };
 
 class TheChamp : public Enemy {
@@ -40,6 +42,7 @@ public:
     TheChamp();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    bool isBoss() const override { return true; }
 };
 
 #endif

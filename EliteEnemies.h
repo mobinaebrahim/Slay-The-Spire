@@ -18,6 +18,7 @@ public:
     void chooseAction() override; 
     void executeAction(Character* target) override;
     void onPlayerPlayedCard(Card* card);
+    bool isElite() const override { return true; }
 };
 
 class ThreeSentries : public Enemy {
@@ -28,6 +29,7 @@ public:
     void chooseAction() override;
     void executeAction(Character* target) override;
     static void spawnGroup(BattleManager* bm);
+    bool isElite() const override { return true; }
 };
 
 class MiddleSentry : public ThreeSentries {
@@ -47,6 +49,7 @@ public:
     BookOfStabbing();
     void chooseAction() override;
     void executeAction(Character* target) override;
+    bool isElite() const override { return true; }
 };
 
 class Taskmaster : public Enemy {
@@ -55,6 +58,7 @@ public:
     void chooseAction() override;
     void executeAction(Character* target) override;
     static void spawnGroup(BattleManager* bm);
+    bool isElite() const override { return true; }
 };
 
 #endif

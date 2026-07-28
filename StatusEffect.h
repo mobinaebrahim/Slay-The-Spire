@@ -22,6 +22,7 @@ public:
     virtual int modifyBlock(int baseBlock);
     virtual void onTurnEnd(Character* owner) {}
     virtual void onTurnStart(Character* owner) {}
+    virtual void onCardExhausted(Character* owner) {}
     virtual bool isExpired() const { return false; }
 };
 

@@ -57,6 +57,11 @@ private:
     QGraphicsView *view;
     QAudioOutput *audioOutput;
 
+    QList<QPushButton*> m_hiddenMenuButtons;
+
+    void hide_menu_buttons_for_dialog();
+    void restore_menu_buttons_after_dialog();
+
     void handle_play_button();
     void open_map_page(bool isLeader, bool isMultiplayer, int existingSaveId = -1, const QJsonObject &savedMapData = QJsonObject());
 };

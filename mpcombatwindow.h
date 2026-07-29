@@ -125,6 +125,7 @@ private:
 
     QLabel *playerHeartIcon;
     QLabel *playerHpTopLabel;
+    QLabel *playerNameLabel;
 
     QLabel *goldIconLabel;
     QLabel *goldCountLabel;

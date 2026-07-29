@@ -8,7 +8,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     ui->setupUi(this);
 
     // ---start background music---
-    AudioManager::instance().playMusic(":/assets/music/background.mp3");
+    //AudioManager::instance().playMusic(":/a.ssets/music/background.mp3");
 
     // ---play click sound for every button in this window---
     const QList<QPushButton*> allButtons = this->findChildren<QPushButton*>();
@@ -72,14 +72,22 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     ui->btnSetting->raise();
     ui->btnStatics->raise();
     ui->btnQuit->raise();
-    ui->btnCompendium->raise();
+    ui->btnLogout->raise();
+
+    // ---initial state: only btnPlay visible among the play-flow buttons---
     ui->btnContinue->hide();
     ui->btnAbandon->hide();
+    ui->btnSingleplayer->hide();
+    ui->btnmultiplayer->hide();
 
     connect(ui->btnQuit,&QPushButton::clicked, this, [this](){
         this->close();
     });
 
+    // ---logout: go back to login/register page---
+    connect(ui->btnLogout, &QPushButton::clicked, this, [this](){
+        ui->stackedWidget->setCurrentWidget(ui->page_home);
+    });
 
     connect(ui->btnStatics, &QPushButton::clicked, this, [this](){
         ui->page_menu->hide();
@@ -95,14 +103,28 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     });
 
     connect(ui->btnFriends, &QPushButton::clicked, this, [this](){
+        hide_menu_buttons_for_dialog();
+
         friendspage *friendsDlg = new friendspage(this);
         friendsDlg->setAttribute(Qt::WA_DeleteOnClose);
+
+        connect(friendsDlg, &QObject::destroyed, this, [this](){
+            restore_menu_buttons_after_dialog();
+        });
+
         friendsDlg->exec();
     });
 
     connect(ui->btnSetting, &QPushButton::clicked, this, [this](){
+        hide_menu_buttons_for_dialog();
+
         SettingPage *settingDlg = new SettingPage(this);
         settingDlg->setAttribute(Qt::WA_DeleteOnClose);
+
+        connect(settingDlg, &QObject::destroyed, this, [this](){
+            restore_menu_buttons_after_dialog();
+        });
+
         settingDlg->show();
     });
 
@@ -112,7 +134,6 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
         QString currentUser = user_manager::instance().get_current_username();
         QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
 
-        // Reset UI state for next time
         ui->btnContinue->hide();
         ui->btnAbandon->hide();
         ui->btnPlay->show();
@@ -140,7 +161,18 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
 
         ui->btnContinue->hide();
         ui->btnAbandon->hide();
-        ui->btnPlay->show();
+        ui->btnSingleplayer->show();
+        ui->btnmultiplayer->show();
+    });
+
+    connect(ui->btnSingleplayer, &QPushButton::clicked, this, [this](){
+        open_map_page(true, false);
+    });
+
+    connect(ui->btnmultiplayer, &QPushButton::clicked, this, [this](){
+        friendspage *friendsDlg = new friendspage(this);
+        friendsDlg->setAttribute(Qt::WA_DeleteOnClose);
+        friendsDlg->exec();
     });
 
     // ============================================================
@@ -201,32 +233,46 @@ void MainMenuWindow::handle_play_button()
     QString currentUser = user_manager::instance().get_current_username();
     QList<save_entry> saves = SaveManager::instance().get_save_list(currentUser);
 
+    ui->btnPlay->hide();
+
     if (!saves.isEmpty()) {
-        ui->btnPlay->hide();
+        ui->btnSingleplayer->hide();
+        ui->btnmultiplayer->hide();
         ui->btnContinue->show();
         ui->btnAbandon->show();
-        return;
-    }
-
-    QMessageBox modeBox(this);
-    modeBox.setWindowTitle("Choose Mode");
-    modeBox.setText("How do you want to play?");
-    QPushButton *singleBtn = modeBox.addButton("Single Player", QMessageBox::AcceptRole);
-    QPushButton *multiBtn  = modeBox.addButton("Multiplayer", QMessageBox::AcceptRole);
-    modeBox.addButton(QMessageBox::Cancel);
-    modeBox.exec();
-
-    if (modeBox.clickedButton() == singleBtn) {
-        open_map_page(true, false);
-    }
-    else if (modeBox.clickedButton() == multiBtn) {
-
-        friendspage *friendsDlg = new friendspage(this);
-        friendsDlg->setAttribute(Qt::WA_DeleteOnClose);
-        friendsDlg->exec();
+    } else {
+        ui->btnContinue->hide();
+        ui->btnAbandon->hide();
+        ui->btnSingleplayer->show();
+        ui->btnmultiplayer->show();
     }
 }
 
+void MainMenuWindow::hide_menu_buttons_for_dialog()
+{
+    m_hiddenMenuButtons.clear();
+
+    const QList<QPushButton*> candidates = {
+        ui->btnPlay, ui->btnSetting, ui->btnStatics, ui->btnQuit,
+        ui->btnLogout, ui->btnFriends, ui->btnContinue, ui->btnAbandon,
+        ui->btnSingleplayer, ui->btnmultiplayer
+    };
+
+    for (QPushButton *btn : candidates) {
+        if (btn->isVisible()) {
+            m_hiddenMenuButtons.append(btn);
+            btn->hide();
+        }
+    }
+}
+
+void MainMenuWindow::restore_menu_buttons_after_dialog()
+{
+    for (QPushButton *btn : m_hiddenMenuButtons) {
+        btn->show();
+    }
+    m_hiddenMenuButtons.clear();
+}
 
 void MainMenuWindow::open_map_page(bool isLeader, bool isMultiplayer, int existingSaveId, const QJsonObject &savedMapData)
 {

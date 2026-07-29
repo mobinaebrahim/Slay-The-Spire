@@ -6,6 +6,10 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 // ================================================================
 // Helper: determine if a card name is an Attack (client-side)
 // ================================================================
@@ -182,6 +186,13 @@ void MPCombatWindow::buildUI()
         "border-radius: 15px; font-weight: bold;");
     playerBlockBadge->hide();
 
+    playerNameLabel = new QLabel(this);
+    playerNameLabel->setAlignment(Qt::AlignCenter);
+    playerNameLabel->setStyleSheet(
+        "color: white; font-weight: bold; font-size: 13px; background-color: rgba(0,0,0,140); "
+        "border-radius: 4px; padding: 2px;");
+    playerNameLabel->hide();
+
     playerEnergyOrb = new QLabel(this);
     playerEnergyOrb->setFixedSize(70, 70);
     playerEnergyOrb->setPixmap(QPixmap(":/images/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -347,7 +358,13 @@ void MPCombatWindow::buildUI()
     connect(closePileOverlayButton, &QPushButton::clicked, this, &MPCombatWindow::hidePileOverlay);
 
     m_cardsContainer = ui->CardsContainer;
-    QHBoxLayout *cardLayout = new QHBoxLayout(m_cardsContainer);
+    // FIX: avoid creating a duplicate layout if the .ui file already assigned one
+    QHBoxLayout *cardLayout = qobject_cast<QHBoxLayout*>(m_cardsContainer->layout());
+    if (!cardLayout) {
+        cardLayout = new QHBoxLayout(m_cardsContainer);
+    }
+    cardLayout->setContentsMargins(0, 0, 0, 0);
+    cardLayout->setSpacing(8);
 
     m_endTurnBtn = ui->EndTurnButton;
     m_endTurnBtn->setFixedSize(150, 60);
@@ -622,11 +639,11 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
     int teammateW = 160, teammateH = 230;
 
     currentStartX = 110;
-    m_playerX = currentStartX;
-    m_teammateX = currentStartX + 60;
+    m_playerX = currentStartX + 40;
+    m_teammateX = currentStartX + 130;
 
     m_basePlayerY = this->height() / 2 - playerH / 2;
-    m_baseTeammateY = m_basePlayerY - teammateH - 20;
+    m_baseTeammateY = m_basePlayerY - teammateH + 30;
 
     playerSpriteLabel->setGeometry(m_playerX, m_basePlayerY, playerW, playerH);
     playerHpBar->setGeometry(m_playerX, m_basePlayerY + playerH + 8, 180, 22);
@@ -634,6 +651,7 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
     playerEnergyOrb->setGeometry(m_playerX - 20, m_basePlayerY + playerH + 40, 70, 70);
     playerStatusRow->setGeometry(m_playerX, m_basePlayerY + playerH + 70, 200, 30);
     playerHitOverlay->setGeometry(m_playerX, m_basePlayerY, playerW, playerH);
+    playerNameLabel->setGeometry(m_playerX, m_basePlayerY - 48, playerW, 20);
 
     teammateSpriteLabel->setGeometry(m_teammateX, m_baseTeammateY, teammateW, teammateH);
     teammateHpBar->setGeometry(m_teammateX, m_baseTeammateY - 26, 160, 20);
@@ -646,7 +664,7 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
     int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 75;
     int playerSpriteCenterY = m_basePlayerY + playerH / 2;
     int enemyAreaH = 320;
-    int enemyContainerTop = playerSpriteCenterY - spriteCenterOffsetInWrapper;
+    int enemyContainerTop = playerSpriteCenterY - spriteCenterOffsetInWrapper - 35;
     int enemyAreaX = currentStartX + playerW + 150;
     int enemyAreaW = this->width() - enemyAreaX - 60;
     enemyAreaContainer->setGeometry(enemyAreaX, enemyContainerTop, enemyAreaW, enemyAreaH);
@@ -666,6 +684,15 @@ void MPCombatWindow::resizeEvent(QResizeEvent *event)
 
     if (pileOverlay->isVisible())
         pileOverlay->setGeometry(0, 0, this->width(), this->height());
+
+    // FIX: keep overlays centered if visible during resize
+    if (gameOverLabel && gameOverLabel->isVisible()) {
+        int labelW = 600, labelH = 120;
+        gameOverLabel->setGeometry((this->width() - labelW) / 2, (this->height() - labelH) / 2, labelW, labelH);
+    }
+    if (toastLabel && toastLabel->isVisible()) {
+        toastLabel->move(this->width() / 2 - toastLabel->width() / 2, 120);
+    }
 }
 
 // ================================================================
@@ -896,10 +923,11 @@ void MPCombatWindow::updateCharacterUI()
 {
     playerHpBar->setMaximum(m_myMaxHp);
     playerHpBar->setValue(qMax(0, m_myHp));
-    playerHpBar->setFormat(QString("%1 / %2").arg(m_myHp).arg(m_myMaxHp));
+    // FIX: clamp displayed HP so it never shows negative
+    playerHpBar->setFormat(QString("%1 / %2").arg(qMax(0, m_myHp)).arg(m_myMaxHp));
     updateStatusEffectRow(playerStatusRow, m_myEffects);
 
-    playerHpTopLabel->setText(QString("%1/%2").arg(m_myHp).arg(m_myMaxHp));
+    playerHpTopLabel->setText(QString("%1/%2").arg(qMax(0, m_myHp)).arg(m_myMaxHp));
     goldCountLabel->setText(QString::number(m_myGold));
 
     playerBlockBadge->setVisible(m_myBlock > 0);
@@ -922,7 +950,8 @@ void MPCombatWindow::updateCharacterUI()
         teammateNameLabel->setText(m_teammateUsername);
         teammateHpBar->setMaximum(m_teammateMaxHp);
         teammateHpBar->setValue(qMax(0, m_teammateHp));
-        teammateHpBar->setFormat(QString("%1 / %2").arg(m_teammateHp).arg(m_teammateMaxHp));
+        // FIX: clamp teammate HP display
+        teammateHpBar->setFormat(QString("%1 / %2").arg(qMax(0, m_teammateHp)).arg(m_teammateMaxHp));
 
         teammateBlockBadge->setVisible(m_teammateBlock > 0);
         if (m_teammateBlock > 0) teammateBlockBadge->setText(QString::number(m_teammateBlock));
@@ -939,7 +968,8 @@ void MPCombatWindow::updateCharacterUI()
             slot.nameLabel->setText(d.name);
             slot.hpBar->setMaximum(d.maxHp);
             slot.hpBar->setValue(qMax(0, d.hp));
-            slot.hpBar->setFormat(QString("%1 / %2").arg(d.hp).arg(d.maxHp));
+            // FIX: clamp enemy HP display
+            slot.hpBar->setFormat(QString("%1 / %2").arg(qMax(0, d.hp)).arg(d.maxHp));
             slot.intentLabel->setText(d.intent);
             updateStatusEffectRow(slot.statusRow, d.effects);
 
@@ -947,6 +977,9 @@ void MPCombatWindow::updateCharacterUI()
             if (d.block > 0) slot.blockBadge->setText(QString::number(d.block));
         }
     }
+
+    playerNameLabel->setVisible(true);
+    playerNameLabel->setText(m_isLeader ? m_myUsername + " ★" : m_myUsername);
 
     if (!m_iAmAlive) {
         spectatorLabel->setText("You have fallen — spectating");
@@ -956,7 +989,12 @@ void MPCombatWindow::updateCharacterUI()
         m_cardsContainer->setEnabled(false);
     } else {
         spectatorLabel->hide();
-        turnIndicatorLabel->setText(m_isPlayerTurn ? "Your Turn" : "Enemy Turn...");
+        if (m_isPlayerTurn) {
+            turnIndicatorLabel->setText(QString("★ %1's Turn  |  HP: %2 / %3")
+                                            .arg(m_myUsername).arg(qMax(0, m_myHp)).arg(m_myMaxHp));
+        } else {
+            turnIndicatorLabel->setText("Enemy Turn...");
+        }
         m_endTurnBtn->setEnabled(m_isPlayerTurn && !m_hasEndedTurnLocally);
         m_cardsContainer->setEnabled(m_isPlayerTurn);
     }
@@ -967,9 +1005,20 @@ void MPCombatWindow::updateCharacterUI()
 // ================================================================
 void MPCombatWindow::rebuildEnemyUI()
 {
+    // FIX: delete hit overlays explicitly (they are parented to 'this', not wrapper)
     for (auto &slot : enemySlots) {
-        slot.wrapper->hide();
-        slot.wrapper->deleteLater();
+        if (slot.hitOverlay) {
+            slot.hitOverlay->deleteLater();
+            slot.hitOverlay = nullptr;
+        }
+    }
+
+    // FIX: remove old wrappers from layout before clearing vector
+    while (QLayoutItem *child = enemyAreaLayout->takeAt(0)) {
+        if (child->widget()) {
+            child->widget()->deleteLater();
+        }
+        delete child;
     }
     enemySlots.clear();
 
@@ -977,7 +1026,7 @@ void MPCombatWindow::rebuildEnemyUI()
         EnemyUISlot slot;
 
         slot.wrapper = new QWidget(enemyAreaContainer);
-        slot.wrapper->setFixedWidth(220);
+        slot.wrapper->setFixedWidth(253);
         QVBoxLayout *vbox = new QVBoxLayout(slot.wrapper);
         vbox->setContentsMargins(6, 0, 6, 0);
         vbox->setSpacing(4);
@@ -985,7 +1034,7 @@ void MPCombatWindow::rebuildEnemyUI()
         slot.nameLabel = new QLabel(slot.wrapper);
         slot.nameLabel->setAlignment(Qt::AlignCenter);
         slot.nameLabel->setFixedHeight(20);
-        slot.nameLabel->setFixedWidth(205);
+        slot.nameLabel->setFixedWidth(236);
         slot.nameLabel->setStyleSheet(
             "color: white; font-weight: bold; font-size: 13px; "
             "background-color: rgba(0,0,0,140); border-radius: 4px; padding: 2px;");
@@ -993,16 +1042,16 @@ void MPCombatWindow::rebuildEnemyUI()
         slot.intentLabel = new QLabel(slot.wrapper);
         slot.intentLabel->setAlignment(Qt::AlignCenter);
         slot.intentLabel->setFixedHeight(26);
-        slot.intentLabel->setFixedWidth(205);
+        slot.intentLabel->setFixedWidth(236);
         slot.intentLabel->setStyleSheet(
             "background-color: rgba(20,20,20,190); color: white; border-radius: 8px; "
             "padding: 3px; font-weight: bold;");
 
         slot.sprite = new QLabel(slot.wrapper);
-        slot.sprite->setFixedSize(220, 195);
+        slot.sprite->setFixedSize(253, 224);
         slot.sprite->setAlignment(Qt::AlignCenter);
         slot.sprite->setScaledContents(true);
-        slot.sprite->setPixmap(getEnemyPixmap(m_enemies[i].name).scaled(220, 195, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        slot.sprite->setPixmap(getEnemyPixmap(m_enemies[i].name).scaled(253, 224, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         slot.blockBadge = new QLabel(slot.sprite);
         slot.blockBadge->setFixedSize(28, 28);
@@ -1016,7 +1065,7 @@ void MPCombatWindow::rebuildEnemyUI()
         slot.hpBar = new QProgressBar(slot.wrapper);
         slot.hpBar->setTextVisible(true);
         slot.hpBar->setFixedHeight(20);
-        slot.hpBar->setFixedWidth(205);
+        slot.hpBar->setFixedWidth(236);
         slot.hpBar->setStyleSheet(playerHpBar->styleSheet());
 
         slot.statusRow = new QWidget(slot.wrapper);
@@ -1032,7 +1081,7 @@ void MPCombatWindow::rebuildEnemyUI()
         vbox->addWidget(slot.statusRow, 0, Qt::AlignCenter);
 
         slot.hitOverlay = new QLabel(this);
-        slot.hitOverlay->setFixedSize(220, 195);
+        slot.hitOverlay->setFixedSize(253, 224);
         slot.hitOverlay->hide();
         slot.hitOpacity = new QGraphicsOpacityEffect(slot.hitOverlay);
         slot.hitOverlay->setGraphicsEffect(slot.hitOpacity);
@@ -1118,6 +1167,9 @@ void MPCombatWindow::updateHandUI()
     highlightedCardIndex = -1;
 
     QLayout *layout = m_cardsContainer->layout();
+    // FIX: null-safe layout check
+    if (!layout) return;
+
     QLayoutItem *child;
     while ((child = layout->takeAt(0)) != nullptr) {
         if (child->widget()) { child->widget()->hide(); delete child->widget(); }
@@ -1206,6 +1258,14 @@ void MPCombatWindow::updateAnimations()
 
 void MPCombatWindow::playHitEffect(QLabel *overlay, QGraphicsOpacityEffect *opacityEffect)
 {
+    // FIX: stop any existing animation on this overlay to prevent overlap
+    QObject *existingAnim = overlay->property("hitAnim").value<QObject*>();
+    if (existingAnim) {
+        QSequentialAnimationGroup *seq = qobject_cast<QSequentialAnimationGroup*>(existingAnim);
+        if (seq) seq->stop();
+        existingAnim->deleteLater();
+    }
+
     overlay->show();
     overlay->raise();
 
@@ -1223,6 +1283,10 @@ void MPCombatWindow::playHitEffect(QLabel *overlay, QGraphicsOpacityEffect *opac
     seq->addAnimation(flashIn);
     seq->addAnimation(flashOut);
     connect(seq, &QSequentialAnimationGroup::finished, overlay, &QLabel::hide);
+
+    // Store reference so we can stop it if triggered again before finishing
+    overlay->setProperty("hitAnim", QVariant::fromValue<QObject*>(seq));
+
     seq->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
@@ -1613,6 +1677,9 @@ void MPCombatWindow::showCardPileOverlay(const QString &title, const QStringList
     pileOpenSoundPlayer->play();
 
     QGridLayout *gridLayout = qobject_cast<QGridLayout *>(pileCardsContainer->layout());
+    // FIX: null-safe
+    if (!gridLayout) return;
+
     QLayoutItem *child;
     while ((child = gridLayout->takeAt(0)) != nullptr) {
         if (child->widget()) { child->widget()->hide(); delete child->widget(); }

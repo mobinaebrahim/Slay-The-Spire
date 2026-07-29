@@ -9,9 +9,10 @@ class MapNodeItem : public QObject, public QGraphicsEllipseItem
 {
     Q_OBJECT
 public:
-    MapNodeItem(MapNode *node, qreal x, qreal y, qreal w, qreal h)
+    MapNodeItem(MapNode *node, qreal x, qreal y, qreal w, qreal h, bool clickable = true)
         : QGraphicsEllipseItem(x, y, w, h)
         , m_node(node)
+        , m_clickable(clickable)
     {
         setAcceptHoverEvents(true);
     }
@@ -24,7 +25,8 @@ signals:
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override
     {
-        if (m_node->available()) {
+        // NEW: only clickable if enabled AND node is available
+        if (m_clickable && m_node->available()) {
             emit clicked(m_node);
         }
         QGraphicsEllipseItem::mousePressEvent(event);
@@ -32,6 +34,7 @@ protected:
 
 private:
     MapNode *m_node;
+    bool m_clickable;
 };
 
 #endif // MAPNODEITEM_H

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QTimer>
 
 #include "audiomanager.h"
 #include "cursormanager.h"
@@ -20,10 +21,13 @@ public:
     explicit SettingPage(QWidget *parent = nullptr);
     ~SettingPage();
 
+private slots:
+    void handleChangePassword();
+    void updateButtonVisibility(int index);
+
 private:
     Ui::SettingPage *ui;
 
-    void handleChangePassword();
 protected:
     void paintEvent(QPaintEvent *event) override;
 };

@@ -100,6 +100,11 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
         }
     }
 
+    // NEW: disable map clicking for non-leader in multiplayer
+    if (m_isMultiplayer && !m_isLeader) {
+        m_mapView->setClickEnabled(false);
+    }
+
     updateHud();
 
     if (!m_isMultiplayer) {
@@ -109,8 +114,9 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
                     QString type = obj["type"].toString();
                     qDebug() << "MapPage received:" << type << "isLeader=" << m_isLeader << "combatOpen=" << m_combatOpen;
 
+                    // FIX: changed from "map" to "data" to match server key
                     if (type == "map_data" && !m_isLeader) {
-                        handleIncomingMapData(obj["map"].toObject());
+                        handleIncomingMapData(obj["data"].toObject());
                     }
                     else if (type == "room_selected" && !m_isLeader) {
                         handleIncomingRoomSelected(obj["floor"].toInt(), obj["index"].toInt());
@@ -122,6 +128,22 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
                             onCombatStarted();
                         } else {
                             qDebug() << "Combat already open, ignoring.";
+                        }
+                    }
+                    // NEW: update HUD from combat results if server sends player data
+                    else if (type == "combat_over") {
+                        QJsonArray players = obj["players"].toArray();
+                        for (const QJsonValue &v : players) {
+                            QJsonObject pObj = v.toObject();
+                            QString username = pObj["username"].toString();
+                            // Update local HUD if this is our data
+                            // (In a real client you'd match by username or ID)
+                            if (!username.isEmpty()) {
+                                m_playerHp = pObj["hp"].toInt(m_playerHp);
+                                m_playerMaxHp = pObj["max_hp"].toInt(m_playerMaxHp);
+                                m_playerGold = pObj["gold"].toInt(m_playerGold);
+                                updateHud();
+                            }
                         }
                     }
                 });
@@ -158,7 +180,8 @@ void MapPage::sendMapData()
 {
     QJsonObject msg;
     msg["type"] = "map_data";
-    msg["map"] = m_gameMap->toJson();
+    // FIX: changed key from "map" to "data" to match server handler
+    msg["data"] = m_gameMap->toJson();
     NetworkManager::instance().send_game_action(msg);
 }
 

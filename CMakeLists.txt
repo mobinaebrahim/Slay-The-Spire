@@ -9,6 +9,15 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidge
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Sql Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick)
 
+# ============================================================
+# IMPORTANT: resources.qrc is intentionally NOT embedded via
+# AUTORCC. It is excluded below and compiled separately into
+# a standalone .rcc binary (see "External resource compilation"
+# section at the bottom). This avoids generating a huge
+# qrc_resources.cpp file that blows up compiler RAM usage.
+# ------------------------------------------------------------
+set_source_files_properties(resources.qrc PROPERTIES SKIP_AUTORCC ON)
+
 set(PROJECT_SOURCES
         main.cpp
         mainmenuwindow.cpp
@@ -53,17 +62,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         NormalEnemies.cpp NormalEnemies.h
         EliteEnemies.cpp EliteEnemies.h
         cardfactory.h cardfactory.cpp
-        assets/cards/Barricade.png assets/cards/Bash.png "assets/cards/Blood for Blood.png" assets/cards/Bloodletting.png assets/cards/Bludgeon.png assets/cards/Brutality.png assets/cards/Burn.png assets/cards/Clash.png assets/cards/CurseOfBell.png assets/cards/Daze.png assets/cards/Defend.png assets/cards/DemonForm.png assets/cards/Disarm.png assets/cards/DualWield.png assets/cards/Entrench.png assets/cards/Exhume.png assets/cards/Feed.png assets/cards/FeelNoPain.png assets/cards/Immolate.png assets/cards/Impervious.png assets/cards/Inflame.png assets/cards/JAX.png assets/cards/LimitBreak.png assets/cards/Metallicize.png assets/cards/Offering.png assets/cards/PerfectedStrike.png assets/cards/Reaper.png assets/cards/Regret.png assets/cards/ShrugItOff.png assets/cards/Slime.png assets/cards/Strike.png assets/cards/TwinStrike.png assets/cards/Whirlwind.png assets/cards/Wound.png assets/cards/Writhe.png
-        assets/characters/Defect.png assets/characters/IronClad.png assets/characters/Silent.png assets/characters/teammate.png
-        assets/scene.png
-        assets/enemies/BlueSlaver.png assets/enemies/BookOfStabbing.png assets/enemies/Cultist.png assets/enemies/GremlinKnob.png assets/enemies/Hexaghost.png assets/enemies/JawWorm.png assets/enemies/KingSlime.png assets/enemies/LargeSlime.png assets/enemies/Looter.png "assets/enemies/Louse (2).png" assets/enemies/Louse.png assets/enemies/MediumSlime.png assets/enemies/Mugger.png assets/enemies/RedSlaver.png assets/enemies/SmallSlime.png assets/enemies/SphericGuardian.png assets/enemies/Taskmaster.png assets/enemies/TheChamp.png assets/enemies/ThreeSentries.png
-        assets/icons/deck.png assets/icons/discard_pile.png assets/icons/draw_pile.png assets/icons/end_turn.png assets/icons/energy.png assets/icons/gold.png assets/icons/hp.png assets/icons/map.png assets/icons/settings.png
-        assets/audio/Card.mp3 assets/audio/DrawPile&DiscardPile.mp3 "assets/audio/End Turn.mp3" assets/audio/Exordium.mp3 assets/audio/hit.mp3 assets/audio/Potion.mp3
         mpcombatwindow.h mpcombatwindow.cpp mpcombatwindow.ui
         mainwindow.ui
         mainwindow.h
         mainwindow.cpp
         combattype.h
+        resources.qrc
     )
 else()
     if(ANDROID)
@@ -97,6 +101,12 @@ set_target_properties(slay-the-spire PROPERTIES
 
 # ============================================================
 # External resource compilation
+# ------------------------------------------------------------
+# resources.qrc is compiled into a standalone binary .rcc file
+# instead of being embedded into a generated C++ source file.
+# This keeps compiler memory usage low regardless of asset size.
+# The resulting resources.rcc must be loaded at runtime via
+# QResource::registerResource() (see main.cpp).
 # ------------------------------------------------------------
 
 get_target_property(QT_RCC_EXECUTABLE Qt${QT_VERSION_MAJOR}::rcc IMPORTED_LOCATION)

@@ -1,19 +1,6 @@
 <RCC>
-    <qresource prefix="/assets">
-        <file>assets/video/background.mp4</file>
-        <file>assets/video/bakground.jpg</file>
-    </qresource>
+    <qresource prefix="/assets"/>
     <qresource prefix="/">
-        <file>assets/scene.png</file>
-        <file>assets/login-register-menu/buttonL.png</file>
-        <file>assets/login-register-menu/buttonLRed.png</file>
-        <file>assets/login-register-menu/nameBox.png</file>
-        <file>assets/login-register-menu/no.png</file>
-        <file>assets/login-register-menu/yes.png</file>
-        <file>assets/login-register-menu/confirm.png</file>
-        <file>assets/mainmenu/menuPanel2.png</file>
-        <file>assets/mainmenu/menuPanel3.png</file>
-        <file>assets/mainmenu/menuPanel4.png</file>
         <file>assets/mainmenu/cancelButton.png</file>
         <file>assets/mainmenu/leaderboards/friends.png</file>
         <file>assets/mainmenu/leaderboards/global.png</file>
@@ -56,12 +43,8 @@
         <file>assets/mainmenu/friend/reject.png</file>
         <file>assets/mainmenu/friend/remove.png</file>
         <file>assets/music/background.mp3</file>
-        <file>assets/music/confrim.mp3</file>
         <file>assets/music/error.mp3</file>
         <file>assets/music/map_room.mp3</file>
-        <file>assets/music/menu_button.mp3</file>
-        <file>assets/mainmenu/cursor2.png</file>
-        <file>assets/mainmenu/cursor3.png</file>
         <file>assets/mainmenu/cursor1.png</file>
         <file>images/cards/Bash.png</file>
         <file>images/cards/Blood for Blood.png</file>
@@ -120,12 +103,12 @@
         <file>images/characters/IronClad.png</file>
         <file>images/characters/Silent.png</file>
         <file>images/characters/Watcher.png</file>
-	<file>images/characters/teammate.png</file>
+        <file>images/characters/teammate.png</file>
         <file>images/scene.png</file>
         <file>images/icons/discard_pile.png</file>
         <file>images/icons/draw_pile.png</file>
         <file>images/icons/end_turn.png</file>
-	<file>images/icons/chatbox.png</file>
+        <file>images/icons/chatbox.png</file>
         <file>images/icons/energy.png</file>
         <file>images/icons/gold.png</file>
         <file>images/icons/hp.png</file>
@@ -138,6 +121,28 @@
         <file>images/icons/deck.png</file>
         <file>images/icons/map.png</file>
         <file>images/icons/settings.png</file>
-	<file>images/icons/gold.png</file>
-        </qresource>
+        <file>images/icons/gold.png</file>
+        <file>assets/mainmenu/continue.png</file>
+        <file>assets/mainmenu/draggablepanel.png</file>
+        <file>assets/mainmenu/exit.png</file>
+        <file>assets/mainmenu/friendpage.png</file>
+        <file>assets/mainmenu/logout.png</file>
+        <file>assets/mainmenu/multiplayer.png</file>
+        <file>assets/mainmenu/play.png</file>
+        <file>assets/mainmenu/settings.png</file>
+        <file>assets/mainmenu/singleplayer.png</file>
+        <file>assets/mainmenu/statics.png</file>
+        <file>assets/mainmenu/abandon.png</file>
+        <file>assets/mainmenu/cursor2.png</file>
+        <file>assets/mainmenu/cursor3.png</file>
+        <file>assets/video/background.mp4</file>
+        <file>assets/mainmenu/changepassword.png</file>
+        <file>assets/mainmenu/refresh.png</file>
+        <file>assets/mainmenu/sound.png</file>
+        <file>assets/mainmenu/leaderboards/floor.png</file>
+        <file>assets/mainmenu/leaderboards/score.png</file>
+        <file>assets/mainmenu/leaderboards/win.png</file>
+        <file>assets/mainmenu/leaderboards/time.png</file>
+        <file>assets/mainmenu/shortkey.png</file>
+    </qresource>
 </RCC>

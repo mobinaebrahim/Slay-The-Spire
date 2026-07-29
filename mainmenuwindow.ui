@@ -22,14 +22,14 @@
         <property name="geometry">
          <rect>
           <x>590</x>
-          <y>660</y>
-          <width>271</width>
+          <y>680</y>
+          <width>281</width>
           <height>91</height>
          </rect>
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton {
-    border-image: url(:/assets/login-register-menu/buttonLRed.png) 0 0 0 0 stretch stretch;
+    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
 	font-size: 14pt;
@@ -50,7 +50,7 @@
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton {
-    border-image: url(:/assets/login-register-menu/buttonL.png) 0 0 0 0 stretch stretch;
+    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
     font-weight: bold;
@@ -79,105 +79,205 @@
        <widget class="QPushButton" name="btnSetting">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>660</y>
-          <width>131</width>
-          <height>29</height>
+          <x>60</x>
+          <y>530</y>
+          <width>231</width>
+          <height>51</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/settings.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>Setting</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnStatics">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>700</y>
-          <width>131</width>
-          <height>29</height>
+          <x>50</x>
+          <y>590</y>
+          <width>251</width>
+          <height>51</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/statics.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>Statics</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnQuit">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>780</y>
-          <width>131</width>
-          <height>29</height>
+          <x>80</x>
+          <y>770</y>
+          <width>190</width>
+          <height>61</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/exit.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>Quit</string>
+         <string/>
         </property>
        </widget>
-       <widget class="QPushButton" name="btnCompendium">
+       <widget class="QPushButton" name="btnLogout">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>620</y>
-          <width>131</width>
-          <height>29</height>
+          <x>60</x>
+          <y>710</y>
+          <width>231</width>
+          <height>61</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/logout.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>compendium</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnFriends">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>740</y>
-          <width>131</width>
-          <height>29</height>
+          <x>50</x>
+          <y>650</y>
+          <width>261</width>
+          <height>51</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/friendpage.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>friends</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnPlay">
         <property name="geometry">
          <rect>
-          <x>180</x>
-          <y>580</y>
-          <width>131</width>
-          <height>29</height>
+          <x>80</x>
+          <y>470</y>
+          <width>190</width>
+          <height>50</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/play.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+
+</string>
+        </property>
         <property name="text">
-         <string>play</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnContinue">
         <property name="geometry">
          <rect>
-          <x>330</x>
-          <y>600</y>
-          <width>131</width>
-          <height>29</height>
+          <x>280</x>
+          <y>495</y>
+          <width>191</width>
+          <height>45</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/continue.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>continue</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnAbandon">
         <property name="geometry">
          <rect>
-          <x>330</x>
-          <y>560</y>
-          <width>131</width>
-          <height>29</height>
+          <x>280</x>
+          <y>440</y>
+          <width>191</width>
+          <height>50</height>
          </rect>
         </property>
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;    border-image: url(:/assets/mainmenu/continue.png) 0 0 0 0 stretch stretch;&lt;/p&gt;&lt;p&gt;    border: none;&lt;/p&gt;&lt;p&gt;    background: transparent;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/abandon.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
         <property name="text">
-         <string>abandon</string>
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnSingleplayer">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>440</y>
+          <width>195</width>
+          <height>45</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/singleplayer.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnmultiplayer">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>490</y>
+          <width>191</width>
+          <height>45</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+    border-image: url(:/assets/mainmenu/multiplayer.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;
+</string>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </widget>

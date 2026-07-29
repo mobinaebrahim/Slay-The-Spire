@@ -105,7 +105,7 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
     <rect>
      <x>470</x>
      <y>350</y>
-     <width>291</width>
+     <width>331</width>
      <height>171</height>
     </rect>
    </property>
@@ -117,65 +117,26 @@ border-image: url(:/assets/authpage/lineedit.png);</string>
 }</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>240</x>
-     <y>240</y>
-     <width>63</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-image: url(:/assets/login-register-u/buttonL.png);</string>
-   </property>
-   <property name="text">
-    <string>frend</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>510</x>
-     <y>560</y>
-     <width>63</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>request:</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btnBack">
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>540</y>
+     <y>520</y>
      <width>180</width>
      <height>60</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton#btnBack {
-    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border-image: url(:/assets/mainmenu/cancelButton.png) 0 0 0 0 stretch stretch;
     border: none;
     background: transparent;
 }
 
-QPushButton
-{
-    font-family: &quot;Marcellus&quot;;
-    font-size: 16px;
-	font-weight:Bold;
-
-    color: rgb(245,240,225);
-
-    background: transparent;
-    border: none;
-}</string>
+</string>
    </property>
    <property name="text">
-    <string>back</string>
+    <string/>
    </property>
   </widget>
   <widget class="QListWidget" name="listGameInvites">
@@ -183,7 +144,7 @@ QPushButton
     <rect>
      <x>470</x>
      <y>170</y>
-     <width>291</width>
+     <width>331</width>
      <height>171</height>
     </rect>
    </property>
@@ -198,14 +159,19 @@ QPushButton
   <widget class="QPushButton" name="btnRefreshInvites">
    <property name="geometry">
     <rect>
-     <x>360</x>
-     <y>140</y>
+     <x>490</x>
+     <y>300</y>
      <width>90</width>
      <height>29</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">order-image: url(:/assets/mainmenu/refresh.png) 0 0 0 0 stretch stretch;
+    border: none;
+    background: transparent;</string>
+   </property>
    <property name="text">
-    <string>PushButton</string>
+    <string/>
    </property>
   </widget>
  </widget>

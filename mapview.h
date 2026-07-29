@@ -18,6 +18,9 @@ public:
     explicit MapView(QWidget *parent = nullptr);
     void buildScene(GameMap *map);
 
+    // NEW: disable/enable room clicking (for non-leader lock)
+    void setClickEnabled(bool enabled) { m_clickEnabled = enabled; }
+
 signals:
     void roomClicked(MapNode *node);
     void returnClicked();
@@ -28,6 +31,9 @@ private:
     QString iconPathForRoomType(RoomType type) const;
     QGraphicsProxyWidget *m_returnButtonProxy = nullptr;
     void addReturnButton();
+
+    // NEW
+    bool m_clickEnabled = true;
 };
 
 #endif // MAPVIEW_H

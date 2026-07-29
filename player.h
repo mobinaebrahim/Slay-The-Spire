@@ -23,6 +23,11 @@ private:
     vector<Card*> exhaustPile;
 public:
     Player(string n, int h, int max, int en, int g, BattleManager* bm);
+    // FIX: Player owns every Card* in these four piles (created via
+    // createCardByName / addCopiesToHand / addBurnToDiscard / etc.) but
+    // previously had no destructor, so none of them were ever freed —
+    // a leak that grew every time a new combat's Player was constructed.
+    ~Player();
     int getGold() const { return gold; }
     int getDrawPileSize() const { return drawPile.size(); }
     int getDiscardPileSize() const { return discardPile.size(); }

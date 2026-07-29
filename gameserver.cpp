@@ -108,18 +108,35 @@ void GameServer::on_client_disconnected()
             game.endedTurn.remove(disconnectedSocket);
 
             if (!rooms[roomCode].isEmpty()) {
-                QTcpSocket *newLeader = rooms[roomCode][0];
-                QJsonObject leaderMsg;
-                leaderMsg["type"] = "leader_changed";
-                leaderMsg["you_are_leader"] = true;
-                send_to_client(newLeader, leaderMsg);
+                // FIX: only actually reassign leadership if the socket that
+                // disconnected WAS the leader. Previously this always
+                // crowned rooms[roomCode][0] as leader on any disconnect,
+                // and never touched game.leaderSocket at all, so the
+                // server's own idea of "who is leader" (used by
+                // handle_start_combat / handle_map_data / handle_room_selected)
+                // could permanently disagree with what clients were told.
+                if (game.leaderSocket == disconnectedSocket || game.leaderSocket == nullptr) {
+                    QTcpSocket *newLeader = rooms[roomCode][0];
+                    game.leaderSocket = newLeader;
 
-                for (int i = 1; i < rooms[roomCode].size(); ++i) {
-                    QJsonObject notLeaderMsg;
-                    notLeaderMsg["type"] = "leader_changed";
-                    notLeaderMsg["you_are_leader"] = false;
-                    send_to_client(rooms[roomCode][i], notLeaderMsg);
+                    QJsonObject leaderMsg;
+                    leaderMsg["type"] = "leader_changed";
+                    leaderMsg["you_are_leader"] = true;
+                    send_to_client(newLeader, leaderMsg);
+
+                    for (int i = 1; i < rooms[roomCode].size(); ++i) {
+                        QJsonObject notLeaderMsg;
+                        notLeaderMsg["type"] = "leader_changed";
+                        notLeaderMsg["you_are_leader"] = false;
+                        send_to_client(rooms[roomCode][i], notLeaderMsg);
+                    }
                 }
+
+                // FIX: a disconnect can complete the "everyone ended turn"
+                // condition if the remaining player(s) already ended theirs.
+                // Without this, the turn could stay stuck forever since
+                // nobody left would call handle_end_turn again.
+                check_turn_advance(roomCode);
             }
 
             if (rooms[roomCode].isEmpty()) {
@@ -269,7 +286,15 @@ void GameServer::broadcast_state_update(const QString &roomCode)
 
         if (i < playersArray.size()) {
             QJsonObject playerObj = playersArray[i].toObject();
-            playerObj["is_leader"] = (i == 0);
+            // FIX: was `(i == 0)`, silently assuming the leader is always
+            // whoever is first in rooms[roomCode]. That contradicts every
+            // other leader check in this file (handle_start_combat,
+            // handle_map_data, handle_room_selected, on_client_disconnected),
+            // which all compare against game.leaderSocket because list
+            // position doesn't change when the leader dies mid-combat.
+            // Clients were shown the wrong "is_leader" flag once leadership
+            // had actually transferred.
+            playerObj["is_leader"] = (socket == game.leaderSocket);
             playerObj["is_you"] = true;
             playersArray[i] = playerObj;
         }
@@ -434,7 +459,18 @@ void GameServer::process_enemy_turn(const QString &roomCode)
         if (p && p->getHp() <= 0 && game.playerAlive.value(socket, false)) {
             game.playerAlive[socket] = false;
 
-            if (rooms[roomCode].indexOf(socket) == 0) {
+            // FIX: compare against the authoritative leaderSocket instead of
+            // list position 0. Previously this correctly detected the
+            // leader dying, but only ever told clients via a message —
+            // it never updated game.leaderSocket itself, so every
+            // subsequent server-side leader check kept failing for the
+            // player the clients now believed was leader.
+            if (game.leaderSocket == socket) {
+                QTcpSocket *newLeader = nullptr;
+                for (QTcpSocket *candidate : rooms[roomCode]) {
+                    if (candidate != socket) { newLeader = candidate; break; }
+                }
+                game.leaderSocket = newLeader;
                 transfer_leader_if_needed(roomCode, socket);
             }
         }
@@ -467,10 +503,13 @@ void GameServer::handle_map_data(QTcpSocket *senderSocket, const QJsonObject &me
     QString roomCode = client_room.value(senderSocket);
     if (roomCode.isEmpty()) return;
 
-    // Only leader may broadcast map data
-    if (rooms[roomCode].indexOf(senderSocket) != 0) return;
-
+    // FIX: check against the authoritative leaderSocket, not list position —
+    // list position never updates when the leader dies mid-combat, so this
+    // used to keep rejecting map actions from the player who actually
+    // became leader.
     RoomGame &game = roomGames[roomCode];
+    if (game.leaderSocket != senderSocket) return;
+
     game.mapData = message["data"].toObject();
 
     broadcast_to_room(roomCode, message);
@@ -479,10 +518,10 @@ void GameServer::handle_map_data(QTcpSocket *senderSocket, const QJsonObject &me
 void GameServer::handle_room_selected(QTcpSocket *senderSocket, const QJsonObject &message)
 {
     QString roomCode = client_room.value(senderSocket);
-    if (roomCode.isEmpty()) return;
+    if (roomCode.isEmpty() || !roomGames.contains(roomCode)) return;
 
-    // Only leader may select the next room
-    if (rooms[roomCode].indexOf(senderSocket) != 0) return;
+    // FIX: check against the authoritative leaderSocket, not list position.
+    if (roomGames[roomCode].leaderSocket != senderSocket) return;
 
     // Forward to all clients (non-leaders auto-enter the room)
     broadcast_to_room(roomCode, message);
@@ -495,6 +534,10 @@ void GameServer::handle_create_room(QTcpSocket *senderSocket, const QJsonObject 
     QString roomCode = generate_room_code();
     rooms[roomCode].append(senderSocket);
     client_room[senderSocket] = roomCode;
+
+    // FIX: the room creator is the authoritative leader from the start,
+    // regardless of list position later.
+    roomGames[roomCode].leaderSocket = senderSocket;
 
     QString username = message["username"].toString("Player");
     socketUsernames[senderSocket] = username;
@@ -540,13 +583,18 @@ void GameServer::handle_start_combat(QTcpSocket *senderSocket, const QJsonObject
     QString roomCode = client_room.value(senderSocket);
     if (roomCode.isEmpty()) return;
 
-    if (rooms[roomCode].isEmpty() || rooms[roomCode][0] != senderSocket) {
+    RoomGame &game = roomGames[roomCode];
+
+    // FIX: check against the authoritative leaderSocket, not list position —
+    // list position never changes when the leader dies mid-combat, so this
+    // used to silently ignore start_combat from the player who actually
+    // became leader, leaving the room permanently stuck on the map screen.
+    if (rooms[roomCode].isEmpty() || game.leaderSocket != senderSocket) {
         qDebug() << "Non-leader tried to start combat, ignoring.";
         return;
     }
 
-    RoomGame &game = roomGames[roomCode];
-
+    // NOTE: 'game' already bound above (was previously re-declared here).
     if (game.battleManager) {
         delete game.battleManager;
         game.socketToPlayer.clear();
@@ -647,6 +695,14 @@ void GameServer::handle_play_card(QTcpSocket *senderSocket, const QJsonObject &m
         return;
     }
 
+    // FIX: nothing was checking isPlayable() here, so an unplayable card
+    // (e.g. CurseOfBellCard, or any Curse whose isPlayable() returns false)
+    // could be forced into play by a hand-crafted play_card message.
+    if (!cardToPlay->isPlayable()) {
+        qDebug() << "Card is not playable, ignoring:" << cardName;
+        return;
+    }
+
     const auto& enemies = game.battleManager->getEnemies();
     if (enemies.empty()) return;
 
@@ -695,6 +751,23 @@ void GameServer::handle_end_turn(QTcpSocket *senderSocket, const QJsonObject &me
     qDebug() << "Player ended turn. Ended:" << game.endedTurn.size()
              << "Total alive:" << game.battleManager->getPlayers().size();
 
+    check_turn_advance(roomCode);
+}
+
+// ---Combat: shared turn-advance check---
+// FIX: extracted from handle_end_turn so on_client_disconnected can also
+// trigger it. Previously only handle_end_turn ever checked whether
+// "everyone has ended turn" — so if a player disconnected mid-combat while
+// a teammate was already waiting on them, nobody was left to call
+// handle_end_turn again and the turn (and therefore card-playing) stayed
+// stuck forever.
+void GameServer::check_turn_advance(const QString &roomCode)
+{
+    if (!roomGames.contains(roomCode)) return;
+    RoomGame &game = roomGames[roomCode];
+    if (!game.combatActive || !game.battleManager) return;
+    if (!game.isPlayerTurn) return;
+
     int aliveCount = 0;
     for (QTcpSocket *socket : rooms[roomCode]) {
         if (game.playerAlive.value(socket, false)) {
@@ -702,7 +775,7 @@ void GameServer::handle_end_turn(QTcpSocket *senderSocket, const QJsonObject &me
         }
     }
 
-    if ((int)game.endedTurn.size() >= aliveCount) {
+    if (aliveCount > 0 && (int)game.endedTurn.size() >= aliveCount) {
         qDebug() << "All players ended turn. Processing enemy turn...";
         process_enemy_turn(roomCode);
     } else {

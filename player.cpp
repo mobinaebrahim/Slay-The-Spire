@@ -8,7 +8,22 @@
 extern Card* createCardByName(const std::string& name);
 
 Player::Player(string n, int h, int max, int energy, int g, BattleManager* bm):
-    Character(n, h, max), currentEnergy(energy), maxEnergy(energy), gold(99), battleManagerPtr(bm) {}
+    // FIX: was hardcoded to gold(99), silently discarding the persisted
+    // gold value (g) passed in from the server's saved run state — every
+    // new combat reset the player's gold back to 99 regardless of how
+    // much they actually had.
+    Character(n, h, max), currentEnergy(energy), maxEnergy(energy), gold(g), battleManagerPtr(bm) {}
+
+// FIX: free every Card* this Player owns across its four piles. Without
+// this, deleting a Player (e.g. when GameServer starts a new combat and
+// does `delete game.battleManager`, which in turn deletes its Players)
+// leaked every card that had ever been created for that player.
+Player::~Player() {
+    for (Card* c : drawPile) delete c;
+    for (Card* c : hand) delete c;
+    for (Card* c : discardPile) delete c;
+    for (Card* c : exhaustPile) delete c;
+}
 
 void Player::decreaseEnergy(int amount) {
     currentEnergy -= amount;
@@ -85,7 +100,7 @@ Card* Player::chooseCardFromHand() {
         return nullptr;
 
     int handSize = hand.size();
-    int randomCard = rand() % (handSize + 1);
+    int randomCard = rand() % handSize;
 
     return hand[randomCard];
 }

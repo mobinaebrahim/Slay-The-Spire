@@ -27,6 +27,11 @@ private:
 
 public:
     BattleManager() : isPlayerTurn(true) {}
+    // FIX: BattleManager owns every Enemy*/Player* added via spawnEnemy()/
+    // addPlayer(), but had no destructor — `delete game.battleManager` in
+    // GameServer::handle_start_combat only freed the vectors themselves,
+    // leaking every Enemy and Player object from every previous combat.
+    ~BattleManager();
 
     void spawnEnemy(Enemy* newEnemy);
     void removeEnemy(Enemy* enemy);

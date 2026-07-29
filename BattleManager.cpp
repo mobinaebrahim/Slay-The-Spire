@@ -166,3 +166,8 @@ void BattleManager::processSingleEnemyTurn(Enemy* enemy) {
 void BattleManager::endEnemyTurnPhase() {
     playerTurn();
 }
+
+BattleManager::~BattleManager() {
+    for (Enemy* e : enemies) delete e;
+    for (Player* p : players) delete p;
+}

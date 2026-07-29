@@ -40,6 +40,13 @@ struct RoomGame {
     QString currentEnemyName;
     bool isMultiplayer = false;
 
+    // FIX: authoritative leader, tracked explicitly instead of assuming
+    // rooms[roomCode][0] is always the leader. rooms[] order never changes
+    // when a player dies mid-combat, only on real disconnect, so relying on
+    // index 0 let a dead-but-still-connected leader permanently block map
+    // actions from the player who actually became leader.
+    QTcpSocket* leaderSocket = nullptr;
+
     // Persistent run data
     QMap<QTcpSocket*, PlayerRunState> playerRunStates;
     QJsonObject mapData;
@@ -87,6 +94,11 @@ private:
     void process_enemy_turn(const QString &roomCode);
     void check_combat_over(const QString &roomCode);
     void transfer_leader_if_needed(const QString &roomCode, QTcpSocket *deadSocket);
+
+    // FIX: shared by handle_end_turn AND on_client_disconnected, so a
+    // disconnect while a teammate is already waiting doesn't leave the
+    // turn stuck forever (nobody was left to call handle_end_turn again).
+    void check_turn_advance(const QString &roomCode);
 
     // Broadcast
     void send_to_client(QTcpSocket *client, const QJsonObject &message);

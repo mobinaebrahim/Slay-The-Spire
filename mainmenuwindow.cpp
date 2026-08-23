@@ -8,7 +8,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     ui->setupUi(this);
 
     // ---start background music---
-    //AudioManager::instance().playMusic(":/a.ssets/music/background.mp3");
+    AudioManager::instance().playMusic(":/assets/music/menu_theme.mp3");
 
     // ---play click sound for every button in this window---
     const QList<QPushButton*> allButtons = this->findChildren<QPushButton*>();
@@ -36,15 +36,16 @@ MainMenuWindow::MainMenuWindow(QWidget *parent)
     player->setAudioOutput(audioOutput);
     player->setVideoOutput(videoItem);
 
-    player->setSource(QUrl("qrc:/assets/assets/video/background.mp4"));
+    player->setSource(QUrl("qrc:/assets/video/background.mp4"));
 
     // ---made loop for video
-    connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
+   /* connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
         if (status == QMediaPlayer::EndOfMedia) {
             player->setPosition(0);
             player->play();
         }
-    });
+    });*/
+    player->setLoops(QMediaPlayer::Infinite);
 
     audioOutput->setMuted(true);
     player->play();
@@ -278,6 +279,11 @@ void MainMenuWindow::open_map_page(bool isLeader, bool isMultiplayer, int existi
 {
     MapPage *mapDlg = new MapPage(nullptr, isLeader, isMultiplayer, existingSaveId, savedMapData);
     mapDlg->setAttribute(Qt::WA_DeleteOnClose);
+
+    connect(mapDlg, &QObject::destroyed, this, [this](){
+        this->show();
+        AudioManager::instance().playMusic(":/assets/music/menu_theme.mp3");
+    });
 
     this->hide();
 

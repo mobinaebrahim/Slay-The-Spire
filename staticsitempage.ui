@@ -28,8 +28,8 @@ Qwidget#overlaywidget{
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>-20</x>
-     <y>0</y>
+     <x>-50</x>
+     <y>-10</y>
      <width>1821</width>
      <height>821</height>
     </rect>
@@ -156,6 +156,9 @@ Qwidget#overlaywidget{
     </widget>
    </widget>
    <widget class="QWidget" name="leaderboard">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
@@ -172,8 +175,8 @@ Qwidget#overlaywidget{
     <widget class="QWidget" name="widget" native="true">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>-40</y>
+       <x>50</x>
+       <y>10</y>
        <width>1920</width>
        <height>1080</height>
       </rect>
@@ -184,8 +187,8 @@ Qwidget#overlaywidget{
      <widget class="QPushButton" name="btnTotalScore">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>370</y>
+        <x>110</x>
+        <y>300</y>
         <width>141</width>
         <height>81</height>
        </rect>
@@ -209,8 +212,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnHighestFloor">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>460</y>
+        <x>110</x>
+        <y>410</y>
         <width>141</width>
         <height>81</height>
        </rect>
@@ -234,8 +237,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnTotalWins">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>450</y>
+        <x>260</x>
+        <y>400</y>
         <width>141</width>
         <height>91</height>
        </rect>
@@ -259,8 +262,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnTotalTime">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>370</y>
+        <x>260</x>
+        <y>290</y>
         <width>141</width>
         <height>91</height>
        </rect>
@@ -284,8 +287,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnglobal">
       <property name="geometry">
        <rect>
-        <x>350</x>
-        <y>260</y>
+        <x>260</x>
+        <y>180</y>
         <width>141</width>
         <height>71</height>
        </rect>
@@ -309,8 +312,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnfriends">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>260</y>
+        <x>120</x>
+        <y>180</y>
         <width>141</width>
         <height>71</height>
        </rect>
@@ -334,8 +337,8 @@ QPushButton:checked {
      <widget class="QPushButton" name="btnRetun1">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>580</y>
+        <x>80</x>
+        <y>520</y>
         <width>101</width>
         <height>61</height>
        </rect>
@@ -351,8 +354,8 @@ QPushButton:checked {
      <widget class="QListWidget" name="table_scores">
       <property name="geometry">
        <rect>
-        <x>540</x>
-        <y>280</y>
+        <x>460</x>
+        <y>200</y>
         <width>261</width>
         <height>341</height>
        </rect>
@@ -367,8 +370,8 @@ QPushButton:checked {
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>250</y>
+        <x>430</x>
+        <y>170</y>
         <width>321</width>
         <height>411</height>
        </rect>
@@ -426,8 +429,8 @@ QPushButton:checked {
     <widget class="QPushButton" name="btnReturnHistory">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>430</y>
+       <x>120</x>
+       <y>490</y>
        <width>111</width>
        <height>51</height>
       </rect>
@@ -444,8 +447,8 @@ QPushButton:checked {
     <widget class="QListWidget" name="table_history">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>30</y>
+       <x>200</x>
+       <y>190</y>
        <width>641</width>
        <height>351</height>
       </rect>
@@ -459,6 +462,9 @@ QPushButton:checked {
     </widget>
    </widget>
    <widget class="QWidget" name="charstats">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <widget class="QLabel" name="label_totalScore">
      <property name="geometry">
       <rect>

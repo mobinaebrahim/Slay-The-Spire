@@ -1,6 +1,23 @@
 #include "mappage.h"
 #include "usermanager.h"
 #include "mainwindow.h"
+#include "Potion.h"
+#include "Relics.h"
+//#include "TreasureScreen.h"
+// Needed to turn m_deckNames (plain strings, saved/synced form of a deck)
+// back into real Card* objects when building a temporary Player for
+// Shop/Event/Campfire.
+extern Card* createCardByName(const std::string& name);
+// Already used elsewhere in the codebase (declared the same way in
+// EventScreen.h) — reused here for relic persistence.
+extern Relic* createRelicByName(const std::string& name);
+
+// FIX: mainwindow.cpp confirmed a real global createPotionByName(name)
+// already exists (declared transitively via Potion.h, included through
+// player.h) — no local guess-based factory needed after all. Declared
+// explicitly here too, matching the extern convention already used for
+// the other two factories above.
+extern Potion* createPotionByName(const std::string& name);
 
 MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existingSaveId, const QJsonObject &savedMapData)
     : QWidget(parent)
@@ -52,6 +69,16 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
             QJsonArray deckArr = playerJson["deck"].toArray();
             for (const QJsonValue &v : deckArr)
                 m_deckNames.push_back(v.toString().toStdString());
+
+            // NEW: same treatment as deck, so bought potions/relics survive
+            // a full app restart via "Continue" instead of just in-session.
+            QJsonArray potionArr = playerJson["potions"].toArray();
+            for (const QJsonValue &v : potionArr)
+                m_potionNames.push_back(v.toString().toStdString());
+
+            QJsonArray relicArr = playerJson["relics"].toArray();
+            for (const QJsonValue &v : relicArr)
+                m_relicNames.push_back(v.toString().toStdString());
 
             // FIX: if the app was closed mid-combat, resume that fight
             // fresh (full pre-combat HP) instead of silently treating the
@@ -120,6 +147,14 @@ MapPage::MapPage(QWidget *parent, bool isLeader, bool isMultiplayer, int existin
                     }
                     else if (type == "room_selected" && !m_isLeader) {
                         handleIncomingRoomSelected(obj["floor"].toInt(), obj["index"].toInt());
+                    }
+                    // NEW: leader finished a Shop/Event/Campfire screen —
+                    // dismiss the "waiting for leader" overlay. This relies
+                    // on GameServer's generic fallback (any message type it
+                    // doesn't specifically handle gets relayed to the rest
+                    // of the room), so no server changes were needed.
+                    else if (type == "room_event_finished" && !m_isLeader) {
+                        hideWaitingOverlay();
                     }
                     else if (type == "combat_started") {
                         qDebug() << "combat_started received! combatOpen=" << m_combatOpen;
@@ -280,6 +315,18 @@ void MapPage::persistProgress()
     for (const auto &name : m_deckNames)
         deckArr.append(QString::fromStdString(name));
     playerObj["deck"] = deckArr;
+
+    // NEW: same treatment as deck — without this, anything bought/found
+    // survives only until the app closes, then silently vanishes on reload.
+    QJsonArray potionArr;
+    for (const auto &name : m_potionNames)
+        potionArr.append(QString::fromStdString(name));
+    playerObj["potions"] = potionArr;
+
+    QJsonArray relicArr;
+    for (const auto &name : m_relicNames)
+        relicArr.append(QString::fromStdString(name));
+    playerObj["relics"] = relicArr;
 
     // FIX: remember whether a fight was in progress when this was written,
     // so a reload can resume it instead of silently skipping the room.
@@ -453,6 +500,97 @@ void MapPage::handleIncomingMapData(const QJsonObject &mapJson)
 void MapPage::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
+    if (m_waitingOverlay && m_waitingOverlay->isVisible())
+        m_waitingOverlay->setGeometry(0, 0, width(), height());
+}
+
+void MapPage::showWaitingOverlay(const QString &text)
+{
+    if (!m_waitingOverlay) {
+        m_waitingOverlay = new QWidget(this);
+        m_waitingOverlay->setStyleSheet("background-color: rgba(0,0,0,180);");
+
+        auto *lbl = new QLabel(m_waitingOverlay);
+        lbl->setObjectName("waitingLabel");
+        lbl->setAlignment(Qt::AlignCenter);
+        lbl->setStyleSheet("color: white; font-size: 20px; font-weight: bold; background: transparent;");
+
+        auto *lay = new QVBoxLayout(m_waitingOverlay);
+        lay->setAlignment(Qt::AlignCenter);
+        lay->addWidget(lbl);
+    }
+
+    if (QLabel *lbl = m_waitingOverlay->findChild<QLabel*>("waitingLabel"))
+        lbl->setText(text);
+
+    m_waitingOverlay->setGeometry(0, 0, width(), height());
+    m_waitingOverlay->show();
+    m_waitingOverlay->raise();
+}
+
+void MapPage::hideWaitingOverlay()
+{
+    if (m_waitingOverlay)
+        m_waitingOverlay->hide();
+}
+
+Player* MapPage::buildPlayerFromProgress()
+{
+    // NOTE: BattleManager* is nullptr here on purpose — Shop/Event/Campfire
+    // never call anything that needs it (no card play, no combat).
+    Player *p = new Player("Hero", m_playerHp, m_playerMaxHp, 3, m_playerGold, nullptr);
+
+    if (m_deckNames.empty()) {
+        // Same default starter deck implied by the "empty = use default
+        // deck on first fight" comment on m_deckNames in mappage.h.
+        for (int i = 0; i < 5; ++i) {
+            if (Card *c = createCardByName("Strike")) p->addCardToDrawPile(c);
+        }
+        for (int i = 0; i < 4; ++i) {
+            if (Card *c = createCardByName("Defend")) p->addCardToDrawPile(c);
+        }
+    } else {
+        for (const std::string &name : m_deckNames) {
+            if (Card *c = createCardByName(name)) p->addCardToDrawPile(c);
+        }
+    }
+
+    // NEW: restore potions/relics from last sync.
+    for (const std::string &name : m_potionNames) {
+        if (Potion *pot = createPotionByName(name)) p->addPotion(pot);
+    }
+    for (const std::string &name : m_relicNames) {
+        if (Relic *r = createRelicByName(name)) p->addRelic(r);
+    }
+
+    return p;
+}
+
+void MapPage::syncProgressFromPlayer(Player* p)
+{
+    if (!p) return;
+
+    m_playerHp    = p->getHp();
+    m_playerMaxHp = p->getMaxHp();
+    m_playerGold  = p->getGold();
+
+    m_deckNames.clear();
+    for (Card *c : p->getFullDeck()) {
+        if (c) m_deckNames.push_back(c->getName());
+    }
+
+    // NEW: mirror deck sync for potions/relics.
+    m_potionNames.clear();
+    for (Potion *pot : p->getPotions()) {
+        if (pot) m_potionNames.push_back(pot->getName());
+    }
+    m_relicNames.clear();
+    for (Relic *r : p->getRelics()) {
+        if (r) m_relicNames.push_back(r->getName());
+    }
+
+    updateHud();
+    persistProgress();
 }
 
 void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type, bool isResume)
@@ -470,27 +608,35 @@ void MapPage::openSinglePlayerCombat(MapNode *node, CombatType type, bool isResu
     // before it resolves, reopening the save will resume this same fight.
     markCombatInProgress(type);
 
+    // FIX: MainWindow's real constructor (confirmed from mainwindow.cpp)
+    // takes potionNames as its own parameter, separate from deckNames.
     MainWindow *combatWindow = new MainWindow(nullptr, m_playerHp, m_playerMaxHp,
-                                              m_playerGold, m_deckNames, type);
+                                              m_playerGold, m_deckNames, m_potionNames, type);
     combatWindow->setAttribute(Qt::WA_DeleteOnClose);
     this->hide();
 
+    // FIX: this used to expect combatFinished(bool, int, int, int, vector<string>,
+    // int damageDealt, bool wasElite) — 7 params. mainwindow.cpp's actual emit
+    // calls only ever pass 6: (victory, hp, maxHp, gold, deck, potions). The old
+    // lambda's extra 2 params don't exist on the real signal at all, so this
+    // wouldn't have compiled. damageDealt/wasElite aren't tracked anywhere in
+    // mainwindow.cpp either (no member, no getter) — there's currently no way to
+    // recover them from here, so m_totalDamageDealt/m_elitesKilled no longer get
+    // incremented from single-player fights. Score for single-player runs is
+    // effectively floor-based until MainWindow exposes that data again (a getter,
+    // or the params restored on the signal).
     connect(combatWindow, &MainWindow::combatFinished, this,
             [this, type](bool victory, int finalHp, int maxHp,
                          int finalGold, const std::vector<std::string>& finalDeck,
-                         int damageDealt, bool wasElite) {
-                m_totalDamageDealt += damageDealt;
-                if (wasElite) {
-                    m_elitesKilled++;
-                }
-
+                         const std::vector<std::string>& finalPotions) {
                 if (victory) {
                     // FIX: fight resolved — no longer pending.
                     clearCombatInProgress();
-                    m_playerHp    = finalHp;
-                    m_playerMaxHp = maxHp;
-                    m_playerGold  = finalGold;
-                    m_deckNames   = finalDeck;
+                    m_playerHp     = finalHp;
+                    m_playerMaxHp  = maxHp;
+                    m_playerGold   = finalGold;
+                    m_deckNames    = finalDeck;
+                    m_potionNames  = finalPotions;
                     updateHud();
                     persistProgress(); // auto-save after every victory
 
@@ -556,22 +702,151 @@ void MapPage::openElite(MapNode *node)
 
 void MapPage::openEvent(MapNode *node)
 {
-    QMessageBox::information(this, "Event", "Entered an event room.");
+    Q_UNUSED(node);
+
+    if (m_isMultiplayer && !m_isLeader) {
+        showWaitingOverlay("Waiting for the leader to finish the event...");
+        return;
+    }
+
+    Player *tempPlayer = buildPlayerFromProgress();
+    EventScreen *eventScreen = new EventScreen(tempPlayer, nullptr);
+    eventScreen->setAttribute(Qt::WA_DeleteOnClose);
+
+    // TODO: no per-room event data exists yet (MapNode doesn't carry an
+    // EventType), so we just pick one at random each time. Wire this up to
+    // real per-node data once the map generator assigns one.
+    static const EventType allEventTypes[] = {
+        EventType::OminousForge, EventType::GoldenIdol, EventType::Augmenter,
+        EventType::FaceTrader, EventType::TheColosseum, EventType::GoldenShrine,
+        EventType::Lab, EventType::ShiningLight, EventType::TheSerpent
+    };
+    eventScreen->setEvent(allEventTypes[rand() % 9]);
+
+    this->hide();
+
+    connect(eventScreen, &EventScreen::finished, this, [this, eventScreen, tempPlayer]() {
+        syncProgressFromPlayer(tempPlayer);
+        delete tempPlayer;
+
+        eventScreen->close();
+        this->show();
+        m_mapView->buildScene(m_gameMap);
+
+        if (m_isMultiplayer) {
+            QJsonObject msg;
+            msg["type"] = "room_event_finished";
+            NetworkManager::instance().send_game_action(msg);
+        }
+    });
+
+    // TODO: EventScreen also emits requestCombat(Enemy*), requestCardTransform(int),
+    // and requestCardSelection(function<void(Card*)>) for options like "The Colosseum"
+    // (fight), "Lab" (transform cards), "The Serpent"/"Shining Light" (pick a card).
+    // None of those are wired up yet — they need, respectively: a route into
+    // single-/multiplayer combat starting from a pre-built Enemy*, a "random card of
+    // rarity X" factory helper, and a card-picker UI we don't have. Any option in
+    // EventScreen that relies on these will currently do nothing when clicked.
+    // requestCardUpgrade is the one exception — wired below since CampfireScreen's
+    // smith logic gives us the exact pattern for it already.
+    connect(eventScreen, &EventScreen::requestCardUpgrade, this, [tempPlayer]() {
+        const auto &deck = tempPlayer->getFullDeck();
+        if (!deck.empty()) {
+            deck[rand() % deck.size()]->upgrade();
+        }
+    });
+
+    eventScreen->showFullScreen();
 }
 
 void MapPage::openShop(MapNode *node)
 {
-    QMessageBox::information(this, "Shop", "Entered a shop room.");
+    Q_UNUSED(node);
+
+    // FIX: was previously a stub QMessageBox for everyone, single-player
+    // included. Per the coop spec, only the leader gets a real screen in
+    // multiplayer; the teammate(s) wait until they're done.
+    if (m_isMultiplayer && !m_isLeader) {
+        showWaitingOverlay("Waiting for the leader to finish shopping...");
+        return;
+    }
+
+    Player *tempPlayer = buildPlayerFromProgress();
+    ShopScreen *shop = new ShopScreen(tempPlayer, nullptr);
+    shop->setAttribute(Qt::WA_DeleteOnClose);
+    this->hide();
+
+    connect(shop, &ShopScreen::finished, this, [this, shop, tempPlayer]() {
+        syncProgressFromPlayer(tempPlayer);
+        delete tempPlayer;
+
+        shop->close();
+        this->show();
+        m_mapView->buildScene(m_gameMap);
+
+        if (m_isMultiplayer) {
+            QJsonObject msg;
+            msg["type"] = "room_event_finished";
+            NetworkManager::instance().send_game_action(msg);
+        }
+    });
+
+    shop->showFullScreen();
 }
 
 void MapPage::openCampfire(MapNode *node)
 {
-    QMessageBox::information(this, "Campfire", "Entered a campfire room.");
+    Q_UNUSED(node);
+
+    if (m_isMultiplayer && !m_isLeader) {
+        showWaitingOverlay("Waiting for the leader at the campfire...");
+        return;
+    }
+
+    Player *tempPlayer = buildPlayerFromProgress();
+    CampfireScreen *campfire = new CampfireScreen(tempPlayer, nullptr);
+    campfire->setAttribute(Qt::WA_DeleteOnClose);
+    this->hide();
+
+    connect(campfire, &CampfireScreen::finished, this, [this, campfire, tempPlayer]() {
+        syncProgressFromPlayer(tempPlayer);
+        delete tempPlayer;
+
+        campfire->close();
+        this->show();
+        m_mapView->buildScene(m_gameMap);
+
+        if (m_isMultiplayer) {
+            QJsonObject msg;
+            msg["type"] = "room_event_finished";
+            NetworkManager::instance().send_game_action(msg);
+        }
+    });
+
+    campfire->showFullScreen();
 }
 
 void MapPage::openTreasure(MapNode *node)
 {
-    QMessageBox::information(this, "Treasure", "Entered a treasure room.");
+    /*//Player tempPlayer = new Player(m_username, m_playerHp, m_playerMaxHp, 3, m_playerGold, nullptr);
+    //TreasureScreen* treasure = new TreasureScreen(tempPlayer, nullptr);
+    //treasure->setAttribute(Qt::WA_DeleteOnClose);
+    treasure->setWindowFlags(Qt::Window);
+
+    this->hide();
+
+    connect(treasure, &TreasureScreen::finished, this, [this, treasure, tempPlayer]() {
+        //m_playerGold = tempPlayer->getGold();
+
+        updateHud();
+        persistProgress();
+
+        //delete tempPlayer;
+        treasure->close();
+        this->show();
+    });
+
+    treasure->showFullScreen();*/
 }
 
 void MapPage::openBossFight(MapNode *node)

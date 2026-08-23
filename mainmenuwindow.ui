@@ -21,36 +21,36 @@
        <widget class="QPushButton" name="btnRegister">
         <property name="geometry">
          <rect>
-          <x>590</x>
-          <y>680</y>
+          <x>40</x>
+          <y>630</y>
           <width>281</width>
-          <height>91</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton {
-    border-image: url(:/assets/authpage/back.png) 0 0 0 0 stretch stretch;
+    border-image: url(:/assets/mainmenu/register.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
 	font-size: 14pt;
     font-weight: bold;}</string>
         </property>
         <property name="text">
-         <string>register</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="btnLogin">
         <property name="geometry">
          <rect>
-          <x>580</x>
+          <x>40</x>
           <y>560</y>
           <width>281</width>
-          <height>101</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton {
-    border-image: url(:/assets/authpage/confrim.png) 0 0 0 0 stretch stretch;
+    border-image: url(:/assets/mainmenu/login.png) 0 0 0 0 stretch stretch;
     border: none;
     color: white;
     font-weight: bold;
@@ -58,20 +58,29 @@
 }</string>
         </property>
         <property name="text">
-         <string>login</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="exit_button">
         <property name="geometry">
          <rect>
-          <x>30</x>
-          <y>790</y>
-          <width>93</width>
-          <height>29</height>
+          <x>40</x>
+          <y>710</y>
+          <width>281</width>
+          <height>71</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    border-image: url(:/assets/mainmenu/quit.png) 0 0 0 0 stretch stretch;
+    border: none;
+    color: white;
+    font-weight: bold;
+	font-size: 14pt;
+}</string>
+        </property>
         <property name="text">
-         <string>exit</string>
+         <string/>
         </property>
        </widget>
       </widget>

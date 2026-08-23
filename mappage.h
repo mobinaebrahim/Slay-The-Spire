@@ -14,6 +14,7 @@
 #include <QElapsedTimer>
 #include <vector>
 #include <string>
+#include <cstdlib>
 
 #include "mapview.h"
 #include "gamemap.h"
@@ -23,6 +24,12 @@
 #include "savemanager.h"
 #include "scoremanager.h"
 #include "combattype.h"
+
+// NEW: non-combat room screens being wired in
+#include "EventScreen.h"
+#include "ShopScreen.h"
+#include "CampfireScreen.h"
+#include "player.h"
 
 class MapPage : public QWidget
 {
@@ -51,6 +58,12 @@ private:
     int m_playerMaxHp = 80;
     int m_playerGold = 99;
     std::vector<std::string> m_deckNames; // empty = use default deck on first fight
+    // NEW: mirrors m_deckNames, needed now that Player also carries
+    // Potion*/Relic* (bought in ShopScreen, granted by events/campfire).
+    // Without these, anything bought/found would be silently lost the
+    // moment the temporary Player* used for Shop/Event/Campfire is deleted.
+    std::vector<std::string> m_potionNames;
+    std::vector<std::string> m_relicNames;
 
     // Top HUD (HP / Gold / Deck)
     QWidget *m_topHud = nullptr;
@@ -70,6 +83,10 @@ private:
     // which type of fight was in progress ("" = none) so we can resume it
     // fresh (full pre-combat HP) instead of silently skipping that room.
     QString m_pendingCombatType;
+
+    // NEW: shown to non-leader clients in multiplayer while the leader is
+    // inside a Shop/Event/Campfire screen they don't get their own copy of.
+    QWidget *m_waitingOverlay = nullptr;
 
     void buildHud();
     void updateHud();
@@ -96,6 +113,15 @@ private:
     void sendMapData();
     void handleIncomingMapData(const QJsonObject &mapJson);
     void handleIncomingRoomSelected(int floor, int index);
+
+    // NEW: bridges MapPage's primitive progress fields (hp/gold/deck-as-
+    // strings) to a real Player* — Shop/Event/Campfire screens need an
+    // actual Player instance, MapPage doesn't keep one around otherwise.
+    Player* buildPlayerFromProgress();
+    void syncProgressFromPlayer(Player* p);
+
+    void showWaitingOverlay(const QString &text);
+    void hideWaitingOverlay();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

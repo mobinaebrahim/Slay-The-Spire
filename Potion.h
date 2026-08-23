@@ -1,0 +1,63 @@
+#ifndef POTION_H
+#define POTION_H
+
+#include <string>
+#include "character.h"
+using namespace std;
+
+class BattleManager;
+
+class Potion {
+protected:
+    string name;
+    string description;
+public:
+    Potion(string n, string d);
+    virtual ~Potion() = default;
+    virtual void applyEffect(Character* caster, Character* target, BattleManager* bm) = 0;
+    string getName() const;
+    string getDescription() const;
+    virtual bool isPlayable() const;
+};
+
+class BlockPotion : public Potion { 
+public:
+    BlockPotion();
+    void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+};
+
+class FirePotion : public Potion { 
+public:
+    FirePotion();
+    void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+};
+
+class EnergyPotion : public Potion { 
+public:
+    EnergyPotion();
+    void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+};
+
+class SwiftPotion : public Potion { 
+public:
+    SwiftPotion();
+    void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+};
+
+class FairyInABottle : public Potion { 
+public:
+    FairyInABottle();
+    void applyEffect(Character* caster, Character* target, BattleManager* bm) override;
+    bool isPlayable() const override;
+};
+
+inline Potion* createPotionByName(const std::string& name) {
+    if (name == "BlockPotion") return new BlockPotion();
+    if (name == "FirePotion") return new FirePotion();
+    if (name == "EnergyPotion") return new EnergyPotion();
+    if (name == "SwiftPotion") return new SwiftPotion();
+    if (name == "FairyInABottle") return new FairyInABottle();
+    return nullptr;
+}
+
+#endif

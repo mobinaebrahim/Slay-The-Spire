@@ -7,6 +7,7 @@
 #include "StatusCard.h"
 #include <string>
 #include <vector>
+#include <functional>
 using namespace std;
 
 class BattleManager {
@@ -21,9 +22,9 @@ public:
     void spawnEnemy(Enemy* newEnemy);
     void removeEnemy(Enemy* enemy);
     void cleanupDeadEnemies();
-    void playerTurn();
+    void playerTurn();     
     void enemyTurn();
-    void startCombat();
+    void startCombat(); 
     bool isCombatOver();
     void playCardAction(Card* card, Enemy* target);
     void dealDamageToAllEnemies(int damage);
@@ -37,6 +38,9 @@ public:
     void setPlayer(Player* p) { player = p; }
     const vector<Enemy*>& getEnemies() const { return enemies; }
     std::vector<Enemy*> enemiesToRemove;
+    bool isBossOrEliteCombat() const;
+
+    std::function<void()> onCombatStartSoundCallback;
 };
 
 #endif

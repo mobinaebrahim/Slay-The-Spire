@@ -57,4 +57,6 @@ public:
     static void spawnGroup(BattleManager* bm);
 };
 
+Enemy* createEliteEnemy(const std::string& name);
+
 #endif

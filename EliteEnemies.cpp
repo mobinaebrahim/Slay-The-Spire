@@ -147,3 +147,15 @@ void Taskmaster::spawnGroup(BattleManager* bm) {
     bm->spawnEnemy(new BlueSlaver());
     bm->spawnEnemy(new RedSlaver());
 }
+
+
+Enemy* createEliteEnemy(const std::string& name) {
+    if (name == "GremlinKnob") {
+        return new GremlinKnob();
+    } else if (name == "BookOfStabbing") {
+        return new BookOfStabbing();
+    } else if (name == "Taskmaster") {
+        return new Taskmaster();
+    }
+    return nullptr;
+}

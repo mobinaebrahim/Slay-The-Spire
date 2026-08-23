@@ -191,7 +191,7 @@ void friendspage::populate_friends_list()
         nameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         QPushButton *inviteBtn = new QPushButton();
-        inviteBtn->setIcon(QIcon(":/assets/mainmenu/friend/remove.png"));
+        inviteBtn->setIcon(QIcon(":/assets/mainmenu/friend/play.png"));
         inviteBtn->setIconSize(QSize(40, 40));
         inviteBtn->setFixedSize(48, 48);
         inviteBtn->setStyleSheet(

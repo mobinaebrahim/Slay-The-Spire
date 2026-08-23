@@ -42,9 +42,6 @@
         <file>assets/mainmenu/friend/draggablepanel.png</file>
         <file>assets/mainmenu/friend/reject.png</file>
         <file>assets/mainmenu/friend/remove.png</file>
-        <file>assets/music/background.mp3</file>
-        <file>assets/music/error.mp3</file>
-        <file>assets/music/map_room.mp3</file>
         <file>assets/mainmenu/cursor1.png</file>
         <file>images/cards/Bash.png</file>
         <file>images/cards/Blood for Blood.png</file>
@@ -144,5 +141,129 @@
         <file>assets/mainmenu/leaderboards/win.png</file>
         <file>assets/mainmenu/leaderboards/time.png</file>
         <file>assets/mainmenu/shortkey.png</file>
+        <file>assets/mainmenu/register.png</file>
+        <file>assets/mainmenu/login.png</file>
+        <file>assets/mainmenu/quit.png</file>
+        <file>assets/music/map_theme.mp3</file>
+        <file>assets/music/menu_theme.mp3</file>
+        <file>assets/cards/Barricade.png</file>
+        <file>assets/cards/Bash.png</file>
+        <file>assets/cards/Blood for Blood.png</file>
+        <file>assets/cards/Bloodletting.png</file>
+        <file>assets/cards/Bludgeon.png</file>
+        <file>assets/cards/Brutality.png</file>
+        <file>assets/cards/Burn.png</file>
+        <file>assets/cards/Clash.png</file>
+        <file>assets/cards/CurseOfBell.png</file>
+        <file>assets/cards/Daze.png</file>
+        <file>assets/cards/Defend.png</file>
+        <file>assets/cards/DemonForm.png</file>
+        <file>assets/cards/Disarm.png</file>
+        <file>assets/cards/DualWield.png</file>
+        <file>assets/cards/Entrench.png</file>
+        <file>assets/cards/Exhume.png</file>
+        <file>assets/cards/Feed.png</file>
+        <file>assets/cards/FeelNoPain.png</file>
+        <file>assets/cards/Immolate.png</file>
+        <file>assets/cards/Impervious.png</file>
+        <file>assets/cards/Inflame.png</file>
+        <file>assets/cards/JAX.png</file>
+        <file>assets/cards/LimitBreak.png</file>
+        <file>assets/cards/Metallicize.png</file>
+        <file>assets/cards/Offering.png</file>
+        <file>assets/cards/PerfectedStrike.png</file>
+        <file>assets/cards/Reaper.png</file>
+        <file>assets/cards/Regret.png</file>
+        <file>assets/cards/ShrugItOff.png</file>
+        <file>assets/cards/Slime.png</file>
+        <file>assets/cards/Strike.png</file>
+        <file>assets/cards/TwinStrike.png</file>
+        <file>assets/cards/Whirlwind.png</file>
+        <file>assets/cards/Wound.png</file>
+        <file>assets/cards/Writhe.png</file>
+        <file>assets/relics/BurningBlood.png</file>
+        <file>assets/relics/CallingBell.png</file>
+        <file>assets/relics/CultistHeadpiece.png</file>
+        <file>assets/relics/FaceOfTheCleric.png</file>
+        <file>assets/relics/Girya.png</file>
+        <file>assets/relics/IceCream.png</file>
+        <file>assets/relics/Kunai.png</file>
+        <file>assets/relics/MarkOfPain.png</file>
+        <file>assets/relics/MutagenicStrength.png</file>
+        <file>assets/relics/PreservedInsect.png</file>
+        <file>assets/relics/Shuriken.png</file>
+        <file>assets/relics/SlaversCollar.png</file>
+        <file>assets/relics/VelvetChoker.png</file>
+        <file>assets/relics/WarpedTongs.png</file>
+        <file>assets/potions/BlockPotion.png</file>
+        <file>assets/potions/EnergyPotion.png</file>
+        <file>assets/potions/FairyInaBottle.png</file>
+        <file>assets/potions/FirePotion.png</file>
+        <file>assets/potions/SwiftPotion.png</file>
+        <file>assets/not_enough_energy.png</file>
+        <file>assets/scene.png</file>
+        <file>assets/shop_bg.png</file>
+        <file>assets/campfire/campfire_bg.png</file>
+        <file>assets/campfire/lift_icon.png</file>
+        <file>assets/campfire/rest_bg.png</file>
+        <file>assets/campfire/rest_icon.png</file>
+        <file>assets/campfire/smith_icon.png</file>
+        <file>assets/enemies/BlueSlaver.png</file>
+        <file>assets/enemies/BookOfStabbing.png</file>
+        <file>assets/enemies/Cultist.png</file>
+        <file>assets/enemies/Green_Louse.png</file>
+        <file>assets/enemies/GremlinKnob.png</file>
+        <file>assets/enemies/Hexaghost.png</file>
+        <file>assets/enemies/JawWorm.png</file>
+        <file>assets/enemies/KingSlime.png</file>
+        <file>assets/enemies/LargeSlime.png</file>
+        <file>assets/enemies/Looter.png</file>
+        <file>assets/enemies/Louse (2).png</file>
+        <file>assets/enemies/Louse.png</file>
+        <file>assets/enemies/MediumSlime.png</file>
+        <file>assets/enemies/Mugger.png</file>
+        <file>assets/enemies/Red_Louse.png</file>
+        <file>assets/enemies/RedSlaver.png</file>
+        <file>assets/enemies/SmallSlime.png</file>
+        <file>assets/enemies/SphericGuardian.png</file>
+        <file>assets/enemies/Taskmaster.png</file>
+        <file>assets/enemies/TheChamp.png</file>
+        <file>assets/enemies/ThreeSentries.png</file>
+        <file>assets/characters/Defect.png</file>
+        <file>assets/characters/IronClad.png</file>
+        <file>assets/characters/leader.png</file>
+        <file>assets/characters/Silent.png</file>
+        <file>assets/characters/teammate.png</file>
+        <file>assets/characters/Watcher.png</file>
+        <file>assets/icons/deck.png</file>
+        <file>assets/icons/discard_pile.png</file>
+        <file>assets/icons/draw_pile.png</file>
+        <file>assets/icons/end_turn.png</file>
+        <file>assets/icons/energy.png</file>
+        <file>assets/icons/gold.png</file>
+        <file>assets/icons/hp.png</file>
+        <file>assets/icons/map.png</file>
+        <file>assets/icons/settings.png</file>
+        <file>assets/icons/settings_overlay.png</file>
+        <file>assets/events/Augmenter.png</file>
+        <file>assets/events/event_frame.png</file>
+        <file>assets/events/FaceTrader.png</file>
+        <file>assets/events/GoldenIdol.png</file>
+        <file>assets/events/GoldenShrine.png</file>
+        <file>assets/events/Lab.png</file>
+        <file>assets/events/OminousForge.png</file>
+        <file>assets/events/ShiningLight.png</file>
+        <file>assets/events/TheColosseum.png</file>
+        <file>assets/events/TheSsssssserpant.png</file>
+        <file>assets/mainmenu/friend/play.png</file>
+        <file>assets/audio/Card.mp3</file>
+        <file>assets/audio/crow.mp3</file>
+        <file>assets/audio/DrawPile&amp;DiscardPile.mp3</file>
+        <file>assets/audio/End Turn.mp3</file>
+        <file>assets/audio/Exordium.mp3</file>
+        <file>assets/audio/hit.mp3</file>
+        <file>assets/audio/Potion.mp3</file>
+        <file>assets/audio/treasure.mp3</file>
+        <file>assets/treasure.png</file>
     </qresource>
 </RCC>

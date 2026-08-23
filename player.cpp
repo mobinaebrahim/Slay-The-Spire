@@ -25,6 +25,11 @@ void Player::increaseMaxHP(int amount) {
     hp += amount;
 }
 
+void Player::loseMaxHP(int amount) {
+    maxHp -= amount;
+    hp -= amount;
+}
+
 void Player::drawCards(int count) {
     for (int i = 0; i < count; i++) {
         if (drawPile.empty()) {
@@ -240,4 +245,77 @@ void Player::upgradeAllBurns() {
     upgradeBurnsIn(drawPile);
     upgradeBurnsIn(discardPile);
     upgradeBurnsIn(exhaustPile);
+}
+
+void Player::addPotion(Potion* potion) {
+    if (potion)
+        potions.push_back(potion);
+}
+
+void Player::removePotion(Potion* potion) {
+    auto it = std::find(potions.begin(), potions.end(), potion);
+    if (it != potions.end()) {
+        delete *it;
+        potions.erase(it);
+    }
+}
+
+void Player::usePotion(Potion* potion, Character* target) {
+    if (!potion || !potion->isPlayable())
+        return;
+    potion->applyEffect(this, target, battleManagerPtr);
+    removePotion(potion);
+}
+
+void Player::addRelic(Relic* relic) {
+    if (relic) {
+        relics.push_back(relic);
+        relic->onObtain(this);
+    }
+}
+
+bool Player::hasRelic(string relicName) const {
+    for (auto* r : relics)
+        if (r->getName() == relicName)
+            return true;
+    return false;
+}
+
+int Player::takeDamage(int incomingDamage) {
+    int damageToHp = Character::takeDamage(incomingDamage);
+
+    if (hp <= 0) {
+        for (auto it = potions.begin(); it != potions.end(); ++it) {
+            FairyInABottle* fairy = dynamic_cast<FairyInABottle*>(*it);
+            if (fairy) {
+                hp = static_cast<int>(maxHp * 0.3);
+                delete *it;
+                potions.erase(it);
+                break;
+            }
+        }
+    }
+    return damageToHp;
+}
+
+void Player::resetEnergy() {
+    if (hasRelic("Ice Cream"))
+        currentEnergy += maxEnergy;
+    else
+        currentEnergy = maxEnergy;
+}
+
+void Player::removeCardFromDeck(Card* card) {
+    auto removeFrom = [&](std::vector<Card*>& pile) -> bool {
+        auto it = std::find(pile.begin(), pile.end(), card);
+        if (it != pile.end()) {
+            pile.erase(it);
+            return true;
+        }
+        return false;
+    };
+    if (removeFrom(hand)) return;
+    if (removeFrom(drawPile)) return;
+    if (removeFrom(discardPile)) return;
+    if (removeFrom(exhaustPile)) return;
 }

@@ -36,6 +36,7 @@
 
 MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
                        int initialGold, const std::vector<std::string>& deckNames,
+                       const std::vector<std::string>& potionNames,
                        CombatType combatType)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -52,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     playerEnergyOrb = new QLabel(this);
     playerEnergyOrb->setFixedSize(70, 70);
-    playerEnergyOrb->setPixmap(QPixmap(":/images/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    playerEnergyOrb->setPixmap(QPixmap(":/assets/icons/energy.png").scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     energyOrbCountLabel = new QLabel(playerEnergyOrb);
     energyOrbCountLabel->setGeometry(0, 0, 70, 70);
@@ -67,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     playerHeartIcon = new QLabel(this);
     playerHeartIcon->setFixedSize(40, 40);
-    playerHeartIcon->setPixmap(QPixmap(":/images/icons/hp.png").scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    playerHeartIcon->setPixmap(QPixmap(":/assets/icons/hp.png").scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     playerHeartIcon->move(14, 6);
 
     playerHpTopLabel = new QLabel(this);
@@ -76,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     goldIconLabel = new QLabel(this);
     goldIconLabel->setFixedSize(46, 46);
-    goldIconLabel->setPixmap(QPixmap(":/images/icons/gold.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    goldIconLabel->setPixmap(QPixmap(":/assets/icons/gold.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     goldIconLabel->move(150, 3);
 
     goldCountLabel = new QLabel(goldIconLabel);
@@ -86,14 +87,14 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     settingLabel = new QLabel(this);
     settingLabel->setFixedSize(46, 46);
-    settingLabel->setPixmap(QPixmap(":/images/icons/settings.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    settingLabel->setPixmap(QPixmap(":/assets/icons/settings.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     settingLabel->move(this->width() - 60, 3);
     settingLabel->installEventFilter(this);
 
     settingsOverlayImage = new QLabel(this);
     settingsOverlayImage->setAlignment(Qt::AlignCenter);
     settingsOverlayImage->setStyleSheet("background-color: rgba(0,0,0,220);");
-    settingsOverlayImage->setPixmap(QPixmap(":/images/icons/settings_overlay.png").scaled(
+    settingsOverlayImage->setPixmap(QPixmap(":/assets/icons/settings_overlay.png").scaled(
         this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     settingsOverlayImage->setGeometry(0, 0, this->width(), this->height());
     settingsOverlayImage->hide();
@@ -101,13 +102,13 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     mapLabel = new QLabel(this);
     mapLabel->setFixedSize(46, 46);
-    mapLabel->setPixmap(QPixmap(":/images/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    mapLabel->setPixmap(QPixmap(":/assets/icons/map.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     mapLabel->move(this->width() - 172, 3);
     mapLabel->installEventFilter(this);
 
     deckIconLabel = new QLabel(this);
     deckIconLabel->setFixedSize(46, 46);
-    deckIconLabel->setPixmap(QPixmap(":/images/icons/deck.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    deckIconLabel->setPixmap(QPixmap(":/assets/icons/deck.png").scaled(46, 46, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     deckIconLabel->move(this->width() - 116, 3);
     deckIconLabel->installEventFilter(this);
 
@@ -118,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     drawPileIconLabel = new QLabel(this);
     drawPileIconLabel->setFixedSize(84, 84);
-    drawPileIconLabel->setPixmap(QPixmap(":/images/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    drawPileIconLabel->setPixmap(QPixmap(":/assets/icons/draw_pile.png").scaled(84, 84, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     drawPileIconLabel->installEventFilter(this);
 
     drawPileCountLabel = new QLabel(drawPileIconLabel);
@@ -133,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     discardPileIconLabel = new QLabel(discardWrapper);
     discardPileIconLabel->setGeometry(16, 16, 74, 74);
-    discardPileIconLabel->setPixmap(QPixmap(":/images/icons/discard_pile.png").scaled(74, 74, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    discardPileIconLabel->setPixmap(QPixmap(":/assets/icons/discard_pile.png").scaled(74, 74, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     discardPileCountLabel = new QLabel(discardPileIconLabel);
     discardPileCountLabel->setGeometry(12, 28, 28, 16);
@@ -189,7 +190,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
     ui->EndTurnButton->installEventFilter(this);
 
     ui->EndTurnButton->setText("");
-    ui->EndTurnButton->setIcon(QIcon(":/images/icons/end_turn.png"));
+    ui->EndTurnButton->setIcon(QIcon(":/assets/icons/end_turn.png"));
     ui->EndTurnButton->setIconSize(QSize(320, 100));
     ui->EndTurnButton->setFixedSize(230, 82);
     ui->EndTurnButton->setContentsMargins(0, 0, 0, 0);
@@ -231,7 +232,7 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
     customTooltipBox->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     playerSpriteLabel = new QLabel(this);
-    playerSpriteLabel->setPixmap(QPixmap(":/images/characters/IronClad.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    playerSpriteLabel->setPixmap(QPixmap(":/assets/characters/IronClad.png").scaled(200, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     playerSpriteLabel->setAlignment(Qt::AlignCenter);
     playerSpriteLabel->setScaledContents(true);
 
@@ -316,8 +317,8 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
     bgAudioOutput = new QAudioOutput(this);
     bgMusicPlayer = new QMediaPlayer(this);
     bgMusicPlayer->setAudioOutput(bgAudioOutput);
-    bgMusicPlayer->setSource(QUrl("qrc:/audio/Exordium.mp3"));
-    bgAudioOutput->setVolume(0.4);
+    bgMusicPlayer->setSource(QUrl(":/audio/Exordium.mp3"));
+    bgAudioOutput->setVolume(1);
 
     connect(bgMusicPlayer, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status){
         if (status == QMediaPlayer::EndOfMedia) {
@@ -330,31 +331,39 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
     hitSoundOutput = new QAudioOutput(this);
     hitSoundPlayer = new QMediaPlayer(this);
     hitSoundPlayer->setAudioOutput(hitSoundOutput);
-    hitSoundPlayer->setSource(QUrl("qrc:/audio/hit.mp3"));
+    hitSoundPlayer->setSource(QUrl(":/audio/hit.mp3"));
     hitSoundOutput->setVolume(0.8);
 
     cardPlaySoundOutput = new QAudioOutput(this);
     cardPlaySoundPlayer = new QMediaPlayer(this);
     cardPlaySoundPlayer->setAudioOutput(cardPlaySoundOutput);
-    cardPlaySoundPlayer->setSource(QUrl("qrc:/audio/Card.mp3"));
+    cardPlaySoundPlayer->setSource(QUrl(":/audio/Card.mp3"));
     cardPlaySoundOutput->setVolume(3);
 
     endTurnHoverSoundOutput = new QAudioOutput(this);
     endTurnHoverSoundPlayer = new QMediaPlayer(this);
     endTurnHoverSoundPlayer->setAudioOutput(endTurnHoverSoundOutput);
-    endTurnHoverSoundPlayer->setSource(QUrl("qrc:/audio/End Turn.mp3"));
+    endTurnHoverSoundPlayer->setSource(QUrl("assets/audio/End Turn.mp3"));
     endTurnHoverSoundOutput->setVolume(3);
 
     pileOpenSoundOutput = new QAudioOutput(this);
     pileOpenSoundPlayer = new QMediaPlayer(this);
     pileOpenSoundPlayer->setAudioOutput(pileOpenSoundOutput);
-    pileOpenSoundPlayer->setSource(QUrl("qrc:/audio/DrawPile&DiscardPile.mp3"));
+    pileOpenSoundPlayer->setSource(QUrl("assets/audio/DrawPile&DiscardPile.mp3"));
     pileOpenSoundOutput->setVolume(3);
 
     playerStatusRow = new QWidget(this);
     QHBoxLayout* playerStatusLayout = new QHBoxLayout(playerStatusRow);
     playerStatusLayout->setContentsMargins(0, 0, 0, 0);
     playerStatusLayout->setSpacing(4);
+
+    potionRow = new QWidget(this);
+    QHBoxLayout* potionLayout = new QHBoxLayout(potionRow);
+    potionLayout->setContentsMargins(0, 0, 0, 0);
+    potionLayout->setSpacing(6);
+    potionLayout->setAlignment(Qt::AlignLeft);
+    potionRow->setFixedHeight(54);
+    potionRow->raise();
 
     hoverCardLabel = new QLabel(this);
     hoverCardLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -391,9 +400,16 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
         playerName = "Dina";
 
     playerObject = new Player(playerName.toStdString(), maxHp, initialHp, 3, initialGold, battleManager);
+
+    for (const auto& name : potionNames) {
+        Potion* p = createPotionByName(name);
+        if (p) playerObject->addPotion(p);
+    }
+    updatePotionUI();
+
     battleManager->setPlayer(playerObject);
 
-    m_combatType = combatType;
+    updatePotionUI();
 
     switch (combatType) {
     case CombatType::Normal:
@@ -409,8 +425,17 @@ MainWindow::MainWindow(QWidget *parent, int initialHp, int maxHp,
 
     if (!deckNames.empty()) {
         for (const auto& name : deckNames) {
-            Card* c = createCardByName(name);
-            if (c) playerObject->addCardToDrawPile(c);
+            std::string pureName = name;
+            bool upgraded = false;
+            if (!pureName.empty() && pureName.back() == '+') {
+                upgraded = true;
+                pureName.pop_back();
+            }
+            Card* c = createCardByName(pureName);
+            if (c) {
+                if (upgraded) c->upgrade();
+                playerObject->addCardToDrawPile(c);
+            }
         }
     } else {
         initializePlayerDeck(15);
@@ -476,7 +501,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
     if (backgroundLabel) {
         backgroundLabel->resize(this->size());
-        QPixmap original(":/images/scene.png");
+        QPixmap original(":/assets/scene.png");
         backgroundLabel->setPixmap(original.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     }
 
@@ -490,6 +515,8 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     playerHpBar->setGeometry(currentStartX + 30 + playerW / 2 - barWidth / 2 + 20, basePlayerY + 250, barWidth, barHeight);
     playerBlockBadge->setGeometry(currentStartX + 20 + playerW - 30, basePlayerY - 8, 30, 30);
     playerHitOverlay->setGeometry(currentStartX + 30, basePlayerY, playerW, playerH);
+    potionRow->setGeometry(220, 0, 300, 54);
+    potionRow->raise();
 
     int playerSpriteCenterY = basePlayerY + playerH / 2;
     int spriteCenterOffsetInWrapper = 20 + 4 + 26 + 4 + 75;
@@ -576,7 +603,7 @@ void MainWindow::updateHandUI() {
         btn->setFixedSize(140, 180);
 
         QString cardName = QString::fromStdString(card->getName());
-        QString cardImagePath = ":/images/cards/" + cardName + ".png";
+        QString cardImagePath = ":/assets/cards/" + cardName + ".png";
 
         btn->setIcon(QIcon(cardImagePath));
         btn->setIconSize(btn->size());
@@ -656,9 +683,11 @@ void MainWindow::checkGameOver() {
 
         QTimer::singleShot(2500, this, [this]() {
             std::vector<std::string> emptyDeck;
-            emit combatFinished(false, 0, playerObject->getMaxHp(),
-                                playerObject->getGold(), emptyDeck,
-                                m_damageDealtThisFight, false);
+            std::vector<std::string> finalPotions;
+            for (Potion* p : playerObject->getPotions()) {
+                if (p) finalPotions.push_back(p->getName());
+            }
+            emit combatFinished(false, 0, playerObject->getMaxHp(), playerObject->getGold(), emptyDeck, finalPotions);
             close();
         });
         return;
@@ -681,10 +710,11 @@ void MainWindow::checkGameOver() {
             for (Card* c : playerObject->getFullDeck()) {
                 if (c) finalDeck.push_back(c->getName());
             }
-            bool wasEliteKill = won && (m_combatType == CombatType::Elite);
-            emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp(),
-                                playerObject->getGold(), finalDeck,
-                                m_damageDealtThisFight, wasEliteKill);
+            std::vector<std::string> finalPotions;
+            for (Potion* p : playerObject->getPotions()) {
+                if (p) finalPotions.push_back(p->getName());
+            }
+            emit combatFinished(won, playerObject->getHp(), playerObject->getMaxHp(), playerObject->getGold(), finalDeck, finalPotions);
             close();
         });
         return;
@@ -798,6 +828,7 @@ void MainWindow::updateCharacterUI() {
 
         slot.intentLabel->setText(intentToShortText(enemy));
     }
+    updatePotionUI();
 }
 
 QPixmap MainWindow::getEnemyPixmap(Enemy* enemy) {
@@ -806,29 +837,29 @@ QPixmap MainWindow::getEnemyPixmap(Enemy* enemy) {
         Louse* louse = dynamic_cast<Louse*>(enemy);
         if (louse) {
             return QPixmap(louse->getColorChance() == 1
-                               ? ":/images/enemies/Green_Louse.png"
-                               : ":/images/enemies/Red_Louse.png");
+                               ? ":/assets/enemies/Green_Louse.png"
+                               : ":/assets/enemies/Red_Louse.png");
         }
     }
-    if (enemyName == "BlueSlaver") return QPixmap(":/images/enemies/BlueSlaver.png");
-    if (enemyName == "BookOfStabbing") return QPixmap(":/images/enemies/BookOfStabbing.png");
-    if (enemyName == "Cultist") return QPixmap(":/images/enemies/Cultist.png");
-    if (enemyName == "GremlinKnob") return QPixmap(":/images/enemies/GremlinKnob.png");
-    if (enemyName == "Hexaghost") return QPixmap(":/images/enemies/Hexaghost.png");
-    if (enemyName == "JawWorm") return QPixmap(":/images/enemies/JawWorm.png");
-    if (enemyName == "KingSlime") return QPixmap(":/images/enemies/KingSlime.png");
-    if (enemyName == "LargeSlime") return QPixmap(":/images/enemies/LargeSlime.png");
-    if (enemyName == "Looter") return QPixmap(":/images/enemies/Looter.png");
-    if (enemyName == "MediumSlime") return QPixmap(":/images/enemies/MediumSlime.png");
-    if (enemyName == "Mugger") return QPixmap(":/images/enemies/Mugger.png");
-    if (enemyName == "RedSlaver") return QPixmap(":/images/enemies/RedSlaver.png");
-    if (enemyName == "SmallSlime") return QPixmap(":/images/enemies/SmallSlime.png");
-    if (enemyName == "SphericGuardian") return QPixmap(":/images/enemies/SphericGuardian.png");
-    if (enemyName == "Taskmaster") return QPixmap(":/images/enemies/Taskmaster.png");
-    if (enemyName == "TheChamp") return QPixmap(":/images/enemies/TheChamp.png");
-    if (enemyName == "ThreeSentries") return QPixmap(":/images/enemies/ThreeSentries.png");
+    if (enemyName == "BlueSlaver") return QPixmap(":/assets/enemies/BlueSlaver.png");
+    if (enemyName == "BookOfStabbing") return QPixmap(":/assets/enemies/BookOfStabbing.png");
+    if (enemyName == "Cultist") return QPixmap(":/assets/enemies/Cultist.png");
+    if (enemyName == "GremlinKnob") return QPixmap(":/assets/enemies/GremlinKnob.png");
+    if (enemyName == "Hexaghost") return QPixmap(":/assets/enemies/Hexaghost.png");
+    if (enemyName == "JawWorm") return QPixmap(":/assets/enemies/JawWorm.png");
+    if (enemyName == "KingSlime") return QPixmap(":/assets/enemies/KingSlime.png");
+    if (enemyName == "LargeSlime") return QPixmap(":/assets/enemies/LargeSlime.png");
+    if (enemyName == "Looter") return QPixmap(":/assets/enemies/Looter.png");
+    if (enemyName == "MediumSlime") return QPixmap(":/assets/enemies/MediumSlime.png");
+    if (enemyName == "Mugger") return QPixmap(":/assets/enemies/Mugger.png");
+    if (enemyName == "RedSlaver") return QPixmap(":/assets/enemies/RedSlaver.png");
+    if (enemyName == "SmallSlime") return QPixmap(":/assets/enemies/SmallSlime.png");
+    if (enemyName == "SphericGuardian") return QPixmap(":/assets/enemies/SphericGuardian.png");
+    if (enemyName == "Taskmaster") return QPixmap(":/assets/enemies/Taskmaster.png");
+    if (enemyName == "TheChamp") return QPixmap(":/assets/enemies/TheChamp.png");
+    if (enemyName == "ThreeSentries") return QPixmap(":/assets/enemies/ThreeSentries.png");
 
-    return QPixmap(":/images/enemy_default.png");
+    return QPixmap(":/assets/enemy_default.png");
 }
 
 void MainWindow::rebuildEnemyUI() {
@@ -926,6 +957,7 @@ void MainWindow::rebuildEnemyUI() {
         glow->setOffset(0, 0);
         slot.sprite->setGraphicsEffect(glow);
     }
+    updatePotionUI();
 }
 
 Enemy* MainWindow::enemyFromWidget(QObject* obj) {
@@ -1202,6 +1234,13 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
         return QMainWindow::eventFilter(obj, event);
     }
 
+    QLabel* potionLabel = qobject_cast<QLabel*>(obj);
+    if (potionLabel && potionLabel->property("potionIndex").isValid() && event->type() == QEvent::MouseButtonRelease) {
+        int idx = potionLabel->property("potionIndex").toInt();
+        usePotionAtIndex(idx);
+        return true;
+    }
+
     return QMainWindow::eventFilter(obj, event);
 }
 
@@ -1253,7 +1292,7 @@ void MainWindow::showCardPileOverlay(const QString& title, const vector<Card*>& 
         QLabel* cardImgLabel = new QLabel();
         cardImgLabel->setFixedSize(120, 160);
         QString cardName = QString::fromStdString(card->getName());
-        cardImgLabel->setPixmap(QPixmap(":/images/cards/" + cardName + ".png")
+        cardImgLabel->setPixmap(QPixmap(":/assets/cards/" + cardName + ".png")
                                     .scaled(120, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         gridLayout->addWidget(cardImgLabel, row, col);
 
@@ -1506,9 +1545,6 @@ void MainWindow::playCardAtIndex(int index, Enemy* explicitTarget) {
         if (e == targetEnemy) { enemyStillAlive = true; break; }
 
     int damageDealt = enemyStillAlive ? (enemyHpBefore - targetEnemy->getHp()) : enemyHpBefore;
-    if (damageDealt > 0) {
-        m_damageDealtThisFight += damageDealt;
-    }
 
     battleManager->cleanupDeadEnemies();
     checkGameOver();
@@ -1756,7 +1792,7 @@ void MainWindow::showNotEnoughEnergy()
 {
     QLabel* bubble = new QLabel(this);
 
-    QPixmap pix(":/images/not_enough_energy.png");
+    QPixmap pix("assets/not_enough_energy.png");
 
     qDebug() << pix.isNull();
 
@@ -2012,20 +2048,81 @@ void MainWindow::spawnEliteEncounter()
     case 3:
         battleManager->spawnEnemy(new TheChamp());
         break;
+
     }
 }
 
 void MainWindow::spawnBossEncounter()
 {
-    int roll = std::rand() % 3;
+    int roll = std::rand() % 2;
     switch (roll) {
     case 0:
         battleManager->spawnEnemy(new Hexaghost());
         break;
     //case 1 :
-        //battleManager->spawnEnemy(new KingSlime());
-    case 2:
+        //battleManager->spawnEnemy(new KingSlime(BattleManager));
+    case 1:
         battleManager->spawnEnemy(new TheChamp());
         break;
     }
+}
+
+void MainWindow::updatePotionUI() {
+    if (!potionRow) return;
+
+    QLayout* layout = potionRow->layout();
+    QLayoutItem* child;
+    while ((child = layout->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();
+            delete child->widget();
+        }
+        delete child;
+    }
+
+    const auto& potions = playerObject->getPotions();
+    int slotCount = 3; // تعداد اسلات پوشن
+
+    for (int i = 0; i < slotCount; ++i) {
+        QLabel* potLabel = new QLabel(potionRow);
+        potLabel->setFixedSize(50, 50);
+        potLabel->setStyleSheet("border: 1px solid rgba(255,255,255,60); border-radius: 4px;");
+
+        if (i < (int)potions.size() && potions[i]) {
+            QString imgPath = "assets/potions/" + QString::fromStdString(potions[i]->getName()) + ".png";
+            QPixmap pix(imgPath);
+            if (!pix.isNull())
+                potLabel->setPixmap(pix.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            potLabel->setProperty("potionIndex", i);
+            potLabel->setCursor(Qt::PointingHandCursor);
+            potLabel->installEventFilter(this);
+        } else {
+            potLabel->setStyleSheet("border: 1px solid rgba(255,255,255,30); border-radius: 4px; background: transparent;");
+        }
+
+        layout->addWidget(potLabel);
+    }
+}
+
+void MainWindow::usePotionAtIndex(int index) {
+    if (isGameOver || isAttackAnimating) return;
+
+    const auto& potions = playerObject->getPotions();
+    if (index < 0 || index >= (int)potions.size()) return;
+
+    Potion* potion = potions[index];
+    if (!potion || !potion->isPlayable()) return;
+
+    Character* target = playerObject;
+    FirePotion* fire = dynamic_cast<FirePotion*>(potion);
+    if (fire) {
+        const auto& enemies = battleManager->getEnemies();
+        if (enemies.empty()) return;
+        int tIdx = qBound(0, targetedEnemyIndex, (int)enemies.size() - 1);
+        target = enemies[tIdx];
+    }
+
+    playerObject->usePotion(potion, target);
+    updatePotionUI();
+    updateCharacterUI();
 }

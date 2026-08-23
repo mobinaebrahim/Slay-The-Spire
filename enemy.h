@@ -33,6 +33,9 @@ public:
     void setBattleManager(BattleManager* bm) { battleManagerPtr = bm; }
     void setHp(int newHp) { hp = newHp; }
     void setMaxHp(int newMax) { maxHp = newMax; }
+
+    virtual bool isElite() const { return false; }
+    virtual bool isBoss() const { return false; }
 };
 
 #endif

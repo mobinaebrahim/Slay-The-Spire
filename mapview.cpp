@@ -93,6 +93,33 @@ void MapView::buildScene(GameMap *map)
         }
     }
 
+    /*// Step 3: now draw the circles (on top of the lines)
+    for (int f = 0; f < map->floorCount(); ++f) {
+        for (int i = 0; i < map->roomCountAt(f); ++i) {
+            MapNode *node = map->nodeAt(f, i);
+            QPointF pos = m_positions[node];
+
+            QBrush brush;
+            if (node->available()) {
+                brush = QBrush(Qt::yellow);
+            } else if (node->visited()) {
+                brush = QBrush(Qt::darkGray);
+            } else {
+                brush = QBrush(Qt::lightGray);
+            }
+
+            MapNodeItem *item = new MapNodeItem(node,
+                                                pos.x() - nodeRadius, pos.y() - nodeRadius,
+                                                nodeRadius * 2, nodeRadius * 2);
+            item->setPen(QPen(Qt::black));
+            item->setBrush(brush);
+
+            connect(item, &MapNodeItem::clicked, this, &MapView::roomClicked);
+
+            m_scene->addItem(item);
+        }
+    }*/
+
     // Step 3: draw the circles on top of the lines, colored by state, and clickable
     for (int f = 0; f < map->floorCount(); ++f) {
         for (int i = 0; i < map->roomCountAt(f); ++i) {
@@ -102,11 +129,9 @@ void MapView::buildScene(GameMap *map)
             // Boss gets a bigger circle than everything else
             qreal radius = (node->roomType() == RoomType::BOSS) ? nodeRadius * 1.6 : nodeRadius;
 
-            // NEW: pass m_clickEnabled to disable clicks for non-leader
             MapNodeItem *item = new MapNodeItem(node,
                                                 pos.x() - radius, pos.y() - radius,
-                                                radius * 2, radius * 2,
-                                                m_clickEnabled);
+                                                radius * 2, radius * 2);
 
             item->setPen(QPen(Qt::NoPen));
             item->setBrush(Qt::NoBrush); // no colored ring anymore - the circle stays invisible
@@ -115,6 +140,7 @@ void MapView::buildScene(GameMap *map)
 
             // Add the room-type icon on top of the circle
 
+            //***
             item->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
             QString iconPath = iconPathForRoomType(node->roomType());
             QPixmap pix(iconPath);

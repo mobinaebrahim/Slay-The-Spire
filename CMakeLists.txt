@@ -68,6 +68,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mainwindow.cpp
         combattype.h
         resources.qrc
+        CampfireScreen.cpp CampfireScreen.h
+        EventScreen.cpp EventScreen.h
+        EventScreen.cpp EventScreen.h
+        Potion.cpp Potion.h
+        ShopScreen.cpp ShopScreen.h
+        Relics.cpp Relics.h
+        treasurescreen.h treasurescreen.cpp
     )
 else()
     if(ANDROID)

@@ -1258,7 +1258,6 @@ void MPCombatWindow::updateAnimations()
 
 void MPCombatWindow::playHitEffect(QLabel *overlay, QGraphicsOpacityEffect *opacityEffect)
 {
-    // FIX: stop any existing animation on this overlay to prevent overlap
     QObject *existingAnim = overlay->property("hitAnim").value<QObject*>();
     if (existingAnim) {
         QSequentialAnimationGroup *seq = qobject_cast<QSequentialAnimationGroup*>(existingAnim);
@@ -1284,9 +1283,13 @@ void MPCombatWindow::playHitEffect(QLabel *overlay, QGraphicsOpacityEffect *opac
     seq->addAnimation(flashOut);
     connect(seq, &QSequentialAnimationGroup::finished, overlay, &QLabel::hide);
 
-    // Store reference so we can stop it if triggered again before finishing
-    overlay->setProperty("hitAnim", QVariant::fromValue<QObject*>(seq));
+    // FIX: clear the stored pointer once this object is actually destroyed,
+    // so a later playHitEffect() call never reads a dangling pointer.
+    connect(seq, &QObject::destroyed, overlay, [overlay]() {
+        overlay->setProperty("hitAnim", QVariant::fromValue<QObject*>(nullptr));
+    });
 
+    overlay->setProperty("hitAnim", QVariant::fromValue<QObject*>(seq));
     seq->start(QAbstractAnimation::DeleteWhenStopped);
 }
 

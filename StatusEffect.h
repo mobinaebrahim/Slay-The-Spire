@@ -7,7 +7,7 @@ using namespace std;
 class StatusEffect {
 protected:
     string name;
-    int amount;
+    int amount;     
 
 public:
     StatusEffect(string name, int amount);
@@ -91,6 +91,14 @@ class FeelNoPainEffect : public StatusEffect {
 public:
     FeelNoPainEffect(int blockAmount);
     void onCardExhausted(Character* owner) override;
+};
+
+class TempStrengthEffect : public StatusEffect {
+public:
+    TempStrengthEffect(int increaseDamageBy);
+    int modifyOutgoingDamage(int baseDamage) override;
+    void onTurnEnd(Character* owner) override;
+    bool isExpired() const override { return amount <= 0; }
 };
 
 #endif

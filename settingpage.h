@@ -22,7 +22,6 @@ public:
     ~SettingPage();
 
 private slots:
-    void handleChangePassword();
     void updateButtonVisibility(int index);
 
 private:

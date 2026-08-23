@@ -360,7 +360,7 @@ font-weight: bold;
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>50</y>
+       <y>60</y>
        <width>261</width>
        <height>41</height>
       </rect>

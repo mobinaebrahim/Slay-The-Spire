@@ -1,0 +1,39 @@
+#ifndef CARD_H
+#define CARD_H
+
+#include <string>
+#include <iostream>
+using namespace std;
+class BattleManager;
+class character;
+
+enum class CardType{ Attack, Skill, Power, Status, Curse};
+
+// NEW: Rarity system for Revive and general card classification
+enum class CardRarity { Basic, Common, Uncommon, Rare };
+
+class Card {
+protected:
+    CardType type;
+    string name;
+    string description;
+    int energyCost;
+    bool isUpgraded = false;
+    CardRarity rarity = CardRarity::Common; // NEW
+public:
+    Card(CardType t, string n, string d, int e);
+    virtual ~Card();
+    virtual void applyEffect(class Character* caster, class Character* target, BattleManager* bm) = 0;
+    string getName() const;
+    string getDescription() const;
+    virtual int getCost(Character* caster);
+    CardType getType() const;
+    CardRarity getRarity() const;        // NEW
+    void setRarity(CardRarity r);        // NEW - for factory use
+    virtual bool isPlayable() const;
+    virtual void upgrade();
+    virtual string getUnplayableReason(Character* caster) const { return ""; }
+    bool getIsUpgraded() const { return isUpgraded; }
+};
+
+#endif
